@@ -8,7 +8,7 @@ const links = [
     { href: "/tournaments", title: "Tournaments" }
 ]
 
-export default () => {
+export default function Nav() {
     const pathname = usePathname()
     return (
         <div className={styles.container}>
