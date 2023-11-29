@@ -11,7 +11,7 @@ export default function Nav() {
     const pathname = usePathname()
     return (
         <div className={styles.container}>
-            <header><Link href="/">Tally 🏁</Link></header>
+            <header className={styles.header}><Link href="/">Tally 🏁</Link></header>
             {links.map(link => (
                 <Link key={link.href} href={link.href} className={pathname === link.href ? styles.active : ""}>{link.title}</Link>
             ))}

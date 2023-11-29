@@ -10,19 +10,6 @@
     margin: 0;
 }
 
-header {
-    font-size: 48px;
-}
-
-header a {
-    text-decoration: none;
-    color: inherit;
-}
-
-header a:hover {
-    text-decoration: underline;
-}
-
 main {
     max-width: 600px;
     margin: 0 auto;
