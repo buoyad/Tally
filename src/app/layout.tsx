@@ -19,9 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={lora.className}>
-        <header>Tally 🏁</header>
         <Nav />
-        {children}
+        <main>
+          {children}
+        </main>
       </body>
     </html>
   )

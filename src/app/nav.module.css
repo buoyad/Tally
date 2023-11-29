@@ -1,7 +1,33 @@
 .container {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
+    margin: 1rem;
+    padding: 12px 64px;
+    align-items: center;
+    position: relative;
+    background: white;
+}
+
+@media screen and (max-width: 800px) {
+    .container {
+        padding: 12px 12px 0;
+    }
+}
+
+.container::before {
+    content: "";
+    position: absolute;
+    top: -1rem;
+    left: -1rem;
+    display: block;
+    background-color: #ffffff;
+    background-image: linear-gradient(45deg, transparent 49%,
+            #4d88f9 50%, transparent 51%);
+    background-size: 5px 5px;
+    right: -1rem;
+    bottom: -1rem;
+    z-index: -1;
 }
 
 .active {

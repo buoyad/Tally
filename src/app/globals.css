@@ -12,6 +12,18 @@
 
 header {
     font-size: 48px;
-    text-align: center;
-    padding-top: 12px;
+}
+
+header a {
+    text-decoration: none;
+    color: inherit;
+}
+
+header a:hover {
+    text-decoration: underline;
+}
+
+main {
+    max-width: 600px;
+    margin: 0 auto;
 }
