@@ -13,8 +13,21 @@
 .formSection {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
 }
 
 .formSection>* {
     margin-bottom: 4px;
+}
+
+.button {
+    padding: 4px;
+    background-color: #4d88f9;
+    color: white;
+    border: 1px solid black;
+    transition: all .1s;
+}
+
+.button:active {
+    opacity: .9;
 }

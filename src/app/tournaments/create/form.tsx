@@ -7,6 +7,7 @@ export default function Form() {
         <div className={styles.formSection}>
             <label htmlFor="tournamentName">Name the tournament</label>
             <input id="tournamentName" name="tournamentName" type="text" placeholder="Tournament name" className={styles.textInput} />
+            <button type="submit" className={styles.button}>Create</button>
         </div>
     </form>
 }

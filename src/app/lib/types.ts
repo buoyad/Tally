@@ -10,8 +10,8 @@ export type Contestant = {
 }
 
 export type Score = {
-    tournamentName: string,
-    contestantName: string,
+    contestantID: string,
     puzzleDate: Date,
+    type: 'mini' | 'biggie',
     score: number,
 }
