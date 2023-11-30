@@ -13,9 +13,9 @@ const links = [
 
 const CWTally = () => {
     const letters = ['T', 'A', 'L', 'L', 'Y', '🏁']
-    return <>
-        {letters.map((letter, idx) => <span className={clsx(RoboMono.className, styles.cwtally, { [styles.cwtallylast]: idx === (letters.length - 1) })} key={idx}>{letter}</span>)}
-    </>
+    return <div>
+        {letters.map((letter, idx) => <span className={clsx(RoboMono.className, styles.tallyletter)} key={idx}>{letter}</span>)}
+    </div>
 }
 
 export default function Nav() {
