@@ -24,7 +24,7 @@ export default function Nav() {
         <div className={styles.container}>
             <header className={styles.header}><Link href="/"><CWTally /></Link></header>
             {links.map(link => (
-                <Link key={link.href} href={link.href} className={clsx(styles.link, {
+                <Link key={link.href} href={link.href} className={clsx({
                     [styles.active]: link.href === pathname
                 })}>{link.title}</Link>
             ))}

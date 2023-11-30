@@ -9,7 +9,7 @@
     background: white;
 }
 
-.container .link {
+.container a {
     position: relative;
     text-decoration: none;
     color: black;
@@ -20,7 +20,7 @@
     right: 0;
 }
 
-.container .link:hover {
+.container a:hover {
     text-decoration: underline;
     text-shadow: 5px 5px rgba(0, 0, 0, .05);
     bottom: 2px;
