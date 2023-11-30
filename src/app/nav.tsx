@@ -13,9 +13,9 @@ const links = [
 
 const CWTally = () => {
     const letters = ['T', 'A', 'L', 'L', 'Y', '🏁']
-    return <div>
+    return <>
         {letters.map((letter, idx) => <span className={clsx(RoboMono.className, styles.tallyletter)} key={idx}>{letter}</span>)}
-    </div>
+    </>
 }
 
 export default function Nav() {
@@ -23,11 +23,11 @@ export default function Nav() {
     return (
         <div className={styles.container}>
             <header className={styles.header}><Link href="/"><CWTally /></Link></header>
-            {links.map(link => (
+            {/* {links.map(link => (
                 <Link key={link.href} href={link.href} className={clsx({
                     [styles.active]: link.href === pathname
                 })}>{link.title}</Link>
-            ))}
+            ))} */}
         </div>
     )
 }
