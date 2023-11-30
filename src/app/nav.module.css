@@ -68,6 +68,14 @@
     height: 1lh;
 }
 
+.tallyletter:first-child::before {
+    content: "1";
+    font-size: 10px;
+    position: absolute;
+    top: -.2em;
+    left: .2em;
+}
+
 .tallyletter:last-child {
     border-right: 1px solid black;
     background-color: black;

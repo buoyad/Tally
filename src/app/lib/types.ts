@@ -1,9 +1,10 @@
 export type Tournament = {
     name: string,
-    contestantIDs: string[],
+    contestants: string[],
 }
 
 export type Contestant = {
+    tournamentName: string,
     name: string,
 }
 
