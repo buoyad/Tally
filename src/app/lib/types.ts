@@ -1,10 +1,11 @@
 export type Tournament = {
     name: string,
     contestants: string[],
+    shareURL: URL,
 }
 
 export type Contestant = {
-    tournamentName: string,
+    id: string,
     name: string,
 }
 

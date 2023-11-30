@@ -20,9 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={lora.className}>
         <Nav />
-        <main>
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   )

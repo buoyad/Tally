@@ -1,7 +1,7 @@
 'use client'
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import styles from './nav.module.css'
+import styles from '@/app/nav.module.css'
 import { Roboto_Mono } from 'next/font/google'
 import { clsx } from 'clsx'
 

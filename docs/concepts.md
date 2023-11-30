@@ -15,6 +15,7 @@ be able to register new scores.
 Contestants have a `name` and a passcode they use to authenticate with Tally.
 They can optionally set an email address that can be used to reset their
 passcode if they ever lose it. Contestants are associated with a list of scores.
+Contestants can participate in multiple tournaments.
 
 ### Scores
 

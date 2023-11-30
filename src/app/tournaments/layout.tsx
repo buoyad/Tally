@@ -6,7 +6,6 @@ export default function TournamentLayout({ children }: { children: React.ReactNo
     const searchParams = useSearchParams()
     const id = searchParams.get('id')
     return <>
-        <header>Tournament{id ? ` ${id}` : ''}</header>
         <Nav />
         {children}
     </>
