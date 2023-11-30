@@ -1,16 +1,15 @@
 export type Tournament = {
     name: string,
-    contestants: string[],
     shareURL: URL,
 }
 
-export type Contestant = {
+export type User = {
     id: string,
     name: string,
 }
 
 export type Score = {
-    contestantID: string,
+    userID: string,
     puzzleDate: Date,
     type: 'mini' | 'biggie',
     score: number,
