@@ -1,12 +1,10 @@
 import { randomBytes } from 'crypto'
 import { sign, verify, JwtPayload } from 'jsonwebtoken'
-import { z } from 'zod'
+import * as validation from './validation'
 
 interface AccessToken {
     email: string
 }
-
-const emailSchema = z.string().email()
 
 export const createAccessToken = (email: String) => sign({ email }, process.env.AUTH_SECRET!, { expiresIn: "15m" })
 
@@ -20,7 +18,7 @@ export const verifyAccessToken = (token: string | null) => {
         // verify also checks token expiry
         const decodedToken = verify(token, process.env.AUTH_SECRET!) as JwtPayload
         // sanitize email from token
-        const email = emailSchema.parse(decodedToken.email)
+        const email = validation.email(decodedToken.email)
         return email
     } catch (error) {
         return null

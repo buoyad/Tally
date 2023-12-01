@@ -36,6 +36,11 @@
     background-color: gray;
 }
 
+.button:disabled:active {
+    opacity: 1;
+}
+
 .subtitle {
     font-size: 10px;
+    font-style: italic;
 }

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { createRefreshToken, verifyAccessToken } from '@/app/lib/auth';
 import { redirect } from 'next/navigation';
 import * as db from '@/app/lib/db';
+import log from '@/app/lib/log';
 
 const secretKey = process.env.AUTH_SECRET!;
 
@@ -23,10 +24,10 @@ async function login(req: NextRequest) {
         // set cookies
         const refreshToken = createRefreshToken()
         await db.updateUser(email, email, refreshToken)
-        console.log('db updateUser success')
+        log.info('db updateUser success')
     } catch (error) {
-        console.log('error in db.updateUser')
-        console.log(error)
+        log.error('error in db.updateUser')
+        log.error(error)
     }
 
     redirect('/user')
