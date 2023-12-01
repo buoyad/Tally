@@ -6,7 +6,7 @@ import * as db from '@/app/lib/db';
 
 const secretKey = process.env.AUTH_SECRET!;
 
-function login(req: NextRequest) {
+async function login(req: NextRequest) {
     if (req.method !== 'GET') {
         return new Response("use GET to login", { status: 405 })
     }
@@ -22,7 +22,7 @@ function login(req: NextRequest) {
     try {
         // set cookies
         const refreshToken = createRefreshToken()
-        db.updateUser(email, email, refreshToken)
+        await db.updateUser(email, email, refreshToken)
         console.log('db updateUser success')
     } catch (error) {
         console.log('error in db.updateUser')
