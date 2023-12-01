@@ -1,6 +1,6 @@
 import { Pool, Client } from 'pg'
 
-const pool = new Pool({ connectionString: process.env.POSTGRES_URL })
+const pool = new Pool({ connectionString: process.env.POSTGRES_URL + "?sslmode=require" })
 
 // updateUser creates the user if it does not exist
 // and stores the user's refresh token
