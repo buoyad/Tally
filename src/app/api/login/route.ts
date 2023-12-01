@@ -23,6 +23,7 @@ function login(req: NextRequest) {
         // set cookies
         const refreshToken = createRefreshToken()
         db.updateUser(email, email, refreshToken)
+        console.log('db updateUser success')
     } catch (error) {
         console.log('error in db.updateUser')
         console.log(error)
