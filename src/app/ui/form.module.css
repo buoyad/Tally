@@ -31,3 +31,11 @@
 .button:active {
     opacity: .9;
 }
+
+.button:disabled {
+    background-color: gray;
+}
+
+.subtitle {
+    font-size: 10px;
+}
