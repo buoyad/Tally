@@ -19,9 +19,14 @@ function login(req: NextRequest) {
         return new Response("Invalid token", { status: 401 })
     }
 
-    // set cookies
-    const refreshToken = createRefreshToken()
-    db.updateUser(email, email, refreshToken)
+    try {
+        // set cookies
+        const refreshToken = createRefreshToken()
+        db.updateUser(email, email, refreshToken)
+    } catch (error) {
+        console.log('error in db.updateUser')
+        console.log(error)
+    }
 
     redirect('/user')
 }

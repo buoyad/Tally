@@ -19,6 +19,6 @@ export async function loginUser(formData: FormData) {
     const accessToken = createAccessToken(email)
 
 
-    const magicLink = `http://localhost:3000/api/login?token=${accessToken}`
+    const magicLink = `${process.env.AUTH_URL}/api/login?token=${accessToken}`
     console.log(magicLink)
 }
