@@ -3,7 +3,7 @@ import { Heading } from '@/app/ui/components'
 import Form from './form'
 import styles from '@/app/ui/form.module.css'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../api/auth/[...nextauth]/route'
+import { authOptions } from '../api/auth/[...nextauth]/auth'
 import { redirect } from 'next/navigation'
 
 export default async function Page() {
