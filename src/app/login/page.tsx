@@ -1,11 +1,16 @@
-'use client'
 import React from 'react'
 import { Heading } from '@/app/ui/components'
 import Form from './form'
 import styles from '@/app/ui/form.module.css'
-import { useFormStatus } from 'react-dom'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../api/auth/[...nextauth]/route'
+import { redirect } from 'next/navigation'
 
-export default function Page() {
+export default async function Page() {
+    const session = await getServerSession(authOptions)
+    if (session?.user) {
+        redirect('/user')
+    }
     return <main>
         <Heading>Log in to Tally</Heading>
         <Form />
