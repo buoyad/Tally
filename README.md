@@ -1,8 +1,16 @@
 # Tally
 
-Tally is a score keeper for the [New York Times mini crossword](https://www.nytimes.com/crosswords/game/mini).
+Tally is a score keeper for the [New York Times
+crossword](https://www.nytimes.com/crosswords/). It uses Next.js and a Postgres
+backend to store users and scores. It uses email magic links for authentication.
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Development
+
+Copy `.env.example` to `.env` and fill in the connection information for your
+Postgres instance, authentication secret, canonical URL, and email information.
+
+TODO: Add a `set-env` script that copies values from `.env.production` to the 
+deployed vercel project.
 
 ## Getting Started
 

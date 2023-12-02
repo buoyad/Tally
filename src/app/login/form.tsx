@@ -1,6 +1,5 @@
 'use client'
 import React from 'react'
-import { loginUser } from '@/app/lib/actions'
 import styles from "@/app/ui/form.module.css"
 import * as validation from '@/app/lib/validation'
 import { useFormStatus } from 'react-dom'
@@ -22,7 +21,7 @@ export default function Form() {
             setDisabled(true)
         }
     }, [email])
-    return <form action={loginUser}>
+    return <form>
         <div className={styles.formSection}>
             <input id="email" name="email" type="email" placeholder="Email" className={styles.textInput} required={true} value={email} onChange={e => setEmail(e.target.value)} />
             <SubmitButton disabled={disabled} />
