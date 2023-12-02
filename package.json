@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "bun db:up && next build",
+    "dev:build": "next build",
     "start": "next start",
     "lint": "next lint",
     "db:up": "db-migrate up",

@@ -2,18 +2,19 @@ import React from 'react'
 import { Heading } from '@/app/ui/components'
 import Form from './form'
 import styles from '@/app/ui/form.module.css'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../api/auth/[...nextauth]/auth'
-import { redirect } from 'next/navigation'
+import { Metadata } from 'next'
+import { redirectIfLoggedIn } from '../lib/hooks'
 
 export default async function Page() {
-    const session = await getServerSession(authOptions)
-    if (session?.user) {
-        redirect('/user')
-    }
+    await redirectIfLoggedIn()
     return <main>
         <Heading>Log in to Tally</Heading>
         <Form />
         <p className={styles.subtitle}>Tally will email you a link to create your account or login to your existing account.</p>
     </main>
+}
+
+export const metadata: Metadata = {
+    title: 'Log in',
+    description: 'Log in to Tally'
 }
