@@ -2,6 +2,7 @@
 import React, { MouseEventHandler } from 'react'
 import styles from "@/app/ui/form.module.css"
 import * as validation from '@/app/lib/validation'
+import { Button } from '@/app/ui/client-components'
 import { signIn } from 'next-auth/react'
 
 export default function Form() {
@@ -26,7 +27,7 @@ export default function Form() {
     return <form>
         <div className={styles.formSection}>
             <input id="email" name="email" type="email" placeholder="Email" className={styles.textInput} required={true} value={email} onChange={e => setEmail(e.target.value)} />
-            <button className={styles.button} disabled={buttonDisabled} aria-disabled={buttonDisabled} onClick={handleSubmit}>{pending ? 'Sending...' : 'Send me a link'}</button>
+            <Button disabled={buttonDisabled} pending={pending} label="Send me a link" pendingLabel="Sending..." role="success" onClick={handleSubmit} />
         </div>
     </form>
 }
