@@ -4,6 +4,7 @@ import PostgresAdapter from "@auth/pg-adapter"
 import { Pool } from "pg"
 import { AuthOptions } from "next-auth"
 import { createTransport } from "nodemailer"
+import * as db from "@/app/lib/db"
 import log from "@/app/lib/log"
 
 const pool = new Pool({
@@ -47,5 +48,14 @@ export const authOptions: AuthOptions = {
         signIn: '/login',
         verifyRequest: '/login/check-email',
         error: '/login',
+    },
+    events: {
+        async signIn(message) {
+            const { isNewUser, user: { email } } = message
+            if (isNewUser && email) {
+                const res = await db.createUser(email, email)
+                log.info(`created user ${email} with id ${res.id}`)
+            }
+        }
     }
 }
