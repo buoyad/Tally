@@ -18,13 +18,14 @@ and that is the only one I have tested.
 
 ### Commands
 
-| Command   | Usage                               |
-| --------- | ----------------------------------- |
-| dev       | start the development server        |
-| build     | build (intended for production)     |
-| dev:build | build locally                       |
-| db:up     | run all outstanding `up` migrations |
-| db:down   | roll back the latest migration      |
+| Command                             | Usage                               |
+| ----------------------------------- | ----------------------------------- |
+| dev                                 | start the development server        |
+| build                               | build (intended for production)     |
+| dev:build                           | build locally                       |
+| db:up                               | run all outstanding `up` migrations |
+| db:down                             | roll back the latest migration      |
+| db-migrate create <name> --sql-file | create a new migration              |
 
 ## Todos
 

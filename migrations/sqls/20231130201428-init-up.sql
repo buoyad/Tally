@@ -42,16 +42,23 @@ CREATE TABLE users (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE userinfo (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS tournaments (
-    id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS user_tournament (
     user_id SERIAL,
-    tournament_id UUID,
+    tournament_id SERIAL,
     CONSTRAINT user_tourn_pk PRIMARY KEY (user_id, tournament_id),
-    CONSTRAINT FK_user FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT FK_user FOREIGN KEY (user_id) REFERENCES userinfo(id),
     CONSTRAINT FK_tournament FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
 );
