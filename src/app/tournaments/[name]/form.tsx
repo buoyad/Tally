@@ -40,7 +40,7 @@ export function InviteRow({ invite, tournamentName }: { invite: { id: number, in
         <form action={formAction}>
             <input type="hidden" name="tournamentName" value={tournamentName} />
             <input type="hidden" name="inviteID" value={invite.id} />
-            <Button label="Revoke" pendingLabel="Revoking..." role="destroy" typeSubmit={true} />
+            <Button label="Cancel" pendingLabel="Canceling..." role="destroy" typeSubmit={true} />
         </form>
     </div>
 }
