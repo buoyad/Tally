@@ -10,7 +10,6 @@ export default async function Page({ params }: { params: { name: string } }) {
     const info = await getTournamentInfo(tournamentName)
     if (!info) {
         redirect('/tournaments')
-        return null
     }
 
     const currentUserIsParticipant = session.userInfo && info.users.some(p => p.id === session.userInfo.id)
@@ -24,9 +23,9 @@ export default async function Page({ params }: { params: { name: string } }) {
         </ul>
         <Subheading>Invite participants</Subheading>
         <ul style={{ marginBottom: '16px' }}>
-            {invitees.map(i => <InviteRow key={i.id} invite={i} />)}
+            {invitees.map(i => <InviteRow key={i.id} invite={i} tournamentID={info.tournament.id} tournamentName={info.tournament.name} />)}
         </ul>
         {currentUserIsParticipant &&
-            <InviteToTournamentForm tournamentID={info.tournament.id} userID={session.userInfo.id} />}
+            <InviteToTournamentForm tournamentID={info.tournament.id} userID={session.userInfo.id} tournamentName={info.tournament.name} />}
     </main>
 }

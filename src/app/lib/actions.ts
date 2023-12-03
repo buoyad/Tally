@@ -50,12 +50,13 @@ export async function changeUsername(_: any, formData: FormData) {
 const inviteToTournamentSchema = validation.z.object({
     userID: validation.z.coerce.number().positive(),
     tournamentID: validation.z.coerce.number().positive(),
+    tournamentName: validation.z.string().min(3).max(32),
     email: validation.z.string().email(),
 })
 export async function inviteToTournament(_: any, formData: FormData) {
     let data
     try {
-        const rawFormData = { userID: formData.get('userID'), tournamentID: formData.get('tournamentID'), email: formData.get('email') }
+        const rawFormData = { userID: formData.get('userID'), tournamentID: formData.get('tournamentID'), tournamentName: formData.get('tournamentName'), email: formData.get('email') }
         data = inviteToTournamentSchema.parse(rawFormData)
         await db.addTournamentInvite(data.userID, data.tournamentID, data.email)
         // TODO: email the user an invite link
@@ -69,5 +70,31 @@ export async function inviteToTournament(_: any, formData: FormData) {
         return { message: 'An unknown error occurred' }
     }
 
-    revalidatePath(`/tournaments/${data.tournamentID}`)
+    revalidatePath(`/tournaments/${data.tournamentName}`)
+}
+
+const removeInviteSchema = validation.z.object({
+    tournamentID: validation.z.coerce.number().positive(),
+    tournamentName: validation.z.string().min(3).max(32),
+    inviteID: validation.z.coerce.number().positive(),
+})
+export async function removeInvite(_: any, formData: FormData) {
+    let data
+    try {
+        const rawFormData = { tournamentID: formData.get('tournamentID'), tournamentName: formData.get('tournamentName'), inviteID: formData.get('inviteID') }
+        data = removeInviteSchema.parse(rawFormData)
+        await db.removeTournamentInvite(data.inviteID)
+    } catch (error) {
+        if (error instanceof validation.z.ZodError) {
+            // should not happen
+            log.error('removeInvite: validation error: ' + error)
+            return { message: "An error occurred" }
+        } else if (error instanceof db.DBError) {
+            return { message: "An error occurred, please try again" }
+        }
+        log.error('inviteToTournament: unknown error: ' + error)
+        return { message: 'An unknown error occurred' }
+    }
+
+    revalidatePath(`/tournaments/${data.tournamentName}`)
 }
