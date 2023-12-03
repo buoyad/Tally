@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Lora } from 'next/font/google'
 import Nav from './nav'
+import Footer from './footer'
 import './globals.css'
 
 const lora = Lora({ subsets: ['latin'] }) // TODO: try some other options https://fonts.google.com/?stroke=Serif&vfonly=true&preview.text=Tally
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body className={lora.className}>
         <Nav />
         {children}
+        <Footer />
       </body>
     </html>
   )
