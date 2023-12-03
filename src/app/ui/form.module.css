@@ -44,3 +44,17 @@
     font-size: 10px;
     font-style: italic;
 }
+
+.error {
+    background-color: #FF5347;
+    color: white;
+    padding: 4px;
+    border-radius: 4px;
+    margin: 8px 0;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.error>* {
+    margin: 0;
+}
