@@ -7,6 +7,6 @@ export default async function Create() {
     const { userInfo, session } = await getLoggedInUser(true)
     return <main>
         <Heading>Create a tournament</Heading>
-        <Form />
+        <Form userID={userInfo!.id} />
     </main>
 }

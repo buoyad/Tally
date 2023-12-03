@@ -12,6 +12,12 @@ interface UserInfo {
     created_at: Date,
 }
 
+interface Tournament {
+    id: number,
+    name: string,
+    created_at: Date,
+}
+
 interface DBErrorInternal extends Error {
     code: string
 }
@@ -44,4 +50,25 @@ export const changeUsername = async (id: number, newName: string) => {
             throw error
         }
     }
+}
+
+export const createTournament = async (name: string, userID: number) => {
+    const client = await pool.connect()
+    try {
+        await client.query('BEGIN')
+        const tRes = await client.query<Tournament>('INSERT INTO tournaments (name) VALUES ($1) RETURNING *', [name])
+        const tournament = tRes.rows[0]
+        await client.query('INSERT INTO user_tournament (user_id, tournament_id) VALUES ($1, $2)', [userID, tournament.id])
+        await client.query('COMMIT')
+    } catch (error) {
+        await client.query('ROLLBACK')
+        throw error
+    } finally {
+        client.release()
+    }
+}
+
+export const getUserTournaments = async (userID: number) => {
+    const res = await pool.query<Tournament>(`SELECT * FROM tournaments WHERE id IN (SELECT tournament_id FROM user_tournament WHERE user_id = $1)`, [userID])
+    return res.rows
 }

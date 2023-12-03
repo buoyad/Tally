@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "../api/auth/[...nextauth]/auth"
 import { redirect } from "next/navigation"
-import { getUser } from "./db"
+import * as db from "./db"
 
 export async function redirectIfLoggedIn(toPath?: string) {
     const session = await getServerSession(authOptions)
@@ -19,6 +19,10 @@ export const getLoggedInUser = async (redirectIfLoggedOut: boolean = false) => {
         return { session: null, userInfo: null }
     }
     const email = session.user!.email || ''
-    const userInfo = await getUser(email)
+    const userInfo = await db.getUser(email)
     return { session, userInfo }
+}
+
+export const getUserTournaments = async (userID: number) => {
+    return await db.getUserTournaments(userID)
 }
