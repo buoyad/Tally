@@ -19,3 +19,7 @@ main {
 p {
     margin-bottom: 12px;
 }
+
+ul {
+    list-style-position: inside;
+}

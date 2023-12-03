@@ -1,5 +1,5 @@
 import React from 'react'
-import { Heading } from '@/app/ui/components'
+import { Heading, Subheading } from '@/app/ui/components'
 import { ChangeUsernameForm, LogoutButton } from './form'
 import { getLoggedInUser } from '../lib/hooks'
 import { getUserTournaments } from '../lib/db'
@@ -12,9 +12,9 @@ export default async function Page() {
     return <main>
         <Heading>Logged in as {userInfo.name}</Heading>
         <ChangeUsernameForm id={userInfo.id} username={userInfo.name} />
-        <h4 style={{ marginTop: '24px' }}>Your tournaments</h4>
+        <Subheading>Your tournaments</Subheading>
         {tournaments.length === 0 && <p>None yet. <Link href="/tournaments/create">Make one now!</Link></p>}
-        {tournaments.map(t => <p key={t.id}>{t.name}</p>)}
+        {tournaments.map(t => <p key={t.id}><Link href={`/tournaments/${t.name}`}>{t.name}</Link></p>)}
         <br /><br />
         <LogoutButton />
     </main>

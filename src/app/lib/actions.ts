@@ -32,7 +32,6 @@ const changeUsernameSchema = validation.z.object({
 export async function changeUsername(_: any, formData: FormData) {
     try {
         const rawFormData = { username: formData.get("username"), id: formData.get('id') }
-        console.log(rawFormData)
         const data = changeUsernameSchema.parse(rawFormData)
         await db.changeUsername(data.id, data.username)
     } catch (error) {
@@ -46,4 +45,29 @@ export async function changeUsername(_: any, formData: FormData) {
     }
 
     revalidatePath('/user')
+}
+
+const inviteToTournamentSchema = validation.z.object({
+    userID: validation.z.coerce.number().positive(),
+    tournamentID: validation.z.coerce.number().positive(),
+    email: validation.z.string().email(),
+})
+export async function inviteToTournament(_: any, formData: FormData) {
+    let data
+    try {
+        const rawFormData = { userID: formData.get('userID'), tournamentID: formData.get('tournamentID'), email: formData.get('email') }
+        data = inviteToTournamentSchema.parse(rawFormData)
+        await db.addTournamentInvite(data.userID, data.tournamentID, data.email)
+        // TODO: email the user an invite link
+    } catch (error) {
+        if (error instanceof validation.z.ZodError) {
+            return { message: "Enter a valid email" }
+        } else if (error instanceof db.DBError) {
+            return { message: error.message }
+        }
+        log.error('inviteToTournament: unknown error: ' + error)
+        return { message: 'An unknown error occurred' }
+    }
+
+    revalidatePath(`/tournaments/${data.tournamentID}`)
 }
