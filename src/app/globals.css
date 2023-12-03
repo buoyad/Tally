@@ -16,6 +16,11 @@ main {
     padding: 48px 12px 12px;
 }
 
+ul {
+    list-style-position: inside;
+}
+
 p {
-    margin-bottom: 12px;
+    /* Fix for descenders being slightly cut off */
+    padding-bottom: 1px;
 }

@@ -1,3 +1,29 @@
 .heading {
-    margin-bottom: 24px;
+    /* margin-bottom: 24px; */
+}
+
+.subheading {
+    /* margin: 16px 0; */
+}
+
+.gridBox {
+    display: grid;
+    align-content: start;
+    overflow: hidden;
+}
+
+.gridBox>* {
+    min-width: 0;
+}
+
+.gap-small {
+    gap: 8px;
+}
+
+.gap-medium {
+    gap: 16px;
+}
+
+.gap-large {
+    gap: 24px;
 }

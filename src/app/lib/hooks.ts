@@ -26,3 +26,9 @@ export const getLoggedInUser = async (redirectIfLoggedOut: boolean = false) => {
 export const getUserTournaments = async (userID: number) => {
     return await db.getUserTournaments(userID)
 }
+
+export const getTournamentInfo = async (tournamentName: string) => {
+    // TODO: maybe don't return participant emails if the user is not logged in
+    // as a participant
+    const res = await db.getTournamentInfo(tournamentName)
+}
