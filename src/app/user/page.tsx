@@ -1,18 +1,11 @@
 import React from 'react'
 import { Heading } from '@/app/ui/components'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../api/auth/[...nextauth]/auth'
-import { redirect } from 'next/navigation'
 import { ChangeUsernameForm, LogoutButton } from './form'
-import { getUser } from '../lib/db'
+import { getLoggedInUser } from '../lib/hooks'
 
 export default async function Page() {
-    const session = await getServerSession(authOptions)
-    if (!session?.user) {
-        redirect('/login')
-    }
-    const email = session.user!.email || ''
-    const userInfo = await getUser(email)
+    const { session, userInfo } = await getLoggedInUser(true)
+    if (!session) return null
     return <main>
         <Heading>Logged in as {userInfo.name}</Heading>
         <ChangeUsernameForm id={userInfo.id} username={userInfo.name} />

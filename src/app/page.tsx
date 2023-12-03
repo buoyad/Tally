@@ -1,19 +1,14 @@
-import { getServerSession } from 'next-auth'
 import Link from 'next/link'
-import { authOptions } from './api/auth/[...nextauth]/auth'
+import { getLoggedInUser } from './lib/hooks'
 
 export default async function Home() {
-  const session = await getServerSession(authOptions)
-  const loggedIn = !!(session?.user)
-  let userEmail = ''
-  if (loggedIn) {
-    userEmail = session.user!.email || ''
-  }
+  const { session, userInfo } = await getLoggedInUser()
   return (
     <main>
+      {!!session && <p>Welcome, {userInfo.name}</p>}
       <p>Tally is a score keeper for the <a href="https://www.nytimes.com/crosswords/game/mini" target="_blank">New York Times Mini Crossword</a>.</p>
-      <p><Link href="/login">Log in</Link> or <Link href="/tournaments">browse</Link> tournaments&apos; scores.</p>
-      {loggedIn && <p>You are logged in as {userEmail}.</p>}
+      <p>{!!session ? <Link href="/user">Edit your profile</Link> : <Link href="/login">Log in</Link>}
+        {' '}or <Link href="/tournaments">browse</Link> tournaments&apos; scores.</p>
     </main>
   )
 }
