@@ -16,10 +16,6 @@ main {
     padding: 48px 12px 12px;
 }
 
-p {
-    margin-bottom: 12px;
-}
-
 ul {
     list-style-position: inside;
 }

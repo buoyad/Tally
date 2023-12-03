@@ -34,7 +34,7 @@ export function InviteToTournamentForm({ userID, tournamentID, tournamentName }:
 
 export function InviteRow({ invite, tournamentName }: { invite: { id: number, invitee_email: string }, tournamentName: string }) {
     const [state, formAction] = useFormState(removeInvite, { message: '' })
-    return <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', maxWidth: '400px', whiteSpace: 'nowrap' }}>
+    return <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', whiteSpace: 'nowrap' }}>
         <span style={{ display: 'inline-block', textOverflow: 'ellipsis', overflow: 'hidden' }}>{invite.invitee_email}</span>
         <form action={formAction}>
             <input type="hidden" name="tournamentName" value={tournamentName} />
