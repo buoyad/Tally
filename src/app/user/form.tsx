@@ -33,9 +33,6 @@ export function ChangeUsernameForm({ id, username }: { id: number, username: str
 export function InviteRow(props: { inviterName: string, tournamentName: string, id: number, userID: number }) {
     const { inviterName, tournamentName, id: inviteID, userID } = props
 
-    const [rejectState, rejectFormAction] = useFormState(removeInvite, { message: '' })
-    const [acceptState, acceptFormAction] = useFormState(acceptInvite, { message: '' })
-
     return <div style={{ display: 'flex', width: '100%', flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
         <span>Someone named &apos;{inviterName}&apos; invited you to compete in <strong>{tournamentName}</strong>. Do you know them? Do you trust them?</span>
         <div style={{ display: 'flex', flexDirection: 'row', width: '100%', gap: '12px', alignItems: 'center' }}>

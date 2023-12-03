@@ -4,7 +4,7 @@ import styles from '@/app/ui/form.module.css'
 import * as validation from '@/app/lib/validation'
 import { Button } from '@/app/ui/client-components'
 import { useFormState } from 'react-dom'
-import { inviteToTournament, removeInvite } from '@/app/lib/actions'
+import { inviteToTournament, removeInvite, leaveTournament } from '@/app/lib/actions'
 
 export function InviteToTournamentForm({ userID, tournamentID, tournamentName }: { userID: number, tournamentID: number, tournamentName: string }) {
     const [state, formAction] = useFormState(inviteToTournament, { message: '' })
@@ -32,14 +32,26 @@ export function InviteToTournamentForm({ userID, tournamentID, tournamentName }:
     </form>
 }
 
-export function InviteRow({ invite, tournamentID, tournamentName }: { invite: { id: number, invitee_email: string }, tournamentID: number, tournamentName: string }) {
+export function InviteRow({ invite, tournamentName }: { invite: { id: number, invitee_email: string }, tournamentName: string }) {
     const [state, formAction] = useFormState(removeInvite, { message: '' })
     return <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', maxWidth: '400px', whiteSpace: 'nowrap' }}>
         <span style={{ display: 'inline-block', textOverflow: 'ellipsis', overflow: 'hidden' }}>{invite.invitee_email}</span>
         <form action={formAction}>
-            <input type="hidden" name="tournamentID" value={tournamentID} />
+            <input type="hidden" name="tournamentName" value={tournamentName} />
             <input type="hidden" name="inviteID" value={invite.id} />
             <Button label="Revoke" pendingLabel="Revoking..." role="destroy" typeSubmit={true} />
         </form>
     </div>
+}
+
+export function LeaveTournamentForm({ tournamentID, tournamentName, userID, isLastUser }: { tournamentID: number, tournamentName: string, userID: number, isLastUser: boolean }) {
+    const [state, formAction] = useFormState(leaveTournament, { message: '' })
+    return <form action={formAction}>
+        <input type="hidden" name="tournamentID" value={tournamentID} />
+        <input type="hidden" name="tournamentName" value={tournamentName} />
+        <input type="hidden" name="userID" value={userID} />
+        <Button label="Leave tournament" pendingLabel="Leaving..." role="destroy" typeSubmit={true} disabled={isLastUser} />
+        {isLastUser && <p className={styles.subtitle}>The last participant cannot leave a tournament</p>}
+        {state?.message && <p className={styles.error}>{state.message}</p>}
+    </form>
 }

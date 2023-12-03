@@ -70,7 +70,26 @@ export const createTournament = async (name: string, userID: number) => {
         await client.query('COMMIT')
     } catch (error) {
         await client.query('ROLLBACK')
-        log.error('createTournament: ' + error)
+        log.error('db.createTournament: ' + error)
+        throw error
+    } finally {
+        client.release()
+    }
+}
+
+export const leaveTournament = async (tournamentID: number, userID: number) => {
+    const client = await pool.connect()
+    try {
+        await client.query('BEGIN')
+        const participantsRes = await client.query('SELECT * FROM user_tournament WHERE tournament_id = $1', [tournamentID])
+        if (participantsRes.rowCount <= 1) {
+            throw new DBError("Last participant cannot leave the tournament")
+        }
+        await client.query('DELETE FROM user_tournament WHERE user_id = $1 AND tournament_id = $2', [userID, tournamentID])
+        await client.query('COMMIT')
+    } catch (error) {
+        await client.query('ROLLBACK')
+        log.error('db.leaveTournament: ' + error)
         throw error
     } finally {
         client.release()
@@ -126,15 +145,17 @@ export const getTournamentInfo = async (tournamentName: string) => {
             users: users.rows.map(row => ({ id: row.user_id, name: row.user_name, email: row.user_email, created_at: row.user_created_at }))
         }
     } catch (error) {
-        log.error('getTournamentInfo: ' + error)
+        log.error('db.getTournamentInfo: ' + error)
         return null
     }
 }
 
 export const addTournamentInvite = async (inviterUserID: number, tournamentID: number, inviteeEmail: string) => {
+    const client = await pool.connect()
     try {
+        await client.query('BEGIN')
         // make sure the user is not already in the tournament
-        const res = await pool.query<UserInfo>(
+        const res = await client.query<UserInfo>(
             `SELECT * FROM userinfo
             INNER JOIN user_tournament ON userinfo.id = user_tournament.user_id AND user_tournament.tournament_id = $2
             WHERE email = $1`,
@@ -142,14 +163,23 @@ export const addTournamentInvite = async (inviterUserID: number, tournamentID: n
         if (res.rows.length > 0) {
             throw new DBError("User is already in the tournament")
         }
-        await pool.query('INSERT INTO tournament_invites (inviter_user_id, tournament_id, invitee_email) VALUES ($1, $2, $3)', [inviterUserID, tournamentID, inviteeEmail])
+        // make sure inviter is in the tournament
+        const inviterRes = await client.query(`SELECT * FROM user_tournament WHERE user_id = $1 AND tournament_id = $2`, [inviterUserID, tournamentID])
+        if (inviterRes.rows.length === 0) {
+            throw new DBError("Inviter is not in the tournament")
+        }
+        await client.query('INSERT INTO tournament_invites (inviter_user_id, tournament_id, invitee_email) VALUES ($1, $2, $3)', [inviterUserID, tournamentID, inviteeEmail])
+        await client.query('COMMIT')
     } catch (error) {
+        await client.query('ROLLBACK')
         if ((error as DBErrorInternal)?.code === "23505") {
             throw new DBError("Invite already exists")
         } else {
-            log.error('addTournamentInvite: ' + error)
+            log.error('db.addTournamentInvite: ' + error)
             throw error
         }
+    } finally {
+        client.release()
     }
 }
 
@@ -178,7 +208,7 @@ export const acceptTournamentInvite = async (inviteID: number) => {
         await client.query('COMMIT')
     } catch (error) {
         await client.query('ROLLBACK')
-        log.error('acceptTournamentInvite: ' + error)
+        log.error('db.acceptTournamentInvite: ' + error)
         if ((error as DBErrorInternal)?.code === "23505") {
             throw new DBError("User is already in the tournament")
         }
@@ -191,4 +221,12 @@ export const acceptTournamentInvite = async (inviteID: number) => {
 export const getTournamentInvites = async (tournamentID: number) => {
     const res = await pool.query<Invite>(`SELECT * FROM tournament_invites WHERE tournament_id = $1`, [tournamentID])
     return res.rows
+}
+
+export const getTournamentInvite = async (inviteID: number) => {
+    const res = await pool.query<Invite>(`SELECT * FROM tournament_invites WHERE id = $1`, [inviteID])
+    if (res.rows.length === 0) {
+        throw new DBError("Invite does not exist")
+    }
+    return res.rows[0]
 }

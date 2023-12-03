@@ -10,7 +10,7 @@ export default async function Page() {
     if (!session) return null
     const tournaments = await getUserTournaments(userInfo.id)
     const invites = await getUserInvites(userInfo.email)
-    console.log(invites)
+
     return <main>
         <Heading>Logged in as {userInfo.name}</Heading>
         <ChangeUsernameForm id={userInfo.id} username={userInfo.name} />
