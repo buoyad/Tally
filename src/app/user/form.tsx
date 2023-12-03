@@ -18,12 +18,13 @@ export function LogoutButton() {
 
 export function ChangeUsernameForm({ id, username }: { id: number, username: string }) {
     const [state, formAction] = useFormState(changeUsername, { message: '' })
+    const [newUsername, setNewUsername] = React.useState(username)
     return <form action={formAction}>
         <div className={styles.formSection}>
             <label htmlFor="username">Username</label>
             <input type="hidden" value={id} name="id" />
-            <input className={styles.textInput} id="username" name="username" type="text" defaultValue={username} />
-            <Button typeSubmit={true} label="Change username" pendingLabel="Changing..." />
+            <input className={styles.textInput} id="username" name="username" type="text" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} />
+            <Button typeSubmit={true} disabled={newUsername === username} label="Change username" pendingLabel="Changing..." />
             {state?.message && <p className={styles.error}>{state.message}</p>}
         </div>
     </form>
