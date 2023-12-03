@@ -19,3 +19,8 @@ main {
 ul {
     list-style-position: inside;
 }
+
+p {
+    /* Fix for descenders being slightly cut off */
+    padding-bottom: 1px;
+}

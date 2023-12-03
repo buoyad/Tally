@@ -5,6 +5,7 @@ import styles from '@/app/ui/form.module.css'
 import { useFormState } from 'react-dom'
 import { Button } from '@/app/ui/client-components'
 import { changeUsername, removeInvite, acceptInvite } from '../lib/actions'
+import { GridBox } from '../ui/components'
 
 export function LogoutButton() {
     const [pending, setPending] = React.useState(false)
@@ -13,20 +14,20 @@ export function LogoutButton() {
         await signOut()
         setPending(false)
     }
-    return <Button pending={pending} onClick={handleClick} label="Log out" pendingLabel="Logging out..." />
+    return <Button pending={pending} onClick={handleClick} label="Log out" pendingLabel="Logging out..." role="destroy" />
 }
 
 export function ChangeUsernameForm({ id, username }: { id: number, username: string }) {
     const [state, formAction] = useFormState(changeUsername, { message: '' })
     const [newUsername, setNewUsername] = React.useState(username)
     return <form action={formAction}>
-        <div className={styles.formSection}>
-            <label htmlFor="username">Username</label>
+        <GridBox>
+            <label htmlFor="username"><strong>Username</strong></label>
             <input type="hidden" value={id} name="id" />
             <input className={styles.textInput} id="username" name="username" type="text" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} />
             <Button typeSubmit={true} disabled={newUsername === username} label="Change username" pendingLabel="Changing..." />
             {state?.message && <p className={styles.error}>{state.message}</p>}
-        </div>
+        </GridBox>
     </form>
 }
 
