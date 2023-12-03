@@ -4,6 +4,7 @@ import log from "./log"
 import { redirect } from "next/navigation"
 import * as db from "./db"
 import { revalidatePath } from 'next/cache'
+import { getLoggedInUser } from './hooks'
 
 const createTournamentSchema = validation.z.object({
     name: validation.z.string().min(3).max(32),
@@ -74,14 +75,13 @@ export async function inviteToTournament(_: any, formData: FormData) {
 }
 
 const removeInviteSchema = validation.z.object({
-    tournamentID: validation.z.coerce.number().positive(),
     tournamentName: validation.z.string().min(3).max(32),
     inviteID: validation.z.coerce.number().positive(),
 })
 export async function removeInvite(_: any, formData: FormData) {
     let data
     try {
-        const rawFormData = { tournamentID: formData.get('tournamentID'), tournamentName: formData.get('tournamentName'), inviteID: formData.get('inviteID') }
+        const rawFormData = { tournamentName: formData.get('tournamentName'), inviteID: formData.get('inviteID') }
         data = removeInviteSchema.parse(rawFormData)
         await db.removeTournamentInvite(data.inviteID)
     } catch (error) {
@@ -97,4 +97,36 @@ export async function removeInvite(_: any, formData: FormData) {
     }
 
     revalidatePath(`/tournaments/${data.tournamentName}`)
+}
+
+const acceptInviteSchema = validation.z.object({
+    inviteID: validation.z.coerce.number().positive(),
+    userID: validation.z.coerce.number().positive(),
+})
+export async function acceptInvite(_: any, formData: FormData) {
+    const session = await getLoggedInUser()
+    if (!session.userInfo) {
+        return { message: "You must be logged in to accept an invite" }
+    }
+
+    try {
+        const rawFormData = { inviteID: formData.get('inviteID'), userID: formData.get('userID') }
+        const data = acceptInviteSchema.parse(rawFormData)
+        if (data.userID !== session.userInfo.id) {
+            return { message: "You must be logged in to accept an invite" }
+        }
+        await db.acceptTournamentInvite(data.inviteID)
+    } catch (error) {
+        if (error instanceof validation.z.ZodError) {
+            // should not happen
+            log.error('acceptInvite: validation error: ' + error)
+            return { message: "An error occurred" }
+        } else if (error instanceof db.DBError) {
+            return { message: error.message }
+        }
+        log.error('acceptInvite: unknown error: ' + error)
+        return { message: 'An unknown error occurred' }
+    }
+
+    revalidatePath(`/user`)
 }

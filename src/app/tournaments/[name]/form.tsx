@@ -38,7 +38,6 @@ export function InviteRow({ invite, tournamentID, tournamentName }: { invite: { 
         <span style={{ display: 'inline-block', textOverflow: 'ellipsis', overflow: 'hidden' }}>{invite.invitee_email}</span>
         <form action={formAction}>
             <input type="hidden" name="tournamentID" value={tournamentID} />
-            <input type="hidden" name="tournamentName" value={tournamentName} />
             <input type="hidden" name="inviteID" value={invite.id} />
             <Button label="Revoke" pendingLabel="Revoking..." role="destroy" typeSubmit={true} />
         </form>

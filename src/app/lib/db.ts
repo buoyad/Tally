@@ -82,6 +82,21 @@ export const getUserTournaments = async (userID: number) => {
     return res.rows
 }
 
+export const getUserInvites = async (userEmail: string) => {
+    const res = await pool.query<Invite & { inviter_name: string, tournament_name: string }>(
+        `SELECT tournament_invites.id, 
+            tournament_invites.tournament_id, 
+            tournaments.name AS tournament_name, 
+            userinfo.name AS inviter_name
+        FROM tournament_invites
+        INNER JOIN tournaments ON tournament_invites.tournament_id = tournaments.id
+        INNER JOIN userinfo ON tournament_invites.inviter_user_id = userinfo.id
+        WHERE invitee_email = $1`,
+        [userEmail]
+    )
+    return res.rows
+}
+
 export const getTournamentInfo = async (tournamentName: string) => {
     try {
         const users = await pool.query<{ id: number, name: string, tournament_created_at: Date, user_id: number, user_name: string, user_email: string, user_created_at: Date }>(
@@ -140,6 +155,37 @@ export const addTournamentInvite = async (inviterUserID: number, tournamentID: n
 
 export const removeTournamentInvite = async (inviteID: number) => {
     await pool.query('DELETE FROM tournament_invites WHERE id = $1', [inviteID])
+}
+
+export const acceptTournamentInvite = async (inviteID: number) => {
+    const client = await pool.connect()
+    try {
+        await client.query('BEGIN')
+        // make sure invitee user exists
+        const inviteRes = await client.query<Invite>(`SELECT * FROM tournament_invites WHERE id = $1`, [inviteID])
+        if (inviteRes.rows.length === 0) {
+            throw new DBError("Invite does not exist")
+        }
+        const invite = inviteRes.rows[0]
+        const userRes = await client.query<UserInfo>(`SELECT * FROM userinfo WHERE email = $1`, [invite.invitee_email])
+        if (userRes.rows.length === 0) {
+            throw new DBError("Invitee user does not exist")
+        }
+        const user = userRes.rows[0]
+        // insert will fail if user is already in the tournament
+        await client.query('INSERT INTO user_tournament (user_id, tournament_id) VALUES ($1, $2)', [user.id, invite.tournament_id])
+        await client.query('DELETE FROM tournament_invites WHERE id = $1', [inviteID])
+        await client.query('COMMIT')
+    } catch (error) {
+        await client.query('ROLLBACK')
+        log.error('acceptTournamentInvite: ' + error)
+        if ((error as DBErrorInternal)?.code === "23505") {
+            throw new DBError("User is already in the tournament")
+        }
+        throw error
+    } finally {
+        client.release()
+    }
 }
 
 export const getTournamentInvites = async (tournamentID: number) => {
