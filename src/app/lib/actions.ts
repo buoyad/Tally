@@ -24,8 +24,11 @@ export async function changeUsername(prevState: any, formData: FormData) {
     } catch (error) {
         if (error instanceof validation.z.ZodError) {
             return { message: "Enter a username between 3 and 20 characters long" }
+        } else if (error instanceof db.DBError) {
+            return { message: error.message }
         }
-        return { message: "Error changing username: " + error }
+        log.error('changeUsername: unknown error: ' + error)
+        return { message: 'An unknown error occurred' }
     }
 
     revalidatePath('/user')

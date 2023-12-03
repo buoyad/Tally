@@ -12,6 +12,17 @@ interface UserInfo {
     created_at: Date,
 }
 
+interface DBErrorInternal extends Error {
+    code: string
+}
+
+export class DBError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = "DBError"
+    }
+}
+
 export const createUser = async (email: string, name: string) => {
     const res = await pool.query<UserInfo>(`INSERT INTO userinfo (email, name) VALUES ($1, $2) RETURNING *`, [email, name])
     return res.rows[0]
@@ -23,6 +34,14 @@ export const getUser = async (email: string) => {
 }
 
 export const changeUsername = async (id: number, newName: string) => {
-    const res = await pool.query<UserInfo>(`UPDATE userinfo SET name = $1 WHERE id = $2 RETURNING *`, [newName, id])
-    return res.rows[0]
+    try {
+        const res = await pool.query<UserInfo>(`UPDATE userinfo SET name = $1 WHERE id = $2 RETURNING *`, [newName, id])
+        return res.rows[0]
+    } catch (error) {
+        if ((error as DBErrorInternal)?.code === "23505") {
+            throw new DBError("Username already exists")
+        } else {
+            throw error
+        }
+    }
 }
