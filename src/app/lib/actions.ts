@@ -225,6 +225,9 @@ export async function submitScore(_: any, formData: FormData) {
             return { message: "You can't submit a score for someone else" }
         }
         const seconds = (data.minutes * 60) + data.seconds
+        if (seconds === 0) {
+            return { message: "You can't submit a score of 0 seconds" }
+        }
         await db.addScore(data.userID, data.date, seconds, 'mini')
     } catch (error) {
         if (error instanceof validation.z.ZodError) {

@@ -30,6 +30,7 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
             setProcessing(true)
             setMinutes('0')
             setSeconds('0')
+            setError('')
             const worker = await loadWorker
             await worker.setParameters({
                 tessedit_char_whitelist: '0123456789:',
@@ -47,7 +48,7 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
                 setSeconds(seconds)
                 setError('')
             } else {
-                setError('unable to read time, try again')
+                setError('unable to read time, try again or enter manually')
             }
             setProcessing(false)
         }
@@ -57,7 +58,7 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
     }, [file])
 
     return <form action={formAction}>
-        <Box>
+        <Box gap="medium">
             <p>Select your completion screenshot</p>
             <Box row={true}>
                 <input type="file" name="file" accept="image/*" onChange={(e) => e.target.files && setFile(e.target.files[0])} title='Upload' className={styles.fileInput} />

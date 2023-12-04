@@ -57,11 +57,10 @@
 }
 
 .error {
-    background-color: #FF4447;
+    background: repeating-linear-gradient(45deg, #DB3143, #DB3143 2px, #FF4447 2px, #FF4447 4px);
     color: white;
     padding: 4px;
     border: 1px solid black;
-    margin: 8px 0;
     display: inline-block;
     font-size: 12px;
 }

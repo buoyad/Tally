@@ -15,6 +15,7 @@ export default async function Page() {
     return <main style={styles.container}>
         <Box style={styles.fullWidth}>
             <Heading>My account</Heading>
+            <p>Welcome back {userInfo.name}</p>
         </Box>
         <Box>
             <Subheading>Tournaments</Subheading>
