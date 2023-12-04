@@ -69,6 +69,14 @@
     margin: 0;
 }
 
+.success {
+    background-color: #4F94DB;
+    color: white;
+    padding: 4px;
+    display: 'inline-block';
+    font-size: 12px;
+}
+
 .fileInput::file-selector-button {
     padding: 4px;
     color: white;

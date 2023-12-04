@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Heading, Subheading } from '@/app/ui/components'
-import { ChangeUsernameForm, LogoutButton, InviteRow, ScoreTable } from './form'
+import { ChangeUsernameForm, LogoutButton, InviteRow, ScoreTable, Message } from './form'
 import { getLoggedInUser } from '../lib/hooks'
 import { getUserTournaments, getUserInvites, getUserScores } from '../lib/db'
 import Link from 'next/link'
@@ -13,6 +13,7 @@ export default async function Page() {
     const scores = await getUserScores(userInfo.id)
 
     return <main style={styles.container}>
+        <Message />
         <Box style={styles.fullWidth}>
             <Heading>My account</Heading>
             <p>Welcome back {userInfo.name}</p>

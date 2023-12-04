@@ -243,7 +243,7 @@ export async function submitScore(_: any, formData: FormData) {
     revalidatePath(`/user`)
 
     if (!data.submitAnother) {
-        redirect('/user')
+        redirect('/user?message=score')
     }
 }
 

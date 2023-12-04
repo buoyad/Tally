@@ -5,9 +5,25 @@ import styles from '@/app/ui/form.module.css'
 import { useFormState } from 'react-dom'
 import { Button } from '@/app/ui/client-components'
 import { changeUsername, removeInvite, acceptInvite, deleteScore } from '../lib/actions'
-import { Box, Subheading } from '../ui/components'
+import { Box } from '../ui/components'
 import { Score } from '../lib/types'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+
+const messages: { [key: string]: string } = {
+    score: 'Nice score! Check out how you stack up against your tournaments.',
+}
+
+export function Message() {
+    const params = useSearchParams()
+    const param = params.get('message')
+    if (!param) return null
+    const message = messages[param]
+    if (!message) return null
+    return <Box style={{ gridColumn: '1 / -1', justifySelf: 'start' }} className={styles.success}>
+        <p>{message}</p>
+    </Box>
+}
 
 export function LogoutButton() {
     const [pending, setPending] = React.useState(false)
