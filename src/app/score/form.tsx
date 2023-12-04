@@ -1,6 +1,6 @@
 'use client'
 import * as React from 'react'
-import { UserInfo } from "../lib/db";
+import { UserInfo } from "../lib/types";
 import { Box } from "../ui/components";
 import { createWorker, PSM } from 'tesseract.js'
 import styles from '@/app/ui/form.module.css'

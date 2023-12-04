@@ -1,38 +1,10 @@
 import { Pool, Client } from 'pg'
 import log from './log'
+import { UserInfo, Tournament, Invite, Score } from './types'
 
 const pool = new Pool({
     connectionString: process.env.POSTGRES_URL + (process.env.NODE_ENV === "production" ? "?sslmode=require" : "")
 })
-
-export interface UserInfo {
-    id: number,
-    name: string,
-    email: string,
-    created_at: Date,
-}
-
-interface Tournament {
-    id: number,
-    name: string,
-    created_at: Date,
-}
-
-interface Invite {
-    id: number,
-    tournament_id: number,
-    invitee_email: string,
-    inviter_user_id: number,
-    rejected: boolean,
-}
-
-interface Score {
-    id: number,
-    user_id: number,
-    for_day: Date,
-    score: number,
-    puzzle_type: 'mini' | 'biggie',
-}
 
 interface DBErrorInternal extends Error {
     code: string
