@@ -69,3 +69,17 @@
 .error>* {
     margin: 0;
 }
+
+.fileInput::file-selector-button {
+    padding: 4px;
+    color: white;
+    background-color: #4D88F9;
+    border: 1px solid black;
+    transition: all .1s;
+    cursor: pointer;
+    content: 'Select a file';
+}
+
+.fileInput.fileInput::file-selector-button:active {
+    opacity: .9;
+}
