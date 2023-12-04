@@ -21,7 +21,7 @@ export function InviteToTournamentForm({ userID, tournamentID, tournamentName }:
     }, [email])
 
     return <form action={formAction}>
-        <Box style={{ placeContent: 'start' }}>
+        <Box>
             <label htmlFor="username">Invite someone to compete</label>
             <input type="hidden" value={userID} name="userID" />
             <input type="hidden" value={tournamentID} name="tournamentID" />
