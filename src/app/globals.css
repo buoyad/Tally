@@ -24,3 +24,12 @@ p {
     /* Fix for descenders being slightly cut off */
     padding-bottom: 1px;
 }
+
+a {
+    color: #3868D6;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
