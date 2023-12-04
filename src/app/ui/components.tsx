@@ -10,11 +10,11 @@ export function Subheading({ children }: { children: React.ReactNode }) {
     return <h4 className={styles.subheading}>{children}</h4>
 }
 
-type GridBoxProps = {
+type BoxProps = {
     children: React.ReactNode,
     gap?: 'small' | 'medium' | 'large',
     style?: React.CSSProperties
 }
-export function GridBox({ children, gap = 'small', style }: GridBoxProps) {
+export function Box({ children, gap = 'small', style }: BoxProps) {
     return <div className={clsx(styles.gridBox, styles[`gap-${gap}`])} style={style}>{children}</div>
 }

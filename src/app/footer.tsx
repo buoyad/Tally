@@ -1,9 +1,9 @@
-import { GridBox } from "./ui/components";
+import { Box } from "./ui/components";
 
 export default function Footer() {
-    return <GridBox style={styles.container}>
+    return <Box style={styles.container}>
         <span>created by <a href="https://ayoubd.com" target="_blank">Danny Ayoub</a></span>
-    </GridBox>
+    </Box>
 }
 
 const styles: { [key: string]: React.CSSProperties } = {

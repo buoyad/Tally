@@ -5,7 +5,7 @@ import * as validation from '@/app/lib/validation'
 import { Button } from '@/app/ui/client-components'
 import { useFormState } from 'react-dom'
 import { inviteToTournament, removeInvite, leaveTournament } from '@/app/lib/actions'
-import { GridBox } from '@/app/ui/components'
+import { Box } from '@/app/ui/components'
 
 export function InviteToTournamentForm({ userID, tournamentID, tournamentName }: { userID: number, tournamentID: number, tournamentName: string }) {
     const [state, formAction] = useFormState(inviteToTournament, { message: '' })
@@ -21,7 +21,7 @@ export function InviteToTournamentForm({ userID, tournamentID, tournamentName }:
     }, [email])
 
     return <form action={formAction}>
-        <GridBox style={{ placeContent: 'start' }}>
+        <Box style={{ placeContent: 'start' }}>
             <label htmlFor="username">Invite someone to compete</label>
             <input type="hidden" value={userID} name="userID" />
             <input type="hidden" value={tournamentID} name="tournamentID" />
@@ -29,7 +29,7 @@ export function InviteToTournamentForm({ userID, tournamentID, tournamentName }:
             <input className={styles.textInput} id="email" name="email" type="text" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} />
             <Button disabled={disabled} label="Invite user" pendingLabel="Inviting..." typeSubmit={true} role="success" />
             {state?.message && <p className={styles.error}>{state.message}</p>}
-        </GridBox>
+        </Box>
     </form>
 }
 

@@ -5,7 +5,7 @@ const pool = new Pool({
     connectionString: process.env.POSTGRES_URL + (process.env.NODE_ENV === "production" ? "?sslmode=require" : "")
 })
 
-interface UserInfo {
+export interface UserInfo {
     id: number,
     name: string,
     email: string,

@@ -1,5 +1,5 @@
 import { getTournamentInfo, getTournamentInvites } from "@/app/lib/db"
-import { GridBox, Heading, Subheading } from "@/app/ui/components"
+import { Box, Heading, Subheading } from "@/app/ui/components"
 import { redirect } from "next/navigation"
 import { InviteToTournamentForm, InviteRow, LeaveTournamentForm } from "./form"
 import { getLoggedInUser } from "@/app/lib/hooks"
@@ -16,31 +16,31 @@ export default async function Page({ params }: { params: { name: string } }) {
     const invitees = currentUserIsParticipant ? await getTournamentInvites(info.tournament.id) : []
 
     return <main style={styles.container}>
-        <GridBox style={styles.fullWidth}>
+        <Box style={styles.fullWidth}>
             <Heading>{tournamentName}</Heading>
-        </GridBox>
-        <GridBox>
+        </Box>
+        <Box>
             <Subheading>Today&apos;s leaderboard</Subheading>
             <div style={styles.placeholder} />
-        </GridBox>
-        <GridBox>
+        </Box>
+        <Box>
             <Subheading>This week</Subheading>
             <div style={styles.placeholder} />
-        </GridBox>
-        <GridBox style={styles.fullWidth}>
+        </Box>
+        <Box style={styles.fullWidth}>
             <Subheading>All time stats</Subheading>
             <div style={styles.placeholder} />
-        </GridBox>
-        <GridBox>
+        </Box>
+        <Box>
             <Subheading>Players</Subheading>
             {info.users.map(p => <p key={p.id}>{p.name}</p>)}
-        </GridBox>
-        {currentUserIsParticipant && <GridBox>
+        </Box>
+        {currentUserIsParticipant && <Box>
             <Subheading>Invite participants</Subheading>
             {invitees.map(i => <InviteRow key={i.id} invite={i} tournamentName={info.tournament.name} />)}
             <InviteToTournamentForm tournamentID={info.tournament.id} userID={session.userInfo.id} tournamentName={info.tournament.name} />
             <LeaveTournamentForm tournamentID={info.tournament.id} tournamentName={tournamentName} userID={session.userInfo.id} isLastUser={info.users.length === 1} />
-        </GridBox>
+        </Box>
         }
     </main >
 }

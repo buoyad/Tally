@@ -4,12 +4,9 @@ import { usePathname } from "next/navigation"
 import styles from '@/app/nav.module.css'
 import { Roboto_Mono } from 'next/font/google'
 import { clsx } from 'clsx'
+import { UserInfo } from "./lib/db"
 
 const RoboMono = Roboto_Mono({ subsets: ['latin'] })
-
-const links = [
-    { href: "/tournaments", title: "Tournaments" }
-]
 
 const CWTally = () => {
     const letters = ['T', 'A', 'L', 'L', 'Y', '🏁']
@@ -18,16 +15,15 @@ const CWTally = () => {
     </>
 }
 
-export default function Nav() {
+export default function Nav({ userInfo }: { userInfo: UserInfo | null }) {
     const pathname = usePathname()
     return (
         <div className={styles.container}>
             <header className={styles.header}><Link href="/"><CWTally /></Link></header>
-            {/* {links.map(link => (
-                <Link key={link.href} href={link.href} className={clsx({
-                    [styles.active]: link.href === pathname
-                })}>{link.title}</Link>
-            ))} */}
+            {userInfo &&
+                <Link href="/user" className={clsx({ [styles.active]: pathname === '/user' })}>Me</Link>
+            }
+            {!userInfo && <Link href="/login" className={clsx({ [styles.active]: pathname === '/login' })}>Log in</Link>}
         </div>
     )
 }

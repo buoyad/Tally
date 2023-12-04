@@ -7,8 +7,9 @@
 }
 
 .gridBox {
-    display: grid;
-    align-content: start;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
     overflow: hidden;
 }
 
