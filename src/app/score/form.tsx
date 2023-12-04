@@ -20,7 +20,7 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
     const [minutes, setMinutes] = React.useState('0')
     const [seconds, setSeconds] = React.useState('0')
 
-    const dateStr = new Date().toLocaleDateString('en-CA')
+    const dateStr = new Date().toISOString().split('T')[0]
     const [date, setDate] = React.useState(dateStr)
 
     const [state, formAction] = useFormState(submitScore, { message: '' })

@@ -224,6 +224,6 @@ export const addScore = async (userID: number, date: string, score: number, type
 }
 
 export const getUserScores = async (userID: number) => {
-    const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = $1', [userID])
+    const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = $1 ORDER BY for_day DESC', [userID])
     return res.rows
 }
