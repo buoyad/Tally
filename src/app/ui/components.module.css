@@ -13,6 +13,11 @@
     overflow: hidden;
 }
 
+.gridBoxRow {
+    flex-direction: row;
+    align-items: center;
+}
+
 .gridBox>* {
     min-width: 0;
 }
