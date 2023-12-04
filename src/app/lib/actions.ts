@@ -204,3 +204,42 @@ export async function leaveTournament(_: any, formData: FormData) {
     revalidatePath(`/user`)
     revalidatePath(`/tournaments/${data.tournamentName}`)
 }
+
+const submitScoreSchema = validation.z.object({
+    minutes: validation.z.coerce.number(),
+    seconds: validation.z.coerce.number(),
+    date: validation.z.string(),
+    userID: validation.z.coerce.number().positive(),
+    submitAnother: validation.z.coerce.boolean(),
+})
+export async function submitScore(_: any, formData: FormData) {
+    const session = await getLoggedInUser()
+    if (!session.userInfo) {
+        return { message: "You must be logged in to submit a score" }
+    }
+    let data
+    try {
+        const rawFormData = { minutes: formData.get('minutes'), seconds: formData.get('seconds'), date: formData.get('date'), userID: formData.get('userID'), submitAnother: formData.get('submitAnother') }
+        data = submitScoreSchema.parse(rawFormData)
+        if (data.userID !== session.userInfo.id) {
+            return { message: "You can't submit a score for someone else" }
+        }
+        const seconds = (data.minutes * 60) + data.seconds
+        await db.addScore(data.userID, data.date, seconds, 'mini')
+    } catch (error) {
+        if (error instanceof validation.z.ZodError) {
+            log.error('submitScore: validation error: ' + error)
+            return { message: "An error occurred" }
+        } else if (error instanceof db.DBError) {
+            return { message: error.message }
+        }
+        log.error('submitScore: unknown error: ' + error)
+        return { message: 'An unknown error occurred' }
+    }
+
+    revalidatePath(`/user`)
+
+    if (!data.submitAnother) {
+        redirect('/user')
+    }
+}

@@ -4,6 +4,9 @@ import { UserInfo } from "../lib/db";
 import { Box } from "../ui/components";
 import { createWorker, PSM } from 'tesseract.js'
 import styles from '@/app/ui/form.module.css'
+import { useFormState } from 'react-dom';
+import { submitScore } from '../lib/actions';
+import { Button } from '../ui/client-components';
 
 const loadWorker = createWorker('eng')
 
@@ -19,6 +22,8 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
 
     const dateStr = new Date().toLocaleDateString('en-CA')
     const [date, setDate] = React.useState(dateStr)
+
+    const [state, formAction] = useFormState(submitScore, { message: '' })
 
     React.useEffect(() => {
         async function runOCR() {
@@ -51,7 +56,7 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
         }
     }, [file])
 
-    return <form>
+    return <form action={formAction}>
         <Box>
             <p>Select your completion screenshot</p>
             <Box row={true}>
@@ -61,13 +66,19 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
             </Box>
             <p>
                 Puzzle completed in{' '}
-                <input type="text" name="minutes" value={minutes} onChange={(e) => setMinutes(e.target.value)} className={styles.textInput} size={1} />{' '}
+                <input type="text" name="minutes" value={minutes} onChange={(e) => setMinutes(e.target.value)} className={styles.textInput} size={2} />{' '}
                 {minutes === '1' ? 'minute' : 'minutes'} and{' '}
                 <input type="text" name="seconds" value={seconds} onChange={(e) => setSeconds(e.target.value)} className={styles.textInput} size={2} />{' '}
                 {seconds === '1' ? 'second' : 'seconds'}. Puzzle published on{' '}
                 <input type="date" name="date" value={date} onChange={(e) => setDate(e.target.value)} className={styles.textInput} />
             </p>
+            <Box row={true}>
+                <input type="checkbox" name="submitAnother" id="submitAnother" value="false" />
+                <label htmlFor="submitAnother">submit another score</label>
+            </Box>
             <input type="hidden" name="userID" value={userInfo.id} />
+            <Button typeSubmit={true} label="Submit" pendingLabel='Submitting...' />
+            {state?.message && <Box className={styles.error}>{state.message}</Box>}
         </Box>
     </form>
 }

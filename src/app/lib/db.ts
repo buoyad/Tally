@@ -26,6 +26,14 @@ interface Invite {
     rejected: boolean,
 }
 
+interface Score {
+    id: number,
+    user_id: number,
+    for_day: Date,
+    score: number,
+    puzzle_type: 'mini' | 'biggie',
+}
+
 interface DBErrorInternal extends Error {
     code: string
 }
@@ -229,4 +237,21 @@ export const getTournamentInvite = async (inviteID: number) => {
         throw new DBError("Invite does not exist")
     }
     return res.rows[0]
+}
+
+export const addScore = async (userID: number, date: string, score: number, type: 'mini' | 'biggie') => {
+    try {
+        await pool.query('INSERT INTO scores (user_id, for_day, score, puzzle_type) VALUES ($1, $2, $3, $4)', [userID, date, score, type])
+    } catch (error) {
+        if ((error as DBErrorInternal)?.code === "23505") {
+            throw new DBError("Score already exists for day")
+        } else {
+            throw error
+        }
+    }
+}
+
+export const getUserScores = async (userID: number) => {
+    const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = $1', [userID])
+    return res.rows
 }

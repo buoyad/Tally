@@ -15,8 +15,12 @@ type BoxProps = {
     gap?: 'small' | 'medium' | 'large',
     style?: React.CSSProperties,
     row?: boolean,
-    className?: string
+    className?: string,
 }
 export function Box({ children, gap = 'small', style, row = false, className }: BoxProps) {
-    return <div className={clsx(styles.gridBox, styles[`gap-${gap}`], { [styles.gridBoxRow]: row }, className)} style={style}>{children}</div>
+    return <div
+        className={clsx(styles.gridBox, styles[`gap-${gap}`], { [styles.gridBoxRow]: row }, className)}
+        style={style}>
+        {children}
+    </div>
 }

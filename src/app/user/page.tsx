@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Heading, Subheading } from '@/app/ui/components'
 import { ChangeUsernameForm, LogoutButton, InviteRow } from './form'
 import { getLoggedInUser } from '../lib/hooks'
-import { getUserTournaments, getUserInvites } from '../lib/db'
+import { getUserTournaments, getUserInvites, getUserScores } from '../lib/db'
 import Link from 'next/link'
 
 export default async function Page() {
@@ -10,6 +10,7 @@ export default async function Page() {
     if (!session) return null
     const tournaments = await getUserTournaments(userInfo.id)
     const invites = await getUserInvites(userInfo.email)
+    const scores = await getUserScores(userInfo.id)
 
     return <main style={styles.container}>
         <Box style={styles.fullWidth}>
@@ -24,6 +25,11 @@ export default async function Page() {
             <Subheading>Invites</Subheading>
             {invites.length === 0 && <p>None yet.</p>}
             {invites.map(i => <InviteRow key={i.id} inviterName={i.inviter_name} tournamentName={i.tournament_name} id={i.id} userID={userInfo.id} />)}
+        </Box>
+        <Box>
+            <Subheading>Scores</Subheading>
+            {scores.length === 0 && <p>None yet. <Link href="/score">Submit one now!</Link></p>}
+            {scores.map(s => <p key={s.id}>{s.for_day.toLocaleDateString('en-CA')} - {Math.floor(s.score / 60)}:{s.score % 60}</p>)}
         </Box>
         <Box style={styles.placeContentStart}>
             <ChangeUsernameForm id={userInfo.id} username={userInfo.name} />
