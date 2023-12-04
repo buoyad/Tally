@@ -78,6 +78,7 @@
     transition: all .1s;
     cursor: pointer;
     content: 'Select a file';
+    border-radius: 0;
 }
 
 .fileInput.fileInput::file-selector-button:active {
