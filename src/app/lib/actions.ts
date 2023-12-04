@@ -246,3 +246,38 @@ export async function submitScore(_: any, formData: FormData) {
         redirect('/user')
     }
 }
+
+const deleteScoreSchema = validation.z.object({
+    scoreID: validation.z.coerce.number().positive(),
+    userID: validation.z.coerce.number().positive(),
+})
+export async function deleteScore(_: any, formData: FormData) {
+    const session = await getLoggedInUser()
+    if (!session.userInfo) {
+        return { message: "You must be logged in to delete a score" }
+    }
+    let data
+    try {
+        const rawFormData = { scoreID: formData.get('scoreID'), userID: formData.get('userID') }
+        data = deleteScoreSchema.parse(rawFormData)
+        if (data.userID !== session.userInfo.id) {
+            return { message: "You can't delete a score for someone else" }
+        }
+        const score = await db.getScore(data.scoreID)
+        if (score.user_id !== session.userInfo.id) {
+            return { message: "You can't delete a score for someone else" }
+        }
+        await db.deleteScore(data.scoreID)
+    } catch (error) {
+        if (error instanceof validation.z.ZodError) {
+            log.error('deleteScore: validation error: ' + error)
+            return { message: "An error occurred" }
+        } else if (error instanceof db.DBError) {
+            return { message: error.message }
+        }
+        log.error('deleteScore: unknown error: ' + error)
+        return { message: 'An unknown error occurred' }
+    }
+
+    revalidatePath(`/user`)
+}

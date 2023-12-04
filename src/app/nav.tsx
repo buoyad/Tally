@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 import styles from '@/app/nav.module.css'
 import { Roboto_Mono } from 'next/font/google'
 import { clsx } from 'clsx'
-import { UserInfo } from "./lib/db"
+import { UserInfo } from "./lib/types"
 
 const RoboMono = Roboto_Mono({ subsets: ['latin'] })
 

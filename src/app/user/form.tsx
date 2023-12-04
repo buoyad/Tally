@@ -4,7 +4,7 @@ import { signOut } from 'next-auth/react'
 import styles from '@/app/ui/form.module.css'
 import { useFormState } from 'react-dom'
 import { Button } from '@/app/ui/client-components'
-import { changeUsername, removeInvite, acceptInvite } from '../lib/actions'
+import { changeUsername, removeInvite, acceptInvite, deleteScore } from '../lib/actions'
 import { Box, Subheading } from '../ui/components'
 import { Score } from '../lib/types'
 import Link from 'next/link'
@@ -69,10 +69,9 @@ export function ScoreTable({ scores, userID }: { scores: Score[], userID: number
     return <div style={scoreTableStyles.container}>
         {scores.length === 0 &&
             <div style={scoreTableStyles.fullWidth}><p>None yet. <Link href="/score">Submit one now!</Link></p></div>}
-        {scores.map((s, idx) => <>
-            <ScoreRow key={s.id} score={s} />
-            {idx !== scores.length - 1 && <div style={scoreTableStyles.divider}></div>}
-        </>)}
+        {scores.map((s, idx) =>
+            <ScoreRow key={s.id} score={s} last={idx === scores.length - 1} />
+        )}
     </div>
 }
 
@@ -83,13 +82,19 @@ const displaySeconds = (seconds: number) => {
     return `${minutes}:${remainder < 10 ? '0' : ''}${remainder}`
 }
 
-function ScoreRow({ score }: { score: Score }) {
+function ScoreRow({ score, last }: { score: Score, last: boolean }) {
     const { id, user_id, for_day, score: seconds } = score
-    const [state, formAction] = useFormState(removeInvite, { message: '' })
+    const [state, formAction] = useFormState(deleteScore, { message: '' })
+    const deleteLabel = !!(state?.message) ? 'Error!' : 'Delete'
     return <>
         <p style={scoreTableStyles.justifySelfStart}>{for_day.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
         <p>{displaySeconds(seconds)}</p>
-        <Button typeSubmit={true} label="Delete" pendingLabel="Deleting..." role="destroy" />
+        <form action={formAction}>
+            <input type="hidden" name="scoreID" value={id} />
+            <input type="hidden" name="userID" value={user_id} />
+            <Button typeSubmit={true} label={deleteLabel} pendingLabel="Deleting..." role="destroy" />
+        </form>
+        {!last && <div style={scoreTableStyles.divider}></div>}
     </>
 
 }
@@ -105,7 +110,8 @@ const scoreTableStyles: { [key: string]: React.CSSProperties } = {
     },
     justifySelfStart: { justifySelf: 'start' },
     fullWidth: {
-        gridColumn: '1 / -1'
+        gridColumn: '1 / -1',
+        justifySelf: 'start',
     },
     divider: {
         gridColumn: '1 / -1',

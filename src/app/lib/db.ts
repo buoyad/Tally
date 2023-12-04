@@ -227,3 +227,15 @@ export const getUserScores = async (userID: number) => {
     const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = $1 ORDER BY for_day DESC', [userID])
     return res.rows
 }
+
+export const getScore = async (scoreID: number) => {
+    const res = await pool.query<Score>('SELECT * FROM scores WHERE id = $1', [scoreID])
+    if (res.rows.length === 0) {
+        throw new DBError("Score does not exist")
+    }
+    return res.rows[0]
+}
+
+export const deleteScore = async (scoreID: number) => {
+    await pool.query('DELETE FROM scores WHERE id = $1', [scoreID])
+}
