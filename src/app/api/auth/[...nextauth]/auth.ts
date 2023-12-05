@@ -18,6 +18,7 @@ export const authOptions: AuthOptions = {
     adapter: PostgresAdapter(pool),
     providers: [
         EmailProvider({
+            maxAge: verifyEmailMaxAge,
             server: {
                 host: process.env.EMAIL_SERVER_HOST,
                 port: process.env.EMAIL_SERVER_PORT,
