@@ -82,19 +82,20 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
     const children = []
 
     if (todayScores.length === 0) {
-        children.push(<p key="no-scores" className={styles.fullWidth}>No scores yet today</p>)
+        children.push(<p key="no-scores" style={scoreTableStyles.fullWidth}>No scores yet today</p>)
     }
 
-    children.push(
-        <Subheading key="name-heading">Name</Subheading>,
-        <Subheading key="score-heading">Score</Subheading>,
-        todayScores.flatMap(s => [
-            <p key={`name-${s.id}`} style={s.user_id === loggedInUser?.id ? scoreTableStyles.fontWeightBold : {}}>{usersByID[s.user_id].name}</p>,
-            <p key={`score-${s.id}`}>{displaySeconds(s.score)}</p>,
-        ])
-    )
 
     if (todayScores.length > 0) {
+        children.push(
+            <Subheading key="name-heading">Name</Subheading>,
+            <Subheading key="score-heading">Score</Subheading>,
+            todayScores.flatMap(s => [
+                <p key={`name-${s.id}`} style={s.user_id === loggedInUser?.id ? scoreTableStyles.fontWeightBold : {}}>{usersByID[s.user_id].name}</p>,
+                <p key={`score-${s.id}`}>{displaySeconds(s.score)}</p>,
+            ])
+        )
+
         const winner = todayScores[0]
         const currentUserWins = winner.user_id === loggedInUser?.id
         const currentUserHasSubmittedScore = todayScores.some(s => s.user_id === loggedInUser?.id)
@@ -119,7 +120,7 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
             }
         }
         children.push(<p key="winner-message" style={scoreTableStyles.fullWidth}>{message}</p>)
-        if (currentUserIsParticipant && !currentUserWins && !currentUserHasSubmittedScore) {
+        if (currentUserIsParticipant && !currentUserHasSubmittedScore) {
             children.push(<p key="submit-score" style={scoreTableStyles.fullWidth}><Link href="/score">Submit your score! Unseat {usersByID[winner.user_id].name}!</Link></p>)
         }
     }
