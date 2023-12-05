@@ -85,7 +85,7 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
         children.push(<p key="no-scores" style={scoreTableStyles.fullWidth}>No scores yet today</p>)
     }
 
-
+    const currentUserHasSubmittedScore = todayScores.some(s => s.user_id === loggedInUser?.id)
     if (todayScores.length > 0) {
         children.push(
             <Subheading key="name-heading">Name</Subheading>,
@@ -98,7 +98,6 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
 
         const winner = todayScores[0]
         const currentUserWins = winner.user_id === loggedInUser?.id
-        const currentUserHasSubmittedScore = todayScores.some(s => s.user_id === loggedInUser?.id)
         let message = ""
         if (todayScores.length === 1) {
             if (currentUserWins) {
@@ -123,6 +122,8 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
         if (currentUserIsParticipant && !currentUserHasSubmittedScore) {
             children.push(<p key="submit-score" style={scoreTableStyles.fullWidth}><Link href="/score">Submit your score! Unseat {usersByID[winner.user_id].name}!</Link></p>)
         }
+    } else if (currentUserIsParticipant && !currentUserHasSubmittedScore) {
+        children.push(<p key="submit-score" style={scoreTableStyles.fullWidth}><Link href="/score">Submit your score!</Link></p>)
     }
 
 
