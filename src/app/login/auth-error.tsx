@@ -18,5 +18,6 @@ const errorMessages: { [key: string]: string } = {
     'EmailCreateAccount': 'There was a problem creating your account. Please try again.',
     'EmailSignin': 'There was a problem sending the verification email. If the problem persists, please contact Danny.',
     'Default': 'There was an unknown error, please try again.',
-    'Score': 'Log in to register a new score.'
+    'Score': 'Log in to register a new score.',
+    'AccessDenied': 'An email was already sent to that address too recently. Please wait a minute before trying again.'
 }
