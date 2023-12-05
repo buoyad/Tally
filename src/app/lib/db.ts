@@ -18,12 +18,12 @@ export class DBError extends Error {
 }
 
 export const createUser = async (email: string, name: string) => {
-    const res = await pool.query<UserInfo>(`INSERT INTO userinfo (email, name) VALUES ($1, $2) RETURNING *`, [email, name])
+    const res = await pool.query<UserInfo>(`INSERT INTO userinfo (email, name) VALUES (LOWER($1), $2) RETURNING *`, [email, name])
     return res.rows[0]
 }
 
 export const getUser = async (email: string) => {
-    const res = await pool.query<UserInfo>(`SELECT * FROM userinfo WHERE email = $1`, [email])
+    const res = await pool.query<UserInfo>(`SELECT * FROM userinfo WHERE LOWER(email) = LOWER($1)`, [email])
     return res.rows[0]
 }
 
@@ -51,6 +51,9 @@ export const createTournament = async (name: string, userID: number) => {
     } catch (error) {
         await client.query('ROLLBACK')
         log.error('db.createTournament: ' + error)
+        if ((error as DBErrorInternal)?.code === "23505") {
+            throw new DBError("A tournament with that name already exists")
+        }
         throw error
     } finally {
         client.release()
@@ -90,7 +93,7 @@ export const getUserInvites = async (userEmail: string) => {
         FROM tournament_invites
         INNER JOIN tournaments ON tournament_invites.tournament_id = tournaments.id
         INNER JOIN userinfo ON tournament_invites.inviter_user_id = userinfo.id
-        WHERE invitee_email = $1`,
+        WHERE LOWER(invitee_email) = LOWER($1)`,
         [userEmail]
     )
     return res.rows
@@ -109,7 +112,7 @@ export const getTournamentInfo = async (tournamentName: string) => {
             FROM tournaments 
             INNER JOIN user_tournament ON tournaments.id = user_tournament.tournament_id 
             INNER JOIN userinfo ON user_tournament.user_id = userinfo.id 
-            WHERE tournaments.name = $1`,
+            WHERE LOWER(tournaments.name) = LOWER($1)`,
             [tournamentName]
         )
         if (users.rows.length === 0) {
@@ -138,7 +141,7 @@ export const addTournamentInvite = async (inviterUserID: number, tournamentID: n
         const res = await client.query<UserInfo>(
             `SELECT * FROM userinfo
             INNER JOIN user_tournament ON userinfo.id = user_tournament.user_id AND user_tournament.tournament_id = $2
-            WHERE email = $1`,
+            WHERE LOWER(email) = LOWER($1)`,
             [inviteeEmail, tournamentID])
         if (res.rows.length > 0) {
             throw new DBError("User is already in the tournament")
@@ -148,7 +151,7 @@ export const addTournamentInvite = async (inviterUserID: number, tournamentID: n
         if (inviterRes.rows.length === 0) {
             throw new DBError("Inviter is not in the tournament")
         }
-        await client.query('INSERT INTO tournament_invites (inviter_user_id, tournament_id, invitee_email) VALUES ($1, $2, $3)', [inviterUserID, tournamentID, inviteeEmail])
+        await client.query('INSERT INTO tournament_invites (inviter_user_id, tournament_id, invitee_email) VALUES ($1, $2, LOWER($3))', [inviterUserID, tournamentID, inviteeEmail])
         await client.query('COMMIT')
     } catch (error) {
         await client.query('ROLLBACK')
@@ -177,7 +180,7 @@ export const acceptTournamentInvite = async (inviteID: number) => {
             throw new DBError("Invite does not exist")
         }
         const invite = inviteRes.rows[0]
-        const userRes = await client.query<UserInfo>(`SELECT * FROM userinfo WHERE email = $1`, [invite.invitee_email])
+        const userRes = await client.query<UserInfo>(`SELECT * FROM userinfo WHERE LOWER(email) = LOWER($1)`, [invite.invitee_email])
         if (userRes.rows.length === 0) {
             throw new DBError("Invitee user does not exist")
         }

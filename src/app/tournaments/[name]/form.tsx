@@ -35,14 +35,14 @@ export function InviteToTournamentForm({ userID, tournamentID, tournamentName }:
 
 export function InviteRow({ invite, tournamentName }: { invite: { id: number, invitee_email: string }, tournamentName: string }) {
     const [state, formAction] = useFormState(removeInvite, { message: '' })
-    return <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', whiteSpace: 'nowrap' }}>
-        <span style={{ display: 'inline-block', textOverflow: 'ellipsis', overflow: 'hidden' }}>{invite.invitee_email}</span>
+    return <Box row={true} style={{ justifyContent: 'space-between', width: '100%', whiteSpace: 'nowrap' }}>
+        <span style={{ display: 'inline-block', textOverflow: 'ellipsis', overflow: 'hidden', flexBasis: 0, flexGrow: 1 }}>{invite.invitee_email}</span>
         <form action={formAction}>
             <input type="hidden" name="tournamentName" value={tournamentName} />
             <input type="hidden" name="inviteID" value={invite.id} />
             <Button label="Cancel" pendingLabel="Canceling..." role="destroy" typeSubmit={true} />
         </form>
-    </div>
+    </Box>
 }
 
 export function LeaveTournamentForm({ tournamentID, tournamentName, userID, isLastUser }: { tournamentID: number, tournamentName: string, userID: number, isLastUser: boolean }) {

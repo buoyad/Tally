@@ -23,6 +23,8 @@ export async function createTournament(_: any, formData: FormData) {
     } catch (error) {
         if (error instanceof validation.z.ZodError) {
             return { message: "Enter a tournament name between 3 and 32 characters long" }
+        } else if (error instanceof db.DBError) {
+            return { message: error.message }
         }
         return { message: 'An unknown error occurred' }
     }

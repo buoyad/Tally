@@ -1,0 +1,2 @@
+DROP INDEX tournaments_name_ci;
+DROP INDEX tournament_invites_tournament_id_invitee_email_ci;

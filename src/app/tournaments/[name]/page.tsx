@@ -6,8 +6,8 @@ import { getLoggedInUser } from "@/app/lib/hooks"
 
 export default async function Page({ params }: { params: { name: string } }) {
     const session = await getLoggedInUser()
-    const tournamentName = decodeURIComponent(params.name)
-    const info = await getTournamentInfo(tournamentName)
+    const _tournamentName = decodeURIComponent(params.name)
+    const info = await getTournamentInfo(_tournamentName)
     if (!info) {
         redirect('/tournaments')
     }
@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: { name: string } }) {
 
     return <main style={styles.container}>
         <Box style={styles.fullWidth}>
-            <Heading>{tournamentName}</Heading>
+            <Heading>{info.tournament.name}</Heading>
         </Box>
         <Box>
             <Subheading>Today&apos;s leaderboard</Subheading>
@@ -39,7 +39,7 @@ export default async function Page({ params }: { params: { name: string } }) {
             <Subheading>Invite participants</Subheading>
             {invitees.map(i => <InviteRow key={i.id} invite={i} tournamentName={info.tournament.name} />)}
             <InviteToTournamentForm tournamentID={info.tournament.id} userID={session.userInfo.id} tournamentName={info.tournament.name} />
-            <LeaveTournamentForm tournamentID={info.tournament.id} tournamentName={tournamentName} userID={session.userInfo.id} isLastUser={info.users.length === 1} />
+            <LeaveTournamentForm tournamentID={info.tournament.id} tournamentName={info.tournament.name} userID={session.userInfo.id} isLastUser={info.users.length === 1} />
         </Box>
         }
     </main >
