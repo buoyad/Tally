@@ -5,8 +5,8 @@ import * as validation from '@/app/lib/validation'
 import { Button } from '@/app/ui/client-components'
 import { signIn } from 'next-auth/react'
 
-export default function Form() {
-    const [email, setEmail] = React.useState('')
+export default function Form({ initialEmail }: { initialEmail: string | null }) {
+    const [email, setEmail] = React.useState(initialEmail || '')
     const [disabled, setDisabled] = React.useState(true)
 
     React.useEffect(() => {

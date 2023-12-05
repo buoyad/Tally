@@ -3,8 +3,10 @@ import * as validation from './validation'
 import log from "./log"
 import { redirect } from "next/navigation"
 import * as db from "./db"
+import * as Mail from './email'
 import { revalidatePath } from 'next/cache'
 import { getLoggedInUser } from './hooks'
+import { SentEmailType } from './types'
 
 const createTournamentSchema = validation.z.object({
     name: validation.z.string().min(3).max(32),
@@ -81,20 +83,30 @@ export async function inviteToTournament(_: any, formData: FormData) {
         if (data.userID !== session.userInfo.id) {
             return { message: "You can't claim to be someone else creating a tournament invite" }
         }
-        // database checks that data.userID is in the tournament
+
+        // database checks that data.userID is in the tournament and that
+        // data.email is not already in it.
         await db.addTournamentInvite(data.userID, data.tournamentID, data.email)
-        // TODO: email the user an invite link
+
+        await db.addSentEmail(data.email, SentEmailType.Invite, data.userID)
+        await Mail.sendInviteEmail(data.email, data.tournamentName, session.userInfo.name)
+        // if the email transport failed to send for some reason, the db will
+        // think we successfully sent it an disallow retries for a time. TODO:
+        // drop the row if the email fails to be sent?
     } catch (error) {
         if (error instanceof validation.z.ZodError) {
             return { message: "Enter a valid email" }
         } else if (error instanceof db.DBError) {
             return { message: error.message }
+        } else if (error instanceof Mail.MailError) {
+            return { message: error.message }
         }
         log.error('inviteToTournament: unknown error: ' + error)
         return { message: 'An unknown error occurred' }
+    } finally {
+        if (data?.tournamentName) revalidatePath(`/tournaments/${data.tournamentName}`)
     }
 
-    revalidatePath(`/tournaments/${data.tournamentName}`)
 }
 
 const removeInviteSchema = validation.z.object({

@@ -26,3 +26,16 @@ export interface Score {
     score: number,
     puzzle_type: 'mini' | 'biggie',
 }
+
+export enum SentEmailType {
+    Verify = "verify",
+    Invite = "invite",
+}
+
+export type SentEmail = {
+    id: number,
+    email: string,
+    sent_at: Date,
+    sending_user_id: number | null,
+    email_type: SentEmailType,
+}

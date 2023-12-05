@@ -5,7 +5,7 @@ import { getLoggedInUser } from '../lib/hooks'
 import { getUserTournaments, getUserInvites, getUserScores } from '../lib/db'
 import Link from 'next/link'
 
-export default async function Page() {
+export default async function Page({ searchParams }: { searchParams?: any }) {
     const { session, userInfo } = await getLoggedInUser(true)
     if (!session) return null
     const tournaments = await getUserTournaments(userInfo.id)
@@ -13,7 +13,7 @@ export default async function Page() {
     const scores = await getUserScores(userInfo.id)
 
     return <main style={styles.container}>
-        <Message />
+        <Message userInfo={userInfo} />
         <Box style={styles.fullWidth}>
             <Heading>My account</Heading>
             <p>Welcome back {userInfo.name}</p>

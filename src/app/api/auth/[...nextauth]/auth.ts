@@ -6,6 +6,7 @@ import { AuthOptions } from "next-auth"
 import { createTransport } from "nodemailer"
 import * as db from "@/app/lib/db"
 import log from "@/app/lib/log"
+import { SentEmailType } from "@/app/lib/types"
 
 const pool = new Pool({
     connectionString: process.env.POSTGRES_URL + (process.env.NODE_ENV === "production" ? "?sslmode=require" : "")
@@ -17,6 +18,7 @@ export const authOptions: AuthOptions = {
     adapter: PostgresAdapter(pool),
     providers: [
         EmailProvider({
+            maxAge: verifyEmailMaxAge,
             server: {
                 host: process.env.EMAIL_SERVER_HOST,
                 port: process.env.EMAIL_SERVER_PORT,
@@ -48,6 +50,32 @@ export const authOptions: AuthOptions = {
         signIn: '/login',
         verifyRequest: '/login/check-email',
         error: '/login',
+    },
+    callbacks: {
+        async signIn(params) {
+            const { email } = params.user
+
+            if (!email) {
+                // should not happen
+                log.error('signIn callback: no email')
+                return false
+            }
+
+            if (params.email?.verificationRequest) {
+                try {
+                    await db.addSentEmail(email, SentEmailType.Verify)
+                } catch (error) {
+                    if (error instanceof db.DBError) {
+                        log.error(`signIn callback: ${error.message}`)
+                    } else {
+                        log.error(`signIn callback: unknown error ${error}`)
+                    }
+                    return false
+                }
+            }
+
+            return true
+        },
     },
     events: {
         async signIn(message) {

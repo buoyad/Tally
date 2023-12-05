@@ -1,6 +1,6 @@
-import { Pool, Client } from 'pg'
+import { Pool, QueryResult } from 'pg'
 import log from './log'
-import { UserInfo, Tournament, Invite, Score } from './types'
+import { UserInfo, Tournament, Invite, Score, SentEmail, SentEmailType } from './types'
 
 const pool = new Pool({
     connectionString: process.env.POSTGRES_URL + (process.env.NODE_ENV === "production" ? "?sslmode=require" : "")
@@ -241,4 +241,49 @@ export const getScore = async (scoreID: number) => {
 
 export const deleteScore = async (scoreID: number) => {
     await pool.query('DELETE FROM scores WHERE id = $1', [scoreID])
+}
+
+const sentEmailTimeout = {
+    [SentEmailType.Verify]: 60, // 1 minute
+    [SentEmailType.Invite]: 60, // 1 minute
+}
+
+// addSentEmail will throw an error if an email of this type was sent too recently
+export const addSentEmail = async (email: string, type: SentEmailType, sendingUserID?: number) => {
+    if (sentEmailTimeout[type] === undefined) {
+        throw new Error('Invalid email type')
+    }
+
+    let res: QueryResult<SentEmail>
+    if (sendingUserID) {
+        res = await pool.query<SentEmail>(`
+            SELECT * FROM sent_emails
+                WHERE LOWER(email) = LOWER($1)
+                AND email_type = $2
+                AND sending_user_id = $3
+                ORDER BY sent_at DESC
+                LIMIT 1
+        `, [email, type, sendingUserID])
+    } else {
+        res = await pool.query<SentEmail>(`
+            SELECT * FROM sent_emails
+                    WHERE LOWER(email) = LOWER($1)
+                    AND email_type = $2
+                    ORDER BY sent_at DESC
+                    LIMIT 1
+        `, [email, type])
+    }
+    if (res.rows.length > 0) {
+        const lastSent = res.rows[0]
+        const now = new Date()
+        const timeout = sentEmailTimeout[type]
+        if ((now.getTime() - lastSent.sent_at.getTime()) < (timeout * 1000)) {
+            throw new DBError("An email was already sent to that address too recently. Wait a minute and try again.")
+        }
+    }
+    if (sendingUserID) {
+        await pool.query('INSERT INTO sent_emails (email, email_type, sending_user_id) VALUES ($1, $2, $3)', [email, type, sendingUserID])
+    } else {
+        await pool.query('INSERT INTO sent_emails (email, email_type) VALUES ($1, $2)', [email, type])
+    }
 }
