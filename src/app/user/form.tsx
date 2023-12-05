@@ -67,7 +67,7 @@ export function InviteRow(props: { inviterName: string, tournamentName: string, 
     const { inviterName, tournamentName, id: inviteID, userID } = props
 
     return <div style={{ display: 'flex', width: '100%', flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
-        <span>Someone named &apos;{inviterName}&apos; invited you to compete in <strong>{tournamentName}</strong>. Do you know them? Do you trust them?</span>
+        <span><strong>{inviterName}</strong> invited you to compete in <strong>{tournamentName}</strong>.<br />Do you want to compete? ⚔️</span>
         <div style={{ display: 'flex', flexDirection: 'row', width: '100%', gap: '12px', alignItems: 'center' }}>
             <AcceptInvite inviteID={inviteID} userID={userID} />
             <RejectInvite inviteID={inviteID} tournamentName={tournamentName} />
