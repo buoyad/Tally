@@ -34,7 +34,7 @@ export class MailError extends Error {
 }
 
 export async function sendInviteEmail(email: string, tournamentName: string, inviterName: string) {
-    const link = `${process.env.NEXTAUTH_URL}/login?email=${email}`
+    const link = `${process.env.NEXTAUTH_URL}/login?inviteEmail=${email}`
     const mailOptions = {
         from: `Tally <${emailFrom}>`,
         to: email,
