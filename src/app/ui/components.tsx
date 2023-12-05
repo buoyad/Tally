@@ -6,8 +6,8 @@ export function Heading({ children }: { children: React.ReactNode }) {
     return <h2 className={styles.heading}>{children}</h2>
 }
 
-export function Subheading({ children }: { children: React.ReactNode }) {
-    return <h4 className={styles.subheading}>{children}</h4>
+export function Subheading({ children, style }: { children: React.ReactNode, style?: React.CSSProperties }) {
+    return <h4 className={styles.subheading} style={style}>{children}</h4>
 }
 
 type BoxProps = {

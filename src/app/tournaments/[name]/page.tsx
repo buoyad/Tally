@@ -1,7 +1,7 @@
-import { getTournamentInfo, getTournamentInvites } from "@/app/lib/db"
+import { getScoresForUsers, getTournamentInfo, getTournamentInvites } from "@/app/lib/db"
 import { Box, Heading, Subheading } from "@/app/ui/components"
 import { redirect } from "next/navigation"
-import { InviteToTournamentForm, InviteRow, LeaveTournamentForm } from "./form"
+import { InviteToTournamentForm, InviteRow, LeaveTournamentForm, LeaderboardToday } from "./form"
 import { getLoggedInUser } from "@/app/lib/hooks"
 
 export default async function Page({ params }: { params: { name: string } }) {
@@ -12,8 +12,15 @@ export default async function Page({ params }: { params: { name: string } }) {
         redirect('/tournaments')
     }
 
-    const currentUserIsParticipant = session.userInfo && info.users.some(p => p.id === session.userInfo.id)
+    const currentUserIsParticipant = !!session.userInfo && info.users.some(p => p.id === session.userInfo.id)
     const invitees = currentUserIsParticipant ? await getTournamentInvites(info.tournament.id) : []
+
+    const usersByID = info.users.reduce((res, user) => {
+        res[user.id] = user
+        return res
+    }, {} as { [key: number]: { id: number, name: string } })
+
+    const scores = await getScoresForUsers(info.users.map(u => u.id))
 
     return <main style={styles.container}>
         <Box style={styles.fullWidth}>
@@ -21,7 +28,7 @@ export default async function Page({ params }: { params: { name: string } }) {
         </Box>
         <Box>
             <Subheading>Today&apos;s leaderboard</Subheading>
-            <div style={styles.placeholder} />
+            <LeaderboardToday scores={scores} usersByID={usersByID} loggedInUser={session.userInfo} currentUserIsParticipant={currentUserIsParticipant} />
         </Box>
         <Box>
             <Subheading>This week</Subheading>

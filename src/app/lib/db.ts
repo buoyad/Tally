@@ -231,6 +231,11 @@ export const getUserScores = async (userID: number) => {
     return res.rows
 }
 
+export const getScoresForUsers = async (userIDs: number[]) => {
+    const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = ANY($1) ORDER BY for_day DESC', [userIDs])
+    return res.rows
+}
+
 export const getScore = async (scoreID: number) => {
     const res = await pool.query<Score>('SELECT * FROM scores WHERE id = $1', [scoreID])
     if (res.rows.length === 0) {
