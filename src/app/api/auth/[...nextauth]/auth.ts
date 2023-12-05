@@ -67,8 +67,9 @@ export const authOptions: AuthOptions = {
                 } catch (error) {
                     if (error instanceof db.DBError) {
                         log.error(`signIn callback: ${error.message}`)
+                    } else {
+                        log.error(`signIn callback: unknown error ${error}`)
                     }
-                    log.error(`signIn callback: unknown error ${error}`)
                     return false
                 }
             }
