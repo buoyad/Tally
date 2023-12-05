@@ -6,8 +6,7 @@
 }
 
 .textInput:focus {
-    outline: none;
-    border: 1px solid black;
+    outline: 2px solid #4d88f9;
 }
 
 .formSection {
