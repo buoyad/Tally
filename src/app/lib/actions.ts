@@ -160,6 +160,7 @@ export async function acceptInvite(_: any, formData: FormData) {
         return { message: "You must be logged in to accept an invite" }
     }
 
+    let tournamentName: string
     try {
         const rawFormData = { inviteID: formData.get('inviteID'), userID: formData.get('userID') }
         const data = acceptInviteSchema.parse(rawFormData)
@@ -170,6 +171,7 @@ export async function acceptInvite(_: any, formData: FormData) {
         if (invite.invitee_email !== session.userInfo.email) {
             return { message: "This invite is not for you" }
         }
+        tournamentName = invite.tournament_name
         await db.acceptTournamentInvite(data.inviteID)
     } catch (error) {
         if (error instanceof validation.z.ZodError) {
@@ -184,6 +186,7 @@ export async function acceptInvite(_: any, formData: FormData) {
     }
 
     revalidatePath(`/user`)
+    redirect('/tournaments/' + tournamentName)
 }
 
 const leaveTournamentSchema = validation.z.object({

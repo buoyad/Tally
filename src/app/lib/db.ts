@@ -207,7 +207,17 @@ export const getTournamentInvites = async (tournamentID: number) => {
 }
 
 export const getTournamentInvite = async (inviteID: number) => {
-    const res = await pool.query<Invite>(`SELECT * FROM tournament_invites WHERE id = $1`, [inviteID])
+    const res = await pool.query<Invite & { tournament_name: string }>(`
+        SELECT 
+            tournament_invites.id, 
+            tournament_invites.tournament_id, 
+            tournament_invites.invitee_email, 
+            tournament_invites.inviter_user_id,
+            tournaments.name AS tournament_name 
+        FROM tournament_invites 
+        INNER JOIN tournaments ON tournament_invites.tournament_id = tournaments.id
+        WHERE tournament_invites.id = $1
+        `, [inviteID])
     if (res.rows.length === 0) {
         throw new DBError("Invite does not exist")
     }
