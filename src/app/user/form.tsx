@@ -10,6 +10,9 @@ import { Score, UserInfo } from '../lib/types'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import dayjs from 'dayjs'
+import isToday from 'dayjs/plugin/isToday'
+
+dayjs.extend(isToday)
 
 const messages: { [key: string]: string } = {
     score: 'Nice score! Check out how you stack up against your tournaments.',
@@ -114,7 +117,12 @@ const displaySeconds = (seconds: number) => {
 }
 
 const displayScoreDate = (date: string) => {
-    return dayjs(date).format('dddd, MMMM D YYYY')
+    const day = dayjs(date)
+    let fmt = ''
+    if (day.year() === dayjs().year()) fmt += day.format('dddd, MMMM D')
+    else fmt += day.format('dddd, MMMM D YYYY')
+
+    return fmt
 }
 
 function ScoreRow({ score, last }: { score: Score, last: boolean }) {
