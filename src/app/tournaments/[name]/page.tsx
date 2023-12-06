@@ -1,8 +1,9 @@
 import { getScoresForUsers, getTournamentInfo, getTournamentInvites } from "@/app/lib/db"
 import { Box, Heading, Subheading } from "@/app/ui/components"
 import { redirect } from "next/navigation"
-import { InviteToTournamentForm, InviteRow, LeaveTournamentForm, LeaderboardToday } from "./form"
+import { InviteToTournamentForm, InviteRow, LeaveTournamentForm } from "./form"
 import { getLoggedInUser } from "@/app/lib/hooks"
+import { LeaderboardToday } from "./stats"
 
 export default async function Page({ params }: { params: { name: string } }) {
     const session = await getLoggedInUser()
