@@ -7,6 +7,7 @@ import styles from '@/app/ui/form.module.css'
 import { useFormState } from 'react-dom';
 import { submitScore } from '../lib/actions';
 import { Button } from '../ui/client-components';
+import dayjs from 'dayjs'
 
 const loadWorker = createWorker('eng')
 
@@ -20,7 +21,7 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
     const [minutes, setMinutes] = React.useState('0')
     const [seconds, setSeconds] = React.useState('0')
 
-    const dateStr = new Date().toISOString().split('T')[0]
+    const dateStr = dayjs().format('YYYY-MM-DD')
     const [date, setDate] = React.useState(dateStr)
 
     const [state, formAction] = useFormState(submitScore, { message: '' })

@@ -3,7 +3,12 @@ import React from 'react'
 import styles from './components.module.css'
 import formStyles from './form.module.css'
 import { useFormStatus } from 'react-dom'
+import { displaySeconds } from '@/app/lib/util'
+import { Tilt_Warp } from 'next/font/google'
+import { useTrail, animated } from '@react-spring/web'
 import clsx from 'clsx'
+
+const timeScoreLargeFont = Tilt_Warp({ subsets: ['latin'], weight: '400' })
 
 type ButtonProps = {
     disabled?: boolean
@@ -26,4 +31,28 @@ export function Button(props: ButtonProps) {
         onClick={onClick}>
         {pending ? (pendingLabel || label) : label}
     </button>
+}
+
+export function TimeScoreLarge({ score, className, style }: { score: number, className?: string, style?: React.CSSProperties }) {
+    return <span className={clsx(styles.timeScore, styles.timeScoreLarge, timeScoreLargeFont.className, className)} style={style}>
+        <AnimatedText>{displaySeconds(score)}</AnimatedText>
+    </span>
+}
+
+function AnimatedText({ children }: { children: string }) {
+    let chars = children.split('')
+    const trails = useTrail(
+        chars.length,
+        {
+            from: { opacity: 0 },
+            opacity: 1,
+            delay: 0,
+        }
+    )
+
+    return <>
+        {trails.map((props, index) => (
+            <animated.span key={index} style={props}>{chars[index]}</animated.span>
+        ))}
+    </>
 }
