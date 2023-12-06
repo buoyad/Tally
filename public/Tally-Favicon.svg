@@ -1,0 +1,12 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+	<title>Tally-Icon</title>
+	<style>
+		.s0 { fill: #ffffff;stroke: #000000;stroke-miterlimit:100;stroke-width: 40 } 
+		.s1 { fill: #ffffff;stroke: #000000;stroke-miterlimit:100;stroke-width: 20 } 
+		.s2 { fill: #000000 } 
+	</style>
+	<path id="Layer 1" class="s0" d="m137 137h750v750h-750z"/>
+	<path id="Shape 2" class="s1" d="m137 502h750v20h-750z"/>
+	<path id="Shape 1" class="s1" d="m492 137h20v750h-20z"/>
+	<path id="Shape 3" class="s2" d="m512 512h367v367h-367z"/>
+</svg>
