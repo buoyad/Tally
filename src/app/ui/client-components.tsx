@@ -5,7 +5,7 @@ import formStyles from './form.module.css'
 import { useFormStatus } from 'react-dom'
 import { displaySeconds } from '@/app/lib/util'
 import { Tilt_Warp } from 'next/font/google'
-import { useTrail, animated } from '@react-spring/web'
+import { useTransition, animated } from '@react-spring/web'
 import clsx from 'clsx'
 
 const timeScoreLargeFont = Tilt_Warp({ subsets: ['latin'], weight: '400' })
@@ -41,18 +41,20 @@ export function TimeScoreLarge({ score, className, style }: { score: number, cla
 
 function AnimatedText({ children }: { children: string }) {
     let chars = children.split('')
-    const trails = useTrail(
-        chars.length,
+    const transitions = useTransition(
+        chars,
         {
-            from: { opacity: 0 },
-            opacity: 1,
-            delay: 0,
+            from: { y: `-1em` },
+            enter: { y: '0' },
+            leave: { y: '0' },
+            trail: 75,
+            config: {
+                mass: 1,
+                tension: 1000,
+                friction: 30,
+            },
         }
     )
 
-    return <>
-        {trails.map((props, index) => (
-            <animated.span key={index} style={props}>{chars[index]}</animated.span>
-        ))}
-    </>
+    return transitions((style, item) => <animated.span style={{ display: 'inline-block', ...style }}>{item}</animated.span>)
 }

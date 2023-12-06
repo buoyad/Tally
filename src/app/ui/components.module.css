@@ -9,6 +9,7 @@
 .timeScoreLarge {
     font-size: 64px;
     font-weight: 700;
+    overflow: hidden;
 }
 
 .gridBox {
