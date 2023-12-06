@@ -39,7 +39,7 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
             </Box>
             <Box>
                 <Subheading>Trends</Subheading>
-                {!enoughData && <p>You need at least 8 scores logged to calculate trends.</p>}
+                {!enoughData && <p>Keep logging scores to calculate trends.</p>}
                 {enoughData &&
                     <p>Over the last week, your average solve time was <TimeScore score={recentAverage || 0} />, which is {' '}
                         {percentChange?.toFixed(1)}% {percentChangeSign === 'pos' ? <strong>faster</strong> : <strong>slower</strong>} than your lifetime average.</p>}

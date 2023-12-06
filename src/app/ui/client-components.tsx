@@ -44,13 +44,13 @@ function AnimatedText({ children }: { children: string }) {
     const transitions = useTransition(
         chars,
         {
-            from: { y: `-1em` },
+            from: { y: `-1.2em` },
             enter: { y: '0' },
             leave: { y: '0' },
             trail: 75,
             config: {
                 mass: 1,
-                tension: 1000,
+                tension: 700,
                 friction: 30,
             },
         }
