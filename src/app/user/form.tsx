@@ -117,7 +117,7 @@ function ScoreRow({ score, last }: { score: Score, last: boolean }) {
     const [state, formAction] = useFormState(deleteScore, { message: '' })
     const deleteLabel = !!(state?.message) ? 'Error!' : 'Delete'
     return <>
-        <p style={scoreTableStyles.justifySelfStart}>{for_day.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}</p>
+        <p style={scoreTableStyles.justifySelfStart}>{for_day}</p>
         <p>{displaySeconds(seconds)}</p>
         <form action={formAction}>
             <input type="hidden" name="scoreID" value={id} />

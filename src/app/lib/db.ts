@@ -1,6 +1,6 @@
 import { Pool, QueryResult } from 'pg'
 import log from './log'
-import { UserInfo, Tournament, Invite, Score, SentEmail, SentEmailType } from './types'
+import { UserInfo, Tournament, Invite, DBScore, SentEmail, SentEmailType } from './types'
 
 const pool = new Pool({
     connectionString: process.env.POSTGRES_URL + (process.env.NODE_ENV === "production" ? "?sslmode=require" : "")
@@ -96,6 +96,18 @@ export const getUserInvites = async (userEmail: string) => {
         WHERE LOWER(invitee_email) = LOWER($1)`,
         [userEmail]
     )
+    return res.rows
+}
+
+export const getPopularTournaments = async () => {
+    const res = await pool.query<Tournament & { num_participants: string }>(`
+        SELECT tournaments.id, tournaments.name, tournaments.created_at, COUNT(user_tournament.user_id) AS num_participants
+        FROM tournaments
+        INNER JOIN user_tournament ON tournaments.id = user_tournament.tournament_id
+        GROUP BY tournaments.id
+        ORDER BY num_participants DESC, tournaments.created_at ASC
+        LIMIT 10
+    `)
     return res.rows
 }
 
@@ -237,21 +249,21 @@ export const addScore = async (userID: number, date: string, score: number, type
 }
 
 export const getUserScores = async (userID: number) => {
-    const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = $1 ORDER BY for_day DESC', [userID])
-    return res.rows
+    const res = await pool.query<DBScore>('SELECT * FROM scores WHERE user_id = $1 ORDER BY for_day DESC', [userID])
+    return res.rows.map(s => ({ ...s, for_day: s.for_day.toISOString().split('T')[0] }))
 }
 
 export const getScoresForUsers = async (userIDs: number[]) => {
-    const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = ANY($1) ORDER BY for_day DESC', [userIDs])
-    return res.rows
+    const res = await pool.query<DBScore>('SELECT * FROM scores WHERE user_id = ANY($1) ORDER BY for_day DESC', [userIDs])
+    return res.rows.map(s => ({ ...s, for_day: s.for_day.toISOString().split('T')[0] }))
 }
 
 export const getScore = async (scoreID: number) => {
-    const res = await pool.query<Score>('SELECT * FROM scores WHERE id = $1', [scoreID])
+    const res = await pool.query<DBScore>('SELECT * FROM scores WHERE id = $1', [scoreID])
     if (res.rows.length === 0) {
         throw new DBError("Score does not exist")
     }
-    return res.rows[0]
+    return { ...res.rows[0], for_day: res.rows[0].for_day.toISOString().split('T')[0] }
 }
 
 export const deleteScore = async (scoreID: number) => {

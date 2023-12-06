@@ -74,9 +74,12 @@ type LeaderboardTodayProps = {
 }
 
 export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserIsParticipant }: LeaderboardTodayProps) {
-    const today = new Date().toISOString().split('T')[0]
+    const todayDate = new Date()
+    const offset = todayDate.getTimezoneOffset()
+    const todayUTC = new Date(todayDate.getTime() - (offset * 60 * 1000))
+    const today = todayUTC.toISOString().split('T')[0]
     // console.log(today)
-    const todayScores = scores.filter(s => s.for_day.toISOString().split('T')[0] === today).sort((a, b) => a.score - b.score)
+    const todayScores = scores.filter(s => s.for_day === today).sort((a, b) => a.score - b.score)
     // console.log(todayScores)
 
     const children = []

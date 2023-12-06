@@ -19,10 +19,18 @@ export interface Invite {
     rejected: boolean,
 }
 
-export interface Score {
+export interface DBScore {
     id: number,
     user_id: number,
     for_day: Date,
+    score: number,
+    puzzle_type: 'mini' | 'biggie',
+}
+
+export interface Score {
+    id: number,
+    user_id: number,
+    for_day: string,
     score: number,
     puzzle_type: 'mini' | 'biggie',
 }
