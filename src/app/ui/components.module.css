@@ -6,6 +6,11 @@
     /* margin: 16px 0; */
 }
 
+.timeScoreLarge {
+    font-size: 64px;
+    font-weight: 700;
+}
+
 .gridBox {
     display: flex;
     flex-direction: column;

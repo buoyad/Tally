@@ -1,9 +1,10 @@
 import React from 'react'
-import { Box, Heading, Subheading } from '@/app/ui/components'
+import { Box, Heading, Subheading, TimeScore } from '@/app/ui/components'
 import { ChangeUsernameForm, LogoutButton, InviteRow, ScoreTable, Message } from './form'
 import { getLoggedInUser } from '../lib/hooks'
 import { getUserTournaments, getUserInvites, getUserScores } from '../lib/db'
 import Link from 'next/link'
+import dayjs from 'dayjs'
 
 export default async function Page({ searchParams }: { searchParams?: any }) {
     const { session, userInfo } = await getLoggedInUser(true)
@@ -12,12 +13,38 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
     const invites = await getUserInvites(userInfo.email)
     const scores = await getUserScores(userInfo.id)
 
+    const averageScore = !!scores.length && scores.reduce((res, curr) => res + curr.score, 0) / scores.length
+    const weekAgo = dayjs().subtract(7, 'day')
+    const recentScores = scores.filter(s => dayjs(s.for_day) > weekAgo)
+    const recentAverage = !!recentScores.length && recentScores.reduce((res, curr) => res + curr.score, 0) / recentScores.length
+    const enoughData = recentScores.length > 3 && scores.length > 7
+    let percentChange
+    let percentChangeSign
+    if (typeof recentAverage === 'number' && typeof averageScore === 'number' && enoughData) {
+        percentChange = ((averageScore - recentAverage) / averageScore) * 100
+        percentChangeSign = percentChange > 0 ? 'pos' : 'neg'
+        percentChange = Math.abs(percentChange)
+    }
+
     return <main style={styles.container}>
         <Message userInfo={userInfo} />
         <Box style={styles.fullWidth}>
             <Heading>My account</Heading>
             <p>Welcome back {userInfo.name}</p>
         </Box>
+        {!!averageScore && <>
+            <Box>
+                <Subheading>Average score on the mini</Subheading>
+                <TimeScore large={true} score={averageScore} />
+            </Box>
+            <Box>
+                <Subheading>Trends</Subheading>
+                {!enoughData && <p>You need at least 8 scores logged to calculate trends.</p>}
+                {enoughData &&
+                    <p>Over the last week, your average solve time was <TimeScore score={recentAverage || 0} />, which is {' '}
+                        {percentChange?.toFixed(1)}% {percentChangeSign === 'pos' ? <strong>faster</strong> : <strong>slower</strong>} than your lifetime average.</p>}
+            </Box>
+        </>}
         <Box>
             <Subheading>Tournaments</Subheading>
             {tournaments.length === 0 && <p>None yet. <Link href="/tournaments/create">Make one now!</Link></p>}
