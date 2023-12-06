@@ -1,20 +1,11 @@
 import { Score, UserInfo } from "@/app/lib/types"
-import { Box, Subheading } from "@/app/ui/components"
+import { Box, Subheading, TimeScore } from "@/app/ui/components"
 import formStyles from '@/app/ui/form.module.css'
 import dayjs, { PluginFunc } from 'dayjs'
 import isTodaysContest from './isTodaysContest'
 import Link from "next/link"
 
 dayjs.extend(isTodaysContest)
-
-
-
-const displaySeconds = (seconds: number) => {
-    // convert seconds to '00:00' format
-    const minutes = Math.floor(seconds / 60)
-    const remainder = seconds % 60
-    return `${minutes}:${remainder < 10 ? '0' : ''}${remainder}`
-}
 
 type LeaderboardTodayProps = {
     scores: Score[],
@@ -63,7 +54,7 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
             todayScores.flatMap((s, idx) => [
                 <Ordinal key={`rank-${s.id}`} position={idx + 1} />,
                 <p key={`name-${s.id}`} style={s.user_id === loggedInUser?.id ? scoreTableStyles.fontWeightBold : {}}>{usersByID[s.user_id].name}</p>,
-                <p key={`score-${s.id}`}>{displaySeconds(s.score)}</p>,
+                <TimeScore key={`score-${s.id}`} score={s.score} />,
             ])
         )
 

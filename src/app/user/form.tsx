@@ -5,7 +5,7 @@ import styles from '@/app/ui/form.module.css'
 import { useFormState } from 'react-dom'
 import { Button } from '@/app/ui/client-components'
 import { changeUsername, removeInvite, acceptInvite, deleteScore } from '../lib/actions'
-import { Box } from '../ui/components'
+import { Box, TimeScore } from '../ui/components'
 import { Score, UserInfo } from '../lib/types'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -109,13 +109,6 @@ export function ScoreTable({ scores, userID }: { scores: Score[], userID: number
     </div>
 }
 
-const displaySeconds = (seconds: number) => {
-    // convert seconds to '00:00' format
-    const minutes = Math.floor(seconds / 60)
-    const remainder = seconds % 60
-    return `${minutes}:${remainder < 10 ? '0' : ''}${remainder}`
-}
-
 const displayScoreDate = (date: string) => {
     const day = dayjs(date)
     let fmt = ''
@@ -131,7 +124,7 @@ function ScoreRow({ score, last }: { score: Score, last: boolean }) {
     const deleteLabel = !!(state?.message) ? 'Error!' : 'Delete'
     return <>
         <p style={scoreTableStyles.justifySelfStart}>{displayScoreDate(for_day)}</p>
-        <p>{displaySeconds(seconds)}</p>
+        <TimeScore score={seconds} />
         <form action={formAction}>
             <input type="hidden" name="scoreID" value={id} />
             <input type="hidden" name="userID" value={user_id} />
