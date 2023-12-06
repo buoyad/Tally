@@ -7,6 +7,7 @@ import { displaySeconds } from '@/app/lib/util'
 import { Tilt_Warp } from 'next/font/google'
 import { useTransition, animated } from '@react-spring/web'
 import clsx from 'clsx'
+import { Box } from './components'
 
 const timeScoreLargeFont = Tilt_Warp({ subsets: ['latin'], weight: '400' })
 
@@ -34,27 +35,48 @@ export function Button(props: ButtonProps) {
 }
 
 export function TimeScoreLarge({ score, className, style }: { score: number, className?: string, style?: React.CSSProperties }) {
-    return <span className={clsx(styles.timeScore, styles.timeScoreLarge, timeScoreLargeFont.className, className)} style={style}>
+    return <div className={clsx(styles.timeScore, styles.timeScoreLarge, timeScoreLargeFont.className, className)} style={style}>
         <AnimatedText>{displaySeconds(score)}</AnimatedText>
-    </span>
+    </div>
 }
 
-function AnimatedText({ children }: { children: string }) {
+function AnimatedText({ children, placeholder = '0:00.0' }: { children: string, placeholder?: string }) {
     let chars = children.split('')
+    let placeholderChars = placeholder.split('')
+    const commonConfig = {
+        trail: 75,
+        config: {
+            mass: 1,
+            tension: 700,
+            friction: 30,
+        },
+    }
     const transitions = useTransition(
         chars,
         {
             from: { y: `-1.2em` },
             enter: { y: '0' },
             leave: { y: '0' },
-            trail: 75,
-            config: {
-                mass: 1,
-                tension: 700,
-                friction: 30,
-            },
+            ...commonConfig,
+            events: {}
         }
     )
 
-    return transitions((style, item) => <animated.span style={{ display: 'inline-block', ...style }}>{item}</animated.span>)
+    const placeholderTransitions = useTransition(
+        placeholderChars,
+        {
+            from: { y: '0' },
+            enter: { y: '1.2em' },
+            leave: { y: '1.2em' },
+            ...commonConfig,
+        }
+    )
+
+    // placeholder chars set the height of the top level Box, then the children are absolutely positioned to occupy the same space.
+    return <Box row={true} gap="none" style={{ overflow: 'hidden', position: 'relative', width: '100%' }}>
+        <Box row={true} gap="none" style={{ position: 'absolute' }}>
+            {transitions((style, item, _, idx) => <animated.span style={{ display: 'inline-block', ...style }}>{item}</animated.span>)}
+        </Box>
+        {placeholderTransitions((style, item, _, idx) => <animated.span style={{ display: 'inline-block', opacity: 0.5, ...style }}>{item}</animated.span>)}
+    </Box>
 }

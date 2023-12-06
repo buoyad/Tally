@@ -22,7 +22,7 @@ export function TimeScore({ score, className, style, large }: { score: number, c
 
 type BoxProps = {
     children: React.ReactNode,
-    gap?: 'small' | 'medium' | 'large',
+    gap?: 'small' | 'medium' | 'large' | 'none',
     style?: React.CSSProperties,
     row?: boolean,
     className?: string,

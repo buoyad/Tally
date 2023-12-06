@@ -9,7 +9,7 @@
 .timeScoreLarge {
     font-size: 64px;
     font-weight: 700;
-    overflow: hidden;
+    width: 100%;
 }
 
 .gridBox {
@@ -26,6 +26,10 @@
 
 .gridBox>* {
     min-width: 0;
+}
+
+.gap-none {
+    gap: 0;
 }
 
 .gap-small {
