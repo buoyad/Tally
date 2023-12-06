@@ -2,6 +2,7 @@ import { Pool, QueryResult, types } from 'pg'
 import log from './log'
 import { UserInfo, Tournament, Invite, Score, SentEmail, SentEmailType } from './types'
 
+// don't transform DATE column type, just return string YYYY-MM-DD
 types.setTypeParser(types.builtins.DATE, (val) => val)
 const pool = new Pool({
     connectionString: process.env.POSTGRES_URL + (process.env.NODE_ENV === "production" ? "?sslmode=require" : "")
@@ -255,7 +256,7 @@ export const getUserScores = async (userID: number) => {
 }
 
 export const getScoresForUsers = async (userIDs: number[]) => {
-    const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = ANY($1) ORDER BY for_day DESC', [userIDs])
+    const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = ANY($1) ORDER BY for_day DESC, score ASC', [userIDs])
     return res.rows
 }
 

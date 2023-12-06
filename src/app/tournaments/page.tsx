@@ -5,11 +5,11 @@ import { Box, Heading } from "../ui/components";
 export default async function Page() {
     const tournaments = await db.getPopularTournaments()
     return <main style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
-        <Heading>Popular tournaments</Heading>
+        <Heading>Top tournaments</Heading>
         <Box style={styles.container}>
             {tournaments.flatMap(t => [
                 <Link key={`link-${t.id}`} href={`/tournaments/${encodeURIComponent(t.name)}`}>{t.name}</Link>,
-                <p key={`participants-${t.id}`}>{t.num_participants} {t.num_participants === '1' ? 'contestant' : 'contestants'}</p>,
+                <p key={`participants-${t.id}`}>{t.num_participants} {t.num_participants === 1 ? 'contestant' : 'contestants'}</p>,
             ])}
         </Box>
     </main>

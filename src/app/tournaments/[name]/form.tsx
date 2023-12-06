@@ -7,7 +7,11 @@ import { useFormState } from 'react-dom'
 import { inviteToTournament, removeInvite, leaveTournament } from '@/app/lib/actions'
 import { Box, Subheading } from '@/app/ui/components'
 import { Score, UserInfo } from '@/app/lib/types'
+import dayjs from 'dayjs'
+import isToday from 'dayjs/plugin/isToday'
 import Link from 'next/link'
+
+dayjs.extend(isToday)
 
 export function InviteToTournamentForm({ userID, tournamentID, tournamentName }: { userID: number, tournamentID: number, tournamentName: string }) {
     const [state, formAction] = useFormState(inviteToTournament, { message: '' })
@@ -74,13 +78,7 @@ type LeaderboardTodayProps = {
 }
 
 export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserIsParticipant }: LeaderboardTodayProps) {
-    const todayDate = new Date()
-    const offset = todayDate.getTimezoneOffset()
-    const todayUTC = new Date(todayDate.getTime() - (offset * 60 * 1000))
-    const today = todayUTC.toISOString().split('T')[0]
-    // console.log(today)
-    const todayScores = scores.filter(s => s.for_day === today).sort((a, b) => a.score - b.score)
-    // console.log(todayScores)
+    const todayScores = scores.filter(s => dayjs(s.for_day).isToday())
 
     const children = []
 

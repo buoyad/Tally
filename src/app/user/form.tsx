@@ -9,6 +9,7 @@ import { Box } from '../ui/components'
 import { Score, UserInfo } from '../lib/types'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import dayjs from 'dayjs'
 
 const messages: { [key: string]: string } = {
     score: 'Nice score! Check out how you stack up against your tournaments.',
@@ -112,12 +113,16 @@ const displaySeconds = (seconds: number) => {
     return `${minutes}:${remainder < 10 ? '0' : ''}${remainder}`
 }
 
+const displayScoreDate = (date: string) => {
+    return dayjs(date).format('dddd, MMMM D YYYY')
+}
+
 function ScoreRow({ score, last }: { score: Score, last: boolean }) {
     const { id, user_id, for_day, score: seconds } = score
     const [state, formAction] = useFormState(deleteScore, { message: '' })
     const deleteLabel = !!(state?.message) ? 'Error!' : 'Delete'
     return <>
-        <p style={scoreTableStyles.justifySelfStart}>{for_day}</p>
+        <p style={scoreTableStyles.justifySelfStart}>{displayScoreDate(for_day)}</p>
         <p>{displaySeconds(seconds)}</p>
         <form action={formAction}>
             <input type="hidden" name="scoreID" value={id} />
