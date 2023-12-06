@@ -19,12 +19,25 @@ export interface Invite {
     rejected: boolean,
 }
 
+export enum PuzzleType {
+    mini = "mini",
+    biggie = "biggie",
+}
+
 export interface Score {
     id: number,
     user_id: number,
     for_day: string,
     score: number,
-    puzzle_type: 'mini' | 'biggie',
+    puzzle_type: PuzzleType,
+}
+
+export type UserStats = {
+    [key in PuzzleType]?: {
+        avg: number,
+        recentAvg: number,
+        hasTrends: boolean,
+    }
 }
 
 export enum SentEmailType {

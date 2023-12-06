@@ -57,8 +57,8 @@ function AnimatedText({ children, placeholder = '0:00.0' }: { children: string, 
             from: { y: `-1.2em` },
             enter: { y: '0' },
             leave: { y: '0' },
+            keys: chars.map((_, idx) => `${idx}-char`),
             ...commonConfig,
-            events: {}
         }
     )
 
@@ -68,6 +68,7 @@ function AnimatedText({ children, placeholder = '0:00.0' }: { children: string, 
             from: { y: '0' },
             enter: { y: '1.2em' },
             leave: { y: '1.2em' },
+            keys: placeholderChars.map((_, idx) => `${idx}-placeholder`),
             ...commonConfig,
         }
     )

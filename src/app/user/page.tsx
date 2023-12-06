@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Heading, Subheading, TimeScore } from '@/app/ui/components'
 import { ChangeUsernameForm, LogoutButton, InviteRow, ScoreTable, Message } from './form'
 import { getLoggedInUser } from '../lib/hooks'
-import { getUserTournaments, getUserInvites, getUserScores } from '../lib/db'
+import { getUserTournaments, getUserInvites, getUserScores, getUserStats } from '../lib/db'
 import Link from 'next/link'
 import dayjs from 'dayjs'
 
@@ -13,17 +13,16 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
     const invites = await getUserInvites(userInfo.email)
     const scores = await getUserScores(userInfo.id)
 
-    const averageScore = !!scores.length && scores.reduce((res, curr) => res + curr.score, 0) / scores.length
-    const weekAgo = dayjs().subtract(7, 'day')
-    const recentScores = scores.filter(s => dayjs(s.for_day) > weekAgo)
-    const recentAverage = !!recentScores.length && recentScores.reduce((res, curr) => res + curr.score, 0) / recentScores.length
-    const enoughData = recentScores.length > 3 && scores.length > 7
-    let percentChange
-    let percentChangeSign
-    if (typeof recentAverage === 'number' && typeof averageScore === 'number' && enoughData) {
-        percentChange = ((averageScore - recentAverage) / averageScore) * 100
-        percentChangeSign = percentChange > 0 ? 'pos' : 'neg'
-        percentChange = Math.abs(percentChange)
+    const userStats = await getUserStats(userInfo.id)
+    const miniStats = userStats.mini
+    let avg, recentAvg, hasTrends, percentChange, percentChangeSign
+    if (miniStats) {
+        avg = miniStats.avg; recentAvg = miniStats.recentAvg, hasTrends = miniStats.hasTrends;
+        if (hasTrends) {
+            percentChange = ((avg - recentAvg) / avg) * 100
+            percentChangeSign = percentChange > 0 ? 'pos' : 'neg'
+            percentChange = Math.abs(percentChange)
+        }
     }
 
     return <main style={styles.container}>
@@ -32,16 +31,16 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
             <Heading>My account</Heading>
             <p>Welcome back {userInfo.name}</p>
         </Box>
-        {!!averageScore && <>
+        {!!avg && <>
             <Box>
                 <Subheading>Average score on the mini</Subheading>
-                <TimeScore large={true} score={averageScore} />
+                <TimeScore large={true} score={avg} />
             </Box>
             <Box>
                 <Subheading>Trends</Subheading>
-                {!enoughData && <p>Keep logging scores to calculate trends.</p>}
-                {enoughData &&
-                    <p>Over the last week, your average solve time was <TimeScore score={recentAverage || 0} />, which is {' '}
+                {!hasTrends && <p>Keep logging scores to calculate trends.</p>}
+                {hasTrends &&
+                    <p>Over the last week, your average solve time was <TimeScore score={recentAvg || 0} />, which is {' '}
                         {percentChange?.toFixed(1)}% {percentChangeSign === 'pos' ? <strong>faster</strong> : <strong>slower</strong>} than your lifetime average.</p>}
             </Box>
         </>}

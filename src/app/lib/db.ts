@@ -1,6 +1,6 @@
 import { Pool, QueryResult, types } from 'pg'
 import log from './log'
-import { UserInfo, Tournament, Invite, Score, SentEmail, SentEmailType } from './types'
+import { UserInfo, Tournament, Invite, Score, SentEmail, SentEmailType, UserStats, PuzzleType } from './types'
 
 // don't transform DATE column type, just return string YYYY-MM-DD
 types.setTypeParser(types.builtins.DATE, (val) => val)
@@ -253,6 +253,30 @@ export const addScore = async (userID: number, date: string, score: number, type
 export const getUserScores = async (userID: number) => {
     const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = $1 ORDER BY for_day DESC', [userID])
     return res.rows
+}
+
+export const getUserStats = async (userID: number): Promise<UserStats> => {
+    const res = await pool.query<{ user_id: number, puzzle_type: PuzzleType, avg: string, recent_avg: string, recent_scores: string, total_scores: string }>(`
+        SELECT 
+            scores.user_id, 
+            scores.puzzle_type, 
+            AVG(scores.score) AS avg, 
+            AVG(scores.score) FILTER (WHERE scores.for_day >= (NOW() - INTERVAL '7 days')) AS recent_avg,
+            COUNT(scores.score) FILTER (WHERE scores.for_day >= (NOW() - INTERVAL '7 days')) AS recent_scores,
+            COUNT(scores.score) AS total_scores
+        FROM scores
+        WHERE scores.user_id = $1
+        GROUP BY scores.user_id, scores.puzzle_type
+    `, [userID])
+    const stats = res.rows.reduce((acc, row) => {
+        acc[row.puzzle_type] = {
+            avg: parseFloat(row.avg),
+            recentAvg: parseFloat(row.recent_avg),
+            hasTrends: parseFloat(row.recent_scores) > 3 && parseFloat(row.total_scores) > 7,
+        }
+        return acc
+    }, {} as UserStats)
+    return stats
 }
 
 export const getScoresForUsers = async (userIDs: number[]) => {
