@@ -19,7 +19,7 @@ export function Podium({ userInfo, scores }: PodiumProps) {
         (idx) => ({
             from: {
                 height: '0px',
-                backgroundColor: 'gray',
+                backgroundColor: 'transparent',
                 boxShadow: '0px 0px transparent',
                 border: '0px solid transparent'
             },
@@ -56,7 +56,7 @@ export function Podium({ userInfo, scores }: PodiumProps) {
     return <div style={styles.podiumContainer}>
         <div style={styles.podiumBase}>
             <AnimatedPlacer username={placers[1]?.user_name} score={placers[1]?.score} pos={1} style={placerTrails[1]} />
-            <animated.div style={{ ...styles.podium, ...platformTrails[1] }} />
+            <animated.div style={{ ...styles.podium, ...platformTrails[1], borderTopRightRadius: 0 }} />
         </div>
         <div style={styles.podiumBase}>
             <AnimatedPlacer username={placers[0]?.user_name} score={placers[0]?.score} pos={0} style={placerTrails[0]} />
@@ -64,7 +64,7 @@ export function Podium({ userInfo, scores }: PodiumProps) {
         </div>
         <div style={styles.podiumBase}>
             <AnimatedPlacer username={placers[2]?.user_name} score={placers[2]?.score} pos={2} style={placerTrails[2]} />
-            <animated.div style={{ ...styles.podium, ...platformTrails[2] }} />
+            <animated.div style={{ ...styles.podium, ...platformTrails[2], borderTopLeftRadius: 0 }} />
         </div>
     </div>
 }
@@ -85,21 +85,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     podiumContainer: {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr 1fr',
-        gap: '.5rem',
         width: '100%',
         justifyItems: 'center',
         paddingBottom: '20px',
     },
     podiumBase: {
         height: '300px',
-        width: '80%',
+        width: '100%',
         position: 'relative',
         minWidth: 0,
     },
     podium: {
         position: 'absolute',
         bottom: '5px',
-        width: '100%',
+        width: '95%',
         borderTopLeftRadius: '5px',
         borderTopRightRadius: '5px'
     },
