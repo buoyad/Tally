@@ -5,7 +5,7 @@ import * as validation from '@/app/lib/validation'
 import { Button } from '@/app/ui/client-components'
 import { useFormState } from 'react-dom'
 import { inviteToTournament, removeInvite, leaveTournament } from '@/app/lib/actions'
-import { Box } from '@/app/ui/components'
+import { Box, Subtitle } from '@/app/ui/components'
 
 export function InviteToTournamentForm({ userID, tournamentID, tournamentName }: { userID: number, tournamentID: number, tournamentName: string }) {
     const [state, formAction] = useFormState(inviteToTournament, { message: '' })
@@ -52,7 +52,7 @@ export function LeaveTournamentForm({ tournamentID, tournamentName, userID, isLa
         <input type="hidden" name="tournamentName" value={tournamentName} />
         <input type="hidden" name="userID" value={userID} />
         <Button label="Leave tournament" pendingLabel="Leaving..." role="destroy" typeSubmit={true} disabled={isLastUser} />
-        {isLastUser && <p className={styles.subtitle}>The last participant cannot leave a tournament</p>}
+        {isLastUser && <Subtitle>The last participant cannot leave a tournament</Subtitle>}
         {state?.message && <p className={styles.error}>{state.message}</p>}
     </form>
 }

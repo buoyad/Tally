@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from './components.module.css'
+import formStyles from './form.module.css'
 import clsx from 'clsx'
 import { Baloo_2 } from 'next/font/google'
 import { TimeScoreLarge } from './client-components'
@@ -13,6 +14,10 @@ export function Heading({ children }: { children: React.ReactNode }) {
 
 export function Subheading({ children, style }: { children: React.ReactNode, style?: React.CSSProperties }) {
     return <h4 className={styles.subheading} style={style}>{children}</h4>
+}
+
+export function Subtitle({ children, style }: { children: React.ReactNode, style?: React.CSSProperties }) {
+    return <p className={formStyles.subtitle} style={style}>{children}</p>
 }
 
 export function TimeScore({ score, className, style, large }: { score: number, className?: string, style?: React.CSSProperties, large?: boolean }) {

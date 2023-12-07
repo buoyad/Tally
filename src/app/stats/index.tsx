@@ -1,10 +1,8 @@
 import { Score, UserInfo } from "@/app/lib/types"
-import { Box, Subheading, TimeScore, Ordinal } from "@/app/ui/components"
-import formStyles from '@/app/ui/form.module.css'
-import dayjs, { PluginFunc } from 'dayjs'
+import { Box, Subheading, TimeScore, Ordinal, Subtitle } from "@/app/ui/components"
+import dayjs from 'dayjs'
 import isTodaysContest from './isTodaysContest'
 import Link from "next/link"
-import { TimeScoreLarge } from "../ui/client-components"
 import { Podium } from "./client"
 
 dayjs.extend(isTodaysContest)
@@ -21,9 +19,9 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
 
     const children = []
 
-    children.push(<p key="subtitle" className={formStyles.subtitle} style={styles.fullWidth}>
+    children.push(<Subtitle key="subtitle" style={styles.fullWidth}>
         Contest ends at 10PM eastern time
-    </p>)
+    </Subtitle>)
 
     if (todayScores.length === 0) {
         children.push(<p key="no-scores" style={styles.fullWidth}>No scores yet today</p>)
