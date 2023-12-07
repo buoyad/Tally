@@ -5,7 +5,7 @@ import formStyles from './form.module.css'
 import { useFormStatus } from 'react-dom'
 import { displaySeconds } from '@/app/lib/util'
 import { Tilt_Warp } from 'next/font/google'
-import { useTransition, animated } from '@react-spring/web'
+import { useTransition, animated, UseTransitionProps } from '@react-spring/web'
 import clsx from 'clsx'
 import { Box } from './components'
 
@@ -42,7 +42,7 @@ export function TimeScoreLarge({ score, className, style, placeholder }: { score
 
 function AnimatedText({ children, placeholder = ['0', ':', '0', '0', '.', '0'] }: { children: string, placeholder?: string[] }) {
     let chars = children.split('')
-    const commonConfig = {
+    const commonConfig: UseTransitionProps = {
         trail: 75,
         config: {
             mass: 1,

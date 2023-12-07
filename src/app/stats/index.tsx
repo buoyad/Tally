@@ -4,6 +4,8 @@ import formStyles from '@/app/ui/form.module.css'
 import dayjs, { PluginFunc } from 'dayjs'
 import isTodaysContest from './isTodaysContest'
 import Link from "next/link"
+import { TimeScoreLarge } from "../ui/client-components"
+import { Podium } from "./client"
 
 dayjs.extend(isTodaysContest)
 
@@ -19,12 +21,12 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
 
     const children = []
 
-    children.push(<p key="subtitle" className={formStyles.subtitle} style={scoreTableStyles.fullWidth}>
+    children.push(<p key="subtitle" className={formStyles.subtitle} style={styles.fullWidth}>
         Contest ends at 10PM eastern time
     </p>)
 
     if (todayScores.length === 0) {
-        children.push(<p key="no-scores" style={scoreTableStyles.fullWidth}>No scores yet today</p>)
+        children.push(<p key="no-scores" style={styles.fullWidth}>No scores yet today</p>)
     }
 
     const currentUserHasSubmittedScore = todayScores.some(s => s.user_id === loggedInUser?.id)
@@ -35,7 +37,7 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
             <Subheading key="score-heading">Score</Subheading>,
             todayScores.flatMap((s, idx) => [
                 <Ordinal key={`rank-${s.id}`} position={idx + 1} />,
-                <p key={`name-${s.id}`} style={s.user_id === loggedInUser?.id ? scoreTableStyles.fontWeightBold : {}}>{usersByID[s.user_id].name}</p>,
+                <p key={`name-${s.id}`} style={s.user_id === loggedInUser?.id ? styles.fontWeightBold : {}}>{usersByID[s.user_id].name}</p>,
                 <TimeScore key={`score-${s.id}`} score={s.score} />,
             ])
         )
@@ -62,23 +64,40 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
                 message = `${usersByID[winner.user_id].name} wins! For now...`
             }
         }
-        children.push(<p key="winner-message" style={scoreTableStyles.fullWidth}>{message}</p>)
+        children.push(<p key="winner-message" style={styles.fullWidth}>{message}</p>)
         if (currentUserIsParticipant && !currentUserHasSubmittedScore) {
-            children.push(<p key="submit-score" style={scoreTableStyles.fullWidth}><Link href="/score">Submit your score! Unseat {usersByID[winner.user_id].name}!</Link></p>)
+            children.push(<p key="submit-score" style={styles.fullWidth}><Link href="/score">Submit your score! Unseat {usersByID[winner.user_id].name}!</Link></p>)
         }
     } else if (currentUserIsParticipant && !currentUserHasSubmittedScore) {
-        children.push(<p key="submit-score" style={scoreTableStyles.fullWidth}><Link href="/score">Submit your score!</Link></p>)
+        children.push(<p key="submit-score" style={styles.fullWidth}><Link href="/score">Submit your score!</Link></p>)
     }
 
 
     return <Box style={{ width: '100%' }}>
-        <div style={scoreTableStyles.container}>
+        <div style={styles.container}>
             {children}
         </div>
     </Box>
 }
 
-const scoreTableStyles: { [key: string]: React.CSSProperties } = {
+type PodiumLeaderboardProps = {
+    userInfo: UserInfo | null,
+    scores: (Score & { user_name: string })[],
+}
+export function PodiumLeaderboard({ userInfo, scores }: PodiumLeaderboardProps) {
+    return (
+        <Box style={styles.container}>
+            {scores.length === 0 && <p style={styles.fullWidth}>No scores yet today</p>}
+            {scores.length > 0 && <div style={styles.fullWidth}><Podium userInfo={userInfo} scores={scores} /></div>}
+            {scores.slice(3).flatMap((s, idx) => [
+                <Ordinal position={idx + 4} key={`ordinal-${idx}`} />,
+                <p key={`name=${idx}`} style={styles.username}>{s.user_name}</p>,
+                <TimeScore score={s.score} key={`score-${idx}`} />,
+            ])}
+        </Box>)
+}
+
+const styles: { [key: string]: React.CSSProperties } = {
     container: {
         display: 'grid',
         gridTemplateColumns: '.5fr 3fr 1fr',
@@ -86,11 +105,13 @@ const scoreTableStyles: { [key: string]: React.CSSProperties } = {
         width: '100%',
         alignItems: 'start',
         justifyItems: 'start',
+        whiteSpace: 'nowrap'
     },
     justifySelfStart: { justifySelf: 'start' },
     fullWidth: {
         gridColumn: '1 / -1',
         justifySelf: 'start',
+        width: '100%',
     },
     divider: {
         gridColumn: '1 / -1',
@@ -100,5 +121,10 @@ const scoreTableStyles: { [key: string]: React.CSSProperties } = {
     },
     fontWeightBold: {
         fontWeight: 'bold'
+    },
+    username: {
+        width: '100%',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
     }
 }

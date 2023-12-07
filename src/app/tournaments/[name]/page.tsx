@@ -3,7 +3,7 @@ import { Box, Heading, Subheading } from "@/app/ui/components"
 import { redirect } from "next/navigation"
 import { InviteToTournamentForm, InviteRow, LeaveTournamentForm } from "./form"
 import { getLoggedInUser } from "@/app/lib/hooks"
-import { LeaderboardToday } from "./stats"
+import { LeaderboardToday } from "@/app/stats"
 
 export default async function Page({ params }: { params: { name: string } }) {
     const session = await getLoggedInUser()
