@@ -81,7 +81,7 @@ export const authOptions: AuthOptions = {
         async signIn(message) {
             const { isNewUser, user: { email } } = message
             if (isNewUser && email) {
-                const res = await db.createUser(email, email)
+                const res = await db.createUser(email, email.split("@")[0])
                 log.info(`created user ${email} with id ${res.id}`)
             }
         }
