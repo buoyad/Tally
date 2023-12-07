@@ -1,6 +1,11 @@
 import { Pool, QueryResult, types } from 'pg'
 import log from './log'
 import { UserInfo, Tournament, Invite, Score, SentEmail, SentEmailType, UserStats, PuzzleType } from './types'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import tz from 'dayjs/plugin/timezone'
+dayjs.extend(utc)
+dayjs.extend(tz)
 
 // don't transform DATE column type, just return string YYYY-MM-DD
 types.setTypeParser(types.builtins.DATE, (val) => val)
@@ -256,18 +261,20 @@ export const getUserScores = async (userID: number) => {
 }
 
 export const getUserStats = async (userID: number): Promise<UserStats> => {
+    const nyNow = dayjs().tz('America/New_York')
+    const recencyCutoff = dayjs().tz('America/New_York').year(nyNow.year()).month(nyNow.month()).date(nyNow.date()).hour(22).minute(0).second(0).millisecond(0).subtract(7, 'days')
     const res = await pool.query<{ user_id: number, puzzle_type: PuzzleType, avg: string, recent_avg: string, recent_scores: string, total_scores: string }>(`
         SELECT 
             scores.user_id, 
             scores.puzzle_type, 
             AVG(scores.score) AS avg, 
-            AVG(scores.score) FILTER (WHERE scores.for_day >= (NOW() - INTERVAL '7 days')) AS recent_avg,
-            COUNT(scores.score) FILTER (WHERE scores.for_day >= (NOW() - INTERVAL '7 days')) AS recent_scores,
+            AVG(scores.score) FILTER (WHERE scores.for_day >= $2) AS recent_avg,
+            COUNT(scores.score) FILTER (WHERE scores.for_day >= $2) AS recent_scores,
             COUNT(scores.score) AS total_scores
         FROM scores
         WHERE scores.user_id = $1
         GROUP BY scores.user_id, scores.puzzle_type
-    `, [userID])
+    `, [userID, recencyCutoff])
     const stats = res.rows.reduce((acc, row) => {
         acc[row.puzzle_type] = {
             avg: parseFloat(row.avg),
