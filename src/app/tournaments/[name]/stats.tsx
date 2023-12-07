@@ -1,5 +1,5 @@
 import { Score, UserInfo } from "@/app/lib/types"
-import { Box, Subheading, TimeScore } from "@/app/ui/components"
+import { Box, Subheading, TimeScore, Ordinal } from "@/app/ui/components"
 import formStyles from '@/app/ui/form.module.css'
 import dayjs, { PluginFunc } from 'dayjs'
 import isTodaysContest from './isTodaysContest'
@@ -12,24 +12,6 @@ type LeaderboardTodayProps = {
     usersByID: { [key: number]: { id: number, name: string } },
     loggedInUser: UserInfo | null,
     currentUserIsParticipant: boolean,
-}
-
-const Ordinal = ({ position }: { position: number }) => {
-    let suffix: string
-    switch (position) {
-        case 1:
-            suffix = 'st'
-            break
-        case 2:
-            suffix = 'nd'
-            break
-        case 3:
-            suffix = 'rd'
-            break
-        default:
-            suffix = 'th'
-    }
-    return <p style={{}}>{position}<sup>{suffix}</sup></p>
 }
 
 export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserIsParticipant }: LeaderboardTodayProps) {

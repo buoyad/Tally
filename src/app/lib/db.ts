@@ -291,6 +291,24 @@ export const getScoresForUsers = async (userIDs: number[]) => {
     return res.rows
 }
 
+export const getGlobalScores = async (type: PuzzleType) => {
+    const nyNow = dayjs().tz('America/New_York')
+    let recencyCutoff = nyNow.format('YYYY-MM-DD')
+    if (nyNow.hour() > 22) {
+        recencyCutoff = nyNow.add(1, 'day').format('YYYY-MM-DD')
+    }
+    const res = await pool.query<Score & { user_name: string }>(`
+        SELECT scores.*, userinfo.name AS user_name
+        FROM scores
+        INNER JOIN userinfo ON scores.user_id = userinfo.id
+        WHERE scores.puzzle_type = $1
+        AND scores.for_day = $2
+        ORDER BY scores.score ASC
+        LIMIT 10
+    `, [type, recencyCutoff])
+    return res.rows
+}
+
 export const getScore = async (scoreID: number) => {
     const res = await pool.query<Score>('SELECT * FROM scores WHERE id = $1', [scoreID])
     if (res.rows.length === 0) {

@@ -34,15 +34,14 @@ export function Button(props: ButtonProps) {
     </button>
 }
 
-export function TimeScoreLarge({ score, className, style }: { score: number, className?: string, style?: React.CSSProperties }) {
+export function TimeScoreLarge({ score, className, style, placeholder }: { score: number, className?: string, style?: React.CSSProperties, placeholder?: string[] }) {
     return <div className={clsx(styles.timeScore, styles.timeScoreLarge, timeScoreLargeFont.className, className)} style={style}>
-        <AnimatedText>{displaySeconds(score)}</AnimatedText>
+        <AnimatedText placeholder={placeholder}>{displaySeconds(score)}</AnimatedText>
     </div>
 }
 
-function AnimatedText({ children, placeholder = '0:00.0' }: { children: string, placeholder?: string }) {
+function AnimatedText({ children, placeholder = ['0', ':', '0', '0', '.', '0'] }: { children: string, placeholder?: string[] }) {
     let chars = children.split('')
-    let placeholderChars = placeholder.split('')
     const commonConfig = {
         trail: 75,
         config: {
@@ -63,12 +62,12 @@ function AnimatedText({ children, placeholder = '0:00.0' }: { children: string, 
     )
 
     const placeholderTransitions = useTransition(
-        placeholderChars,
+        placeholder,
         {
             from: { y: '0' },
             enter: { y: '1.2em' },
             leave: { y: '1.2em' },
-            keys: placeholderChars.map((_, idx) => `${idx}-placeholder`),
+            keys: placeholder.map((_, idx) => `${idx}-placeholder`),
             ...commonConfig,
         }
     )

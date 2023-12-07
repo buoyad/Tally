@@ -34,3 +34,21 @@ export function Box({ children, gap = 'small', style, row = false, className }: 
         {children}
     </div>
 }
+
+export const Ordinal = ({ position, style }: { position: number, style?: React.CSSProperties }) => {
+    let suffix: string
+    switch (position) {
+        case 1:
+            suffix = 'st'
+            break
+        case 2:
+            suffix = 'nd'
+            break
+        case 3:
+            suffix = 'rd'
+            break
+        default:
+            suffix = 'th'
+    }
+    return <p style={style}>{position}<sup>{suffix}</sup></p>
+}
