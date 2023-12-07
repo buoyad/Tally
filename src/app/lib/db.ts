@@ -35,7 +35,7 @@ export const changeUsername = async (id: number, newName: string) => {
         return res.rows[0]
     } catch (error) {
         if ((error as DBErrorInternal)?.code === "23505") {
-            throw new DBError("Username already exists")
+            throw new DBError("A user with that name already exists")
         } else {
             throw error
         }

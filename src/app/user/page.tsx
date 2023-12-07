@@ -4,7 +4,6 @@ import { ChangeUsernameForm, LogoutButton, InviteRow, ScoreTable, Message } from
 import { getLoggedInUser } from '../lib/hooks'
 import { getUserTournaments, getUserInvites, getUserScores, getUserStats } from '../lib/db'
 import Link from 'next/link'
-import dayjs from 'dayjs'
 
 export default async function Page({ searchParams }: { searchParams?: any }) {
     const { session, userInfo } = await getLoggedInUser(true)
