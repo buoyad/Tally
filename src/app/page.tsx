@@ -16,7 +16,7 @@ export default async function Home() {
         <p>Tally is a score keeper for <a href="https://www.nytimes.com/crosswords" target="_blank">The New York Times mini crossword puzzle</a>.</p>
         <p><Link href="/tournaments">Browse tournaments</Link> or <Link href="/tournaments/create">create</Link> one of your own.</p>
         {!!session && <Subheading><Link href="/score">Register today&apos;s score</Link></Subheading>}
-        <Box style={styles.container}>
+        {/* <Box style={styles.container}>
           <Subheading style={styles.fullWidth}>Today&apos;s fastest mini solves</Subheading>
           {globalLeaderboard.length === 0 && <p style={styles.fullWidth}>No scores yet today</p>}
           {globalLeaderboard.length > 0 && [
@@ -29,7 +29,7 @@ export default async function Home() {
             <p key={`name=${idx}`}>{s.user_name}</p>,
             <TimeScore score={s.score} key={`score-${idx}`} />,
           ])}
-        </Box>
+        </Box> */}
       </Box>
     </main>
   )
