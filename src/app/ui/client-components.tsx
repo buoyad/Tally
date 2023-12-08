@@ -9,7 +9,7 @@ import { useTransition, animated, UseTransitionProps } from '@react-spring/web'
 import clsx from 'clsx'
 import { Box } from './components'
 
-const timeScoreLargeFont = Tilt_Warp({ subsets: ['latin'], weight: '400' })
+export const timeScoreLargeFont = Tilt_Warp({ subsets: ['latin'], weight: '400' })
 
 type ButtonProps = {
     disabled?: boolean

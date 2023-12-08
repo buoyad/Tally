@@ -286,6 +286,60 @@ export const getUserStats = async (userID: number): Promise<UserStats> => {
     return stats
 }
 
+// returns `[maxStreak, currentStreak]`. If `currentStreak` is undefined, then there is no current streak
+export const getUserStreak = async (userID: number, type: PuzzleType) => {
+    // get max streak and current streak for puzzle type
+    // a current streak is one that ends >= yesterday, if it ended yesterday the user is still considered to be on that streak
+    const nyNow = dayjs().tz('America/New_York')
+    let currentStreakCutoff = nyNow
+    if (nyNow.hour() < 22) {
+        currentStreakCutoff = currentStreakCutoff.subtract(1, 'day')
+    }
+    const res = await pool.query<{ start_date: string, end_date: string, length: number, current: boolean }>(
+        `
+        WITH diff AS (
+            SELECT 
+                user_id, 
+                puzzle_type, 
+                for_day, 
+                for_day - LAG(for_day, 1, for_day) OVER (PARTITION BY user_id, puzzle_type ORDER BY for_day) as diff
+            FROM scores
+            WHERE user_id = $1 AND puzzle_type = $2
+        ),
+        groups AS (
+            SELECT 
+                user_id, 
+                puzzle_type,
+                for_day, 
+                SUM(CASE WHEN diff = 1 THEN 0 ELSE 1 END) OVER (PARTITION BY user_id, puzzle_type ORDER BY for_day) as group_id
+            FROM diff
+        ),
+        lengths AS (
+            SELECT 
+                user_id, 
+                puzzle_type, 
+                group_id, 
+                MAX(for_day) - MIN(for_day) + 1 as length, 
+                MIN(for_day) as start_date, 
+                MAX(for_day) as end_date
+            FROM groups
+            GROUP BY user_id, puzzle_type, group_id
+        )
+        SELECT 
+            start_date, 
+            end_date, 
+            length,
+            end_date >= $3 AS current
+        FROM lengths
+        WHERE length = (SELECT MAX(length) FROM lengths) OR
+            end_date >= $3
+        ORDER BY current ASC
+        `, [userID, type, currentStreakCutoff]
+    )
+    console.log(res.rows)
+    return res.rows
+}
+
 export const getScoresForUsers = async (userIDs: number[]) => {
     const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = ANY($1) ORDER BY for_day DESC, score ASC', [userIDs])
     return res.rows

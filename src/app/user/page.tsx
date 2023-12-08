@@ -2,8 +2,11 @@ import React from 'react'
 import { Box, Heading, Subheading, TimeScore } from '@/app/ui/components'
 import { ChangeUsernameForm, LogoutButton, InviteRow, ScoreTable, Message } from './form'
 import { getLoggedInUser } from '../lib/hooks'
-import { getUserTournaments, getUserInvites, getUserScores, getUserStats } from '../lib/db'
+import { getUserTournaments, getUserInvites, getUserScores, getUserStats, getUserStreak } from '../lib/db'
 import Link from 'next/link'
+import { PuzzleType } from '../lib/types'
+import { AnimatedCounter } from '../stats/client'
+import { displayScoreDate } from '../lib/util'
 
 export default async function Page({ searchParams }: { searchParams?: any }) {
     const { session, userInfo } = await getLoggedInUser(true)
@@ -23,6 +26,11 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
             percentChange = Math.abs(percentChange)
         }
     }
+    const hasMiniStats = !!avg
+
+    const streaks = await getUserStreak(userInfo.id, PuzzleType.mini)
+    const currentMiniStreak = streaks.find(s => s.current)
+    const maxMiniStreak = streaks.find(s => !s.current) || currentMiniStreak
 
     return <main style={styles.container}>
         <Message userInfo={userInfo} />
@@ -30,10 +38,10 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
             <Heading>My account</Heading>
             <p>Welcome back {userInfo.name}</p>
         </Box>
-        {!!avg && <>
+        {hasMiniStats && <>
             <Box>
                 <Subheading>Average score on the mini</Subheading>
-                <TimeScore large={true} score={avg} />
+                <TimeScore large={true} score={avg!} />
             </Box>
             <Box>
                 <Subheading>Trends</Subheading>
@@ -41,6 +49,24 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
                 {hasTrends &&
                     <p>Over the last week, your average solve time was <TimeScore score={recentAvg || 0} />, which is {' '}
                         {percentChange?.toFixed(1)}% {percentChangeSign === 'pos' ? <strong>faster</strong> : <strong>slower</strong>} than your lifetime average.</p>}
+            </Box>
+            <Box>
+                <Subheading>Current streak</Subheading>
+                <Box row={true} style={{ alignItems: 'baseline' }}>
+                    <AnimatedCounter value={currentMiniStreak?.length ?? 0} />
+                    <p>{currentMiniStreak?.length === 1 ? 'day' : 'days'}</p>
+                </Box>
+                {!currentMiniStreak && <p>Get a streak going!</p>}
+                {currentMiniStreak && <p>started on {displayScoreDate(currentMiniStreak.start_date)}</p>}
+            </Box>
+            <Box>
+                <Subheading>Longest streak</Subheading>
+                <Box row={true} style={{ alignItems: 'baseline' }}>
+                    <AnimatedCounter value={(maxMiniStreak?.length || currentMiniStreak?.length) ?? 0} />
+                    <p>days</p>
+                </Box>
+                {maxMiniStreak && maxMiniStreak.length !== currentMiniStreak?.length && <p>{displayScoreDate(maxMiniStreak.start_date)} - {displayScoreDate(maxMiniStreak.end_date)}</p>}
+                {maxMiniStreak?.length === currentMiniStreak?.length && <p>You&apos;re in your longest streak! Keep it going!</p>}
             </Box>
         </>}
         <Box>

@@ -1,9 +1,10 @@
 'use client'
 import * as React from 'react'
-import { animated, useSprings } from "@react-spring/web"
+import { animated, useSpring, useSprings } from "@react-spring/web"
 import { Score, UserInfo } from "../lib/types"
 import { Box, TimeScore } from '../ui/components'
 import Link from 'next/link'
+import { timeScoreLargeFont } from '../ui/client-components'
 
 const podiumColors = ['#4d88f9', '#d7d7d7', '#824a02']
 
@@ -80,6 +81,23 @@ const Placer = ({ username, score, pos, style }: { username: string, score: numb
 }
 
 const AnimatedPlacer = animated(Placer)
+
+export const AnimatedCounter = ({ value }: { value: number }) => {
+    const { number, opacity } = useSpring({
+        from: { opacity: .5, number: 0 },
+        number: value,
+        opacity: 1,
+        delay: 100,
+        config: {
+            round: 1,
+            mass: 100,
+            tension: 100,
+            friction: 60,
+            duration: Math.log2(value) * 200,
+        }
+    });
+    return <animated.p className={timeScoreLargeFont.className} style={{ fontSize: '64px', opacity }}>{number}</animated.p>
+}
 
 const styles: { [key: string]: React.CSSProperties } = {
     podiumContainer: {

@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import dayjs from 'dayjs'
 import isToday from 'dayjs/plugin/isToday'
+import { displayScoreDate } from '../lib/util'
 
 dayjs.extend(isToday)
 
@@ -107,15 +108,6 @@ export function ScoreTable({ scores, userID }: { scores: Score[], userID: number
             <ScoreRow key={s.id} score={s} last={idx === scores.length - 1} />
         )}
     </div>
-}
-
-const displayScoreDate = (date: string) => {
-    const day = dayjs(date)
-    let fmt = ''
-    if (day.year() === dayjs().year()) fmt += day.format('dddd, MMMM D')
-    else fmt += day.format('dddd, MMMM D YYYY')
-
-    return fmt
 }
 
 function ScoreRow({ score, last }: { score: Score, last: boolean }) {
