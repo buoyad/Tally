@@ -294,7 +294,7 @@ export const getScoresForUsers = async (userIDs: number[]) => {
 export const getGlobalTopScores = async (type: PuzzleType) => {
     const nyNow = dayjs().tz('America/New_York')
     let recencyCutoff = nyNow.format('YYYY-MM-DD')
-    if (nyNow.hour() > 22) {
+    if (nyNow.hour() >= 22) {
         recencyCutoff = nyNow.add(1, 'day').format('YYYY-MM-DD')
     }
     const res = await pool.query<Score & { user_name: string }>(`

@@ -21,7 +21,7 @@ const timeRegex = /(\d{1,2}):(\d{2})/g
 const getDefaultDay = () => {
     const timeInNY = dayjs().tz('America/New_York')
     let currentlyPublishedDay = timeInNY.format('YYYY-MM-DD')
-    if (timeInNY.hour() > 22) {
+    if (timeInNY.hour() >= 22) {
         currentlyPublishedDay = timeInNY.add(1, 'day').format('YYYY-MM-DD')
     }
     return currentlyPublishedDay
