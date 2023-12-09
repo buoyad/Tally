@@ -84,7 +84,7 @@ type PodiumLeaderboardProps = {
 }
 export function PodiumLeaderboard({ userInfo, scores }: PodiumLeaderboardProps) {
     return (
-        <Box style={styles.container}>
+        <Box style={{ ...styles.container, ...styles.whiteSpaceNowrap }}>
             {scores.length === 0 && <p style={styles.fullWidth}>No scores yet today</p>}
             {scores.length > 0 && <div style={styles.fullWidth}><Podium userInfo={userInfo} scores={scores} /></div>}
             {scores.slice(3).flatMap((s, idx) => [
@@ -102,7 +102,9 @@ const styles: { [key: string]: React.CSSProperties } = {
         gap: '.5rem',
         width: '100%',
         alignItems: 'start',
-        justifyItems: 'start',
+        justifyItems: 'start'
+    },
+    whiteSpaceNowrap: {
         whiteSpace: 'nowrap'
     },
     justifySelfStart: { justifySelf: 'start' },
