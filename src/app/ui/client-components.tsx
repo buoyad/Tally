@@ -5,7 +5,7 @@ import formStyles from './form.module.css'
 import { useFormStatus } from 'react-dom'
 import { displaySeconds } from '@/app/lib/util'
 import { Tilt_Warp } from 'next/font/google'
-import { useTransition, animated, UseTransitionProps } from '@react-spring/web'
+import { useTransition, animated, UseTransitionProps, useResize, useSpring } from '@react-spring/web'
 import clsx from 'clsx'
 import { Box } from './components'
 
@@ -79,4 +79,44 @@ function AnimatedText({ children, placeholder = ['0', ':', '0', '0', '.', '0'] }
         </Box>
         {placeholderTransitions((style, item, _, idx) => <animated.span style={{ display: 'inline-block', opacity: 0.5, ...style }}>{item}</animated.span>)}
     </Box>
+}
+
+type DropdownProps = {
+    items: { content: React.ReactNode, onClick?: () => void }[]
+    label: React.ReactNode
+}
+export const Dropdown = ({ items, label }: DropdownProps) => {
+    const [isOpen, setIsOpen] = React.useState(false)
+    const menu = React.useRef<HTMLDivElement>(null)
+
+    const trigger = () => setIsOpen(!isOpen)
+    const handleOutsideClicks = (e: MouseEvent) => menu.current && isOpen && !menu.current.contains(e.target as Node) && setIsOpen(false)
+    React.useEffect(() => {
+        document.addEventListener('mousedown', handleOutsideClicks)
+        return () => document.removeEventListener('mousedown', handleOutsideClicks)
+    })
+
+    // const openAnimation = useSpring()
+
+    React.useEffect(() => {
+
+    }, [isOpen])
+
+    return <div style={{ position: 'relative' }}>
+        <div onClick={trigger} style={{ cursor: 'pointer', rotate: '90deg' }}>{label}</div>
+        {isOpen && <animated.div style={{ ...dropdownStyles.container }} ref={menu}>
+            {items.map((item, idx) => <div key={idx} onClick={item.onClick}>{item.content}</div>)}
+        </animated.div>}
+    </div>
+}
+
+const dropdownStyles: { [key: string]: React.CSSProperties } = {
+    container: {
+        position: 'absolute',
+        right: 0,
+        minWidth: '150px',
+        padding: '12px',
+        background: 'white',
+        border: '2px solid black',
+    }
 }
