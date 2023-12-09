@@ -18,8 +18,9 @@ export async function createTournament(_: any, formData: FormData) {
         return { message: "You must be logged in to create a tournament" }
     }
     const rawFormData = { name: formData.get("tournamentName"), userID: formData.get('userID') }
+    let data
     try {
-        const data = createTournamentSchema.parse(rawFormData)
+        data = createTournamentSchema.parse(rawFormData)
         await db.createTournament(data.name, data.userID)
         revalidatePath('/user')
     } catch (error) {
@@ -30,8 +31,10 @@ export async function createTournament(_: any, formData: FormData) {
         }
         return { message: 'An unknown error occurred' }
     }
-    // TODO: redirect to tournament page
-    redirect('/user')
+
+    revalidatePath('/user')
+    revalidatePath('/tournaments')
+    redirect(`/tournaments/${data.name}`)
 }
 
 const changeUsernameSchema = validation.z.object({
@@ -61,6 +64,8 @@ export async function changeUsername(_: any, formData: FormData) {
         return { message: 'An unknown error occurred' }
     }
 
+    revalidatePath('/')
+    revalidatePath('/tournaments/[name]', 'page') // just invalidate all tournaments, in the future we can invalidate only the ones the user is in
     revalidatePath('/user')
 }
 
@@ -104,7 +109,10 @@ export async function inviteToTournament(_: any, formData: FormData) {
         log.error('inviteToTournament: unknown error: ' + error)
         return { message: 'An unknown error occurred' }
     } finally {
-        if (data?.tournamentName) revalidatePath(`/tournaments/${data.tournamentName}`)
+        if (data?.tournamentName) {
+            revalidatePath(`/tournaments/${data.tournamentName}`)
+            revalidatePath(`/user`)
+        }
     }
 
 }
@@ -147,6 +155,7 @@ export async function removeInvite(_: any, formData: FormData) {
         return { message: 'An unknown error occurred' }
     }
 
+    revalidatePath(`/user`)
     revalidatePath(`/tournaments/${data.tournamentName}`)
 }
 
@@ -186,7 +195,9 @@ export async function acceptInvite(_: any, formData: FormData) {
     }
 
     revalidatePath(`/user`)
-    redirect('/tournaments/' + tournamentName)
+    revalidatePath('/tournaments')
+    revalidatePath(`/tournaments/${tournamentName}`)
+    redirect(`/tournaments/${tournamentName}`)
 }
 
 const leaveTournamentSchema = validation.z.object({
@@ -219,6 +230,7 @@ export async function leaveTournament(_: any, formData: FormData) {
     }
 
     revalidatePath(`/user`)
+    revalidatePath('/tournaments')
     revalidatePath(`/tournaments/${data.tournamentName}`)
 }
 
@@ -257,7 +269,9 @@ export async function submitScore(_: any, formData: FormData) {
         return { message: 'An unknown error occurred' }
     }
 
+    revalidatePath('/')
     revalidatePath(`/user`)
+    revalidatePath(`/tournaments/[name]`, 'page')
 
     if (!data.submitAnother) {
         redirect('/user?message=score')
@@ -296,5 +310,7 @@ export async function deleteScore(_: any, formData: FormData) {
         return { message: 'An unknown error occurred' }
     }
 
+    revalidatePath('/')
+    revalidatePath('/tournaments/[name]', 'page')
     revalidatePath(`/user`)
 }
