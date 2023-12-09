@@ -4,6 +4,7 @@ import Nav from './nav'
 import Footer from './footer'
 import './globals.css'
 import { getLoggedInUser } from './lib/hooks'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const lora = Lora({ subsets: ['latin'] }) // TODO: try some other options https://fonts.google.com/?stroke=Serif&vfonly=true&preview.text=Tally
 
@@ -43,6 +44,7 @@ export default async function RootLayout({
         <Nav userInfo={userInfo} />
         {children}
         <Footer />
+        <SpeedInsights />
       </body>
     </html>
   )

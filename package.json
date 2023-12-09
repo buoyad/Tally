@@ -14,6 +14,7 @@
   "dependencies": {
     "@auth/pg-adapter": "^0.2.7",
     "@react-spring/web": "^9.7.3",
+    "@vercel/speed-insights": "^1.0.1",
     "clsx": "^2.0.0",
     "dayjs": "^1.11.10",
     "db-migrate": "^0.11.14",
