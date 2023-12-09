@@ -4,6 +4,7 @@ import { UserInfo, Tournament, Invite, Score, SentEmail, SentEmailType, UserStat
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import tz from 'dayjs/plugin/timezone'
+import { unstable_cache as cache } from 'next/cache'
 dayjs.extend(utc)
 dayjs.extend(tz)
 
@@ -25,16 +26,19 @@ export class DBError extends Error {
 }
 
 export const createUser = async (email: string, name: string) => {
+    log.info('createUser: %s', email)
     const res = await pool.query<UserInfo>(`INSERT INTO userinfo (email, name) VALUES (LOWER($1), $2) RETURNING *`, [email, name])
     return res.rows[0]
 }
 
-export const getUser = async (email: string) => {
+export const getUser = cache(async (email: string) => {
+    log.info('cache miss: getUser %s', email)
     const res = await pool.query<UserInfo>(`SELECT * FROM userinfo WHERE LOWER(email) = LOWER($1)`, [email])
     return res.rows[0]
-}
+})
 
 export const changeUsername = async (id: number, newName: string) => {
+    log.info('changeUsername: %d %s', id, newName)
     try {
         const res = await pool.query<UserInfo>(`UPDATE userinfo SET name = $1 WHERE id = $2 RETURNING *`, [newName, id])
         return res.rows[0]
@@ -48,6 +52,7 @@ export const changeUsername = async (id: number, newName: string) => {
 }
 
 export const createTournament = async (name: string, userID: number) => {
+    log.info('createTournament: %s', name)
     const client = await pool.connect()
     try {
         await client.query('BEGIN')
@@ -68,6 +73,7 @@ export const createTournament = async (name: string, userID: number) => {
 }
 
 export const leaveTournament = async (tournamentID: number, userID: number) => {
+    log.info('leaveTournament: %d %d', tournamentID, userID)
     const client = await pool.connect()
     try {
         await client.query('BEGIN')
@@ -86,12 +92,14 @@ export const leaveTournament = async (tournamentID: number, userID: number) => {
     }
 }
 
-export const getUserTournaments = async (userID: number) => {
+export const getUserTournaments = cache(async (userID: number) => {
+    log.info('cache miss: getUserTournaments %d', userID)
     const res = await pool.query<Tournament>(`SELECT * FROM tournaments WHERE id IN (SELECT tournament_id FROM user_tournament WHERE user_id = $1)`, [userID])
     return res.rows
-}
+})
 
-export const getUserInvites = async (userEmail: string) => {
+export const getUserInvites = cache(async (userEmail: string) => {
+    log.info('cache miss: getUserInvites %s', userEmail)
     const res = await pool.query<Invite & { inviter_name: string, tournament_name: string }>(
         `SELECT tournament_invites.id, 
             tournament_invites.tournament_id, 
@@ -104,9 +112,10 @@ export const getUserInvites = async (userEmail: string) => {
         [userEmail]
     )
     return res.rows
-}
+})
 
-export const getPopularTournaments = async () => {
+export const getPopularTournaments = cache(async () => {
+    log.info('cache miss: getPopularTournaments')
     const res = await pool.query<Tournament & { num_participants: number }>(`
         SELECT tournaments.id, tournaments.name, tournaments.created_at, COUNT(user_tournament.user_id)::int AS num_participants
         FROM tournaments
@@ -116,9 +125,10 @@ export const getPopularTournaments = async () => {
         LIMIT 10
     `)
     return res.rows
-}
+})
 
-export const getTournamentInfo = async (tournamentName: string) => {
+export const getTournamentInfo = cache(async (tournamentName: string) => {
+    log.info('cache miss: getTournamentInfo %s', tournamentName)
     try {
         const users = await pool.query<{ id: number, name: string, tournament_created_at: Date, user_id: number, user_name: string, user_email: string, user_created_at: Date }>(
             `SELECT tournaments.id, 
@@ -150,9 +160,10 @@ export const getTournamentInfo = async (tournamentName: string) => {
         log.error('db.getTournamentInfo: ' + error)
         return null
     }
-}
+})
 
 export const addTournamentInvite = async (inviterUserID: number, tournamentID: number, inviteeEmail: string) => {
+    log.info('addTournamentInvite: %s', inviteeEmail)
     const client = await pool.connect()
     try {
         await client.query('BEGIN')
@@ -186,10 +197,12 @@ export const addTournamentInvite = async (inviterUserID: number, tournamentID: n
 }
 
 export const removeTournamentInvite = async (inviteID: number) => {
+    log.info('removeTournamentInvite: %d', inviteID)
     await pool.query('DELETE FROM tournament_invites WHERE id = $1', [inviteID])
 }
 
 export const acceptTournamentInvite = async (inviteID: number) => {
+    log.info('acceptTournamentInvite: %d', inviteID)
     const client = await pool.connect()
     try {
         await client.query('BEGIN')
@@ -220,12 +233,14 @@ export const acceptTournamentInvite = async (inviteID: number) => {
     }
 }
 
-export const getTournamentInvites = async (tournamentID: number) => {
+export const getTournamentInvites = cache(async (tournamentID: number) => {
+    log.info('cache miss: getTournamentInvites %d', tournamentID)
     const res = await pool.query<Invite>(`SELECT * FROM tournament_invites WHERE tournament_id = $1`, [tournamentID])
     return res.rows
-}
+})
 
 export const getTournamentInvite = async (inviteID: number) => {
+    log.info('getTournamentInvite: %d', inviteID)
     const res = await pool.query<Invite & { tournament_name: string }>(`
         SELECT 
             tournament_invites.id, 
@@ -244,6 +259,7 @@ export const getTournamentInvite = async (inviteID: number) => {
 }
 
 export const addScore = async (userID: number, date: string, score: number, type: 'mini' | 'biggie') => {
+    log.info('addScore: %d %s %d %s', userID, date, score, type)
     try {
         await pool.query('INSERT INTO scores (user_id, for_day, score, puzzle_type) VALUES ($1, $2, $3, $4)', [userID, date, score, type])
     } catch (error) {
@@ -255,12 +271,14 @@ export const addScore = async (userID: number, date: string, score: number, type
     }
 }
 
-export const getUserScores = async (userID: number) => {
+export const getUserScores = cache(async (userID: number) => {
+    log.info('cache miss: getUserScores %d', userID)
     const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = $1 ORDER BY for_day DESC', [userID])
     return res.rows
-}
+})
 
-export const getUserStats = async (userID: number): Promise<UserStats> => {
+export const getUserStats = cache(async (userID: number): Promise<UserStats> => {
+    log.info('cache miss: getUserStats %d', userID)
     const nyNow = dayjs().tz('America/New_York')
     const recencyCutoff = dayjs().tz('America/New_York').year(nyNow.year()).month(nyNow.month()).date(nyNow.date()).hour(22).minute(0).second(0).millisecond(0).subtract(7, 'days')
     const res = await pool.query<{ user_id: number, puzzle_type: PuzzleType, avg: string, recent_avg: string, recent_scores: string, total_scores: string }>(`
@@ -284,10 +302,11 @@ export const getUserStats = async (userID: number): Promise<UserStats> => {
         return acc
     }, {} as UserStats)
     return stats
-}
+})
 
 // returns `[maxStreak, currentStreak]`. If `currentStreak` is undefined, then there is no current streak
-export const getUserStreak = async (userID: number, type: PuzzleType) => {
+export const getUserStreak = cache(async (userID: number, type: PuzzleType) => {
+    log.info('cache miss: getUserStreak %d %s', userID, type)
     // get max streak and current streak for puzzle type
     // a current streak is one that ends >= yesterday, if it ended yesterday the user is still considered to be on that streak
     const nyNow = dayjs().tz('America/New_York')
@@ -336,16 +355,17 @@ export const getUserStreak = async (userID: number, type: PuzzleType) => {
         ORDER BY current ASC
         `, [userID, type, currentStreakCutoff]
     )
-    console.log(res.rows)
     return res.rows
-}
+})
 
-export const getScoresForUsers = async (userIDs: number[]) => {
+export const getScoresForUsers = cache(async (userIDs: number[]) => {
+    log.info('cache miss: getScoresForUsers %s', userIDs.join(','))
     const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = ANY($1) ORDER BY for_day DESC, score ASC', [userIDs])
     return res.rows
-}
+})
 
-export const getGlobalTopScores = async (type: PuzzleType) => {
+export const getGlobalTopScores = cache(async (type: PuzzleType) => {
+    log.info('cache miss: getGlobalTopScores %s', type)
     const nyNow = dayjs().tz('America/New_York')
     let recencyCutoff = nyNow.format('YYYY-MM-DD')
     if (nyNow.hour() >= 22) {
@@ -361,9 +381,10 @@ export const getGlobalTopScores = async (type: PuzzleType) => {
         LIMIT 10
     `, [type, recencyCutoff])
     return res.rows
-}
+})
 
 export const getScore = async (scoreID: number) => {
+    log.info('getScore: %d', scoreID)
     const res = await pool.query<Score>('SELECT * FROM scores WHERE id = $1', [scoreID])
     if (res.rows.length === 0) {
         throw new DBError("Score does not exist")
@@ -372,6 +393,7 @@ export const getScore = async (scoreID: number) => {
 }
 
 export const deleteScore = async (scoreID: number) => {
+    log.info('deleteScore: %d', scoreID)
     await pool.query('DELETE FROM scores WHERE id = $1', [scoreID])
 }
 
