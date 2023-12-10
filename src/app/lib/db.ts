@@ -353,7 +353,7 @@ export const getUserStreak = cache(async (userID: number, type: PuzzleType) => {
         WHERE length = (SELECT MAX(length) FROM lengths) OR
             end_date >= $3
         ORDER BY current ASC
-        `, [userID, type, currentStreakCutoff]
+        `, [userID, type, currentStreakCutoff.format('YYYY-MM-DD')]
     )
     return res.rows
 })
@@ -380,6 +380,97 @@ export const getGlobalTopScores = cache(async (type: PuzzleType) => {
         ORDER BY scores.score ASC
         LIMIT 10
     `, [type, recencyCutoff])
+    return res.rows
+})
+
+export const getGlobalTopPerformers = cache(async (type: PuzzleType, timePeriodDays?: number, minScoreCount: number = 10) => {
+    log.info('cache miss: getGlobalTopPerformers %s %s', type, timePeriodDays || 'all time')
+    let timePeriodCutoff
+    if (timePeriodDays) {
+        const nyNow = dayjs().tz('America/New_York')
+        timePeriodCutoff = nyNow.subtract(timePeriodDays, 'day').format('YYYY-MM-DD')
+    }
+    let res: QueryResult<{ avg_score: number, score_count: number, user_name: string }>
+    if (timePeriodCutoff) {
+        res = await pool.query<{ avg_score: number, score_count: number, user_name: string }>(`
+            SELECT 
+                AVG(scores.score) AS avg_score,
+                COUNT(scores.score) AS score_count,
+                userinfo.name AS user_name
+            FROM scores
+            INNER JOIN userinfo ON scores.user_id = userinfo.id
+            WHERE scores.puzzle_type = $1
+            AND scores.for_day >= $2
+            GROUP BY scores.user_id, userinfo.name
+            HAVING COUNT(scores.score) > $3
+            ORDER BY avg_score ASC
+            LIMIT 10
+        `, [type, timePeriodCutoff, minScoreCount])
+    } else {
+        res = await pool.query<{ avg_score: number, score_count: number, user_name: string }>(`
+            SELECT 
+                AVG(scores.score) AS avg_score,
+                COUNT(scores.score) AS score_count,
+                userinfo.name AS user_name
+            FROM scores
+            INNER JOIN userinfo ON scores.user_id = userinfo.id
+            WHERE scores.puzzle_type = $1
+            GROUP BY scores.user_id, userinfo.name
+            HAVING COUNT(scores.score) > $2
+            ORDER BY avg_score ASC
+            LIMIT 10
+        `, [type, minScoreCount])
+    }
+    return res.rows
+})
+
+export const getLongestStreaks = cache(async (type: PuzzleType) => {
+    log.info('cache miss: getLongestStreaks %s', type)
+    // a current streak is one that ends >= yesterday, if it ended yesterday the user is still considered to be on that streak
+    const nyNow = dayjs().tz('America/New_York')
+    let currentStreakCutoff = nyNow
+    if (nyNow.hour() < 22) {
+        currentStreakCutoff = currentStreakCutoff.subtract(1, 'day')
+    }
+    const res = await pool.query<{ user_name: string, length: number }>(`
+        WITH diff AS (
+            SELECT 
+                user_id, 
+                puzzle_type, 
+                for_day, 
+                for_day - LAG(for_day, 1, for_day) OVER (PARTITION BY user_id, puzzle_type ORDER BY for_day) as diff
+            FROM scores
+            WHERE puzzle_type = $1
+        ),
+        groups AS (
+            SELECT 
+                user_id, 
+                puzzle_type,
+                for_day, 
+                SUM(CASE WHEN diff = 1 THEN 0 ELSE 1 END) OVER (PARTITION BY user_id, puzzle_type ORDER BY for_day) as group_id
+            FROM diff
+        ),
+        lengths AS (
+            SELECT 
+                user_id, 
+                puzzle_type, 
+                group_id, 
+                MAX(for_day) - MIN(for_day) + 1 as length, 
+                MIN(for_day) as start_date, 
+                MAX(for_day) as end_date
+            FROM groups
+            GROUP BY user_id, puzzle_type, group_id
+        )
+        SELECT 
+            userinfo.name AS user_name,
+            MAX(length) AS length
+        FROM lengths
+        INNER JOIN userinfo ON lengths.user_id = userinfo.id
+        WHERE end_date >= $2
+        GROUP BY lengths.user_id, userinfo.name
+        ORDER BY length DESC
+        LIMIT 10
+    `, [type, currentStreakCutoff.format('YYYY-MM-DD')])
     return res.rows
 })
 

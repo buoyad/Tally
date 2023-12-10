@@ -83,7 +83,7 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
             <Subheading>Recent scores</Subheading>
             <ScoreTable scores={scores.slice(0, 10)} userID={userInfo.id} />
         </Box>
-        <Box style={styles.placeContentStart}>
+        <Box>
             <ChangeUsernameForm id={userInfo.id} username={userInfo.name} />
         </Box>
         <Box>
@@ -101,7 +101,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     fullWidth: {
         gridColumn: '1 / -1'
     },
-    placeContentStart: {
-        placeContent: 'start'
-    }
 }
