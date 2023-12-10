@@ -4,9 +4,19 @@ import { UserInfo, Tournament, Invite, Score, SentEmail, SentEmailType, UserStat
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import tz from 'dayjs/plugin/timezone'
-import { unstable_cache as cache } from 'next/cache'
+import { unstable_cache as _cache } from 'next/cache'
 dayjs.extend(utc)
 dayjs.extend(tz)
+
+const skipCache = process.env.SKIP_CACHE === "true"
+
+type Callback = (...args: any[]) => Promise<any>;
+function cache<T extends Callback>(cb: T, keyParts?: string[], options?: {
+    revalidate?: number | false;
+    tags?: string[];
+}): T {
+    return skipCache ? cb : _cache(cb, keyParts, options)
+};
 
 // don't transform DATE column type, just return string YYYY-MM-DD
 types.setTypeParser(types.builtins.DATE, (val) => val)
@@ -371,6 +381,7 @@ export const getGlobalTopScores = cache(async (type: PuzzleType) => {
     if (nyNow.hour() >= 22) {
         recencyCutoff = nyNow.add(1, 'day').format('YYYY-MM-DD')
     }
+
     const res = await pool.query<Score & { user_name: string }>(`
         SELECT scores.*, userinfo.name AS user_name
         FROM scores
