@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './components.module.css'
 import formStyles from './form.module.css'
+import loadingStyles from './loading.module.css'
 import clsx from 'clsx'
 import { Baloo_2 } from 'next/font/google'
 import { TimeScoreLarge } from './client-components'
@@ -23,6 +24,14 @@ export function Subtitle({ children, style }: { children: React.ReactNode, style
 export function TimeScore({ score, className, style, large }: { score: number, className?: string, style?: React.CSSProperties, large?: boolean }) {
     if (large) return <TimeScoreLarge score={score} className={className} style={style} />
     return <span className={clsx(styles.timeScore, timeScoreFont.className, className)} style={style}>{displaySeconds(score)}</span>
+}
+
+export function LoadingIndicator({ size = 'small' }: { size?: 'small' | 'large' }) {
+    return <div className={clsx(loadingStyles.loading_container, loadingStyles[`loading_container_${size}`])}>
+        <div className={loadingStyles.loading_box}>
+            <div></div><div></div><div></div><div></div>
+        </div>
+    </div>
 }
 
 type BoxProps = {

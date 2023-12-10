@@ -1,9 +1,10 @@
-import { Score, UserInfo } from "@/app/lib/types"
-import { Box, Subheading, TimeScore, Ordinal, Subtitle } from "@/app/ui/components"
+import { PuzzleType, Score, UserInfo } from "@/app/lib/types"
+import { Box, Subheading, TimeScore, Ordinal, Subtitle, LoadingIndicator } from "@/app/ui/components"
 import dayjs from 'dayjs'
 import isTodaysContest from './isTodaysContest'
 import Link from "next/link"
 import { Podium } from "./client"
+import { getGlobalTopScores } from "../lib/db"
 
 dayjs.extend(isTodaysContest)
 
@@ -78,20 +79,24 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
     </Box>
 }
 
-type PodiumLeaderboardProps = {
-    userInfo: UserInfo | null,
-    scores: (Score & { user_name: string })[],
-}
-export function PodiumLeaderboard({ userInfo, scores }: PodiumLeaderboardProps) {
+export async function PodiumLeaderboard() {
+    const scores = await getGlobalTopScores(PuzzleType.mini)
     return (
         <Box style={{ ...styles.container, ...styles.whiteSpaceNowrap }}>
             {scores.length === 0 && <p style={styles.fullWidth}>No scores yet today</p>}
-            {scores.length > 0 && <div style={styles.fullWidth}><Podium userInfo={userInfo} scores={scores} /></div>}
+            {scores.length > 0 && <div style={styles.fullWidth}><Podium scores={scores} /></div>}
             {scores.slice(3).flatMap((s, idx) => [
                 <Ordinal position={idx + 4} key={`ordinal-${idx}`} />,
                 <p key={`name=${idx}`} style={styles.username}>{s.user_name}</p>,
                 <TimeScore score={s.score} key={`score-${idx}`} />,
             ])}
+        </Box>)
+}
+
+export function PodiumLeaderboardLoading() {
+    return (
+        <Box style={styles.loadingContainer}>
+            <LoadingIndicator size="large" />
         </Box>)
 }
 
@@ -103,6 +108,11 @@ const styles: { [key: string]: React.CSSProperties } = {
         width: '100%',
         alignItems: 'start',
         justifyItems: 'start'
+    },
+    loadingContainer: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     whiteSpaceNowrap: {
         whiteSpace: 'nowrap'

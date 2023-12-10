@@ -80,7 +80,10 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
             {invites.map(i => <InviteRow key={i.id} inviterName={i.inviter_name} tournamentName={i.tournament_name} id={i.id} userID={userInfo.id} />)}
         </Box>
         <Box>
-            <Subheading>Recent scores</Subheading>
+            <Box row={true} gap="large">
+                <Subheading>Recent scores</Subheading>
+                <Link href="/score">Add</Link>
+            </Box>
             <ScoreTable scores={scores.slice(0, 10)} userID={userInfo.id} />
         </Box>
         <Box>

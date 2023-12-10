@@ -9,10 +9,9 @@ import { timeScoreLargeFont } from '../ui/client-components'
 const podiumColors = ['#4d88f9', '#d7d7d7', '#824a02']
 
 type PodiumProps = {
-    userInfo: UserInfo | null,
     scores: (Score & { user_name: string })[],
 }
-export function Podium({ userInfo, scores }: PodiumProps) {
+export function Podium({ scores }: PodiumProps) {
     let placers = scores.slice(0, 3)
 
     const [platformTrails] = useSprings(

@@ -1,27 +1,23 @@
 import Link from 'next/link'
-import { getLoggedInUser } from './lib/hooks'
-import { Box, Subheading, Ordinal, TimeScore, Subtitle } from './ui/components'
-import { getGlobalTopPerformers, getGlobalTopScores } from './lib/db'
-import { PuzzleType } from './lib/types'
-import { PodiumLeaderboard } from './stats'
+import { Box, Subheading, Subtitle } from './ui/components'
+import { PodiumLeaderboard, PodiumLeaderboardLoading } from './stats'
 import { Suspense } from 'react'
 import { GlobalTopPerformers, GlobalTopPerformersLoading, GlobalTopStreaks, GlobalTopStreaksLoading } from './sections'
 
-export default async function Home() {
-  const { session, userInfo } = await getLoggedInUser()
-  const globalLeaderboard = await getGlobalTopScores(PuzzleType.mini)
+export default function Home() {
   return (
     <main>
       <Box gap="large">
-        {!!session && <p>Welcome, {userInfo.name}.</p>}
         <p>Tally is a score keeper for <a href="https://www.nytimes.com/crosswords" target="_blank">The New York Times mini crossword puzzle</a>.</p>
         <p><Link href="/tournaments">Browse tournaments</Link> or <Link href="/tournaments/create">create</Link> one of your own.</p>
-        {!!session && <Subheading><Link href="/score">Register today&apos;s score</Link></Subheading>}
+        <Subheading><Link href="/score">Register today&apos;s score</Link></Subheading>
         <Box>
           <Subheading>Today&apos;s fastest mini solves</Subheading>
           <Subtitle>Contest ends at 10pm eastern time</Subtitle>
         </Box>
-        <PodiumLeaderboard scores={globalLeaderboard} userInfo={userInfo} />
+        <Suspense fallback={<PodiumLeaderboardLoading />}>
+          <PodiumLeaderboard />
+        </Suspense>
 
         <Box style={styles.gridContainer}>
           <Box>
