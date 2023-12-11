@@ -4,12 +4,16 @@ import { colors } from "./colors";
 
 const localStorageKey = 'color-mode'
 
-export const getPreference = () => {
+export const getThemePreference = () => {
     const pref = window.localStorage.getItem(localStorageKey)
-    return ['light', 'dark'].includes(pref || '') ? pref : undefined
+    return pref === 'light' || pref === 'dark' ? pref : undefined
 }
 
-export const setPreference = (pref: 'light' | 'dark') => {
+export const setThemePreference = (pref: 'light' | 'dark' | undefined) => {
+    if (pref === undefined) {
+        window.localStorage.removeItem(localStorageKey)
+        return
+    }
     window.localStorage.setItem(localStorageKey, pref)
 }
 
@@ -44,8 +48,6 @@ export const SetInitialColors = () => {
         }
 
         const colorMode = getInitialColorMode();
-
-        // const root = document.documentElement;
 
         const head = document.head || document.getElementsByTagName('head')[0];
         const style = document.createElement('style');

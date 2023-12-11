@@ -76,6 +76,11 @@
     font-size: 12px;
 }
 
+.fileInput {
+    color: var(--color-text);
+    transition: color 350ms;
+}
+
 .fileInput::file-selector-button {
     padding: 4px;
     color: white;

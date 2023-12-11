@@ -12,10 +12,30 @@
     margin: 0;
 }
 
+div,
+body {
+    transition: background 350ms, background-color 350ms;
+}
+
+p,
+span,
+label,
+strong,
+em,
+a,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--color-text);
+    transition: background 350ms, color 350ms;
+}
+
 body {
     background-color: var(--color-background);
-    color: var(--color-text);
-    transition: background .3s, background-color .3s, color .3s;
 }
 
 main {
