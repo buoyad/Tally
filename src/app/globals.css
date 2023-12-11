@@ -1,4 +1,6 @@
-:root {}
+:root {
+    --link-color: #3868D6;
+}
 
 @media (prefers-color-scheme: dark) {
     :root {}
@@ -8,6 +10,13 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    transition: background-color .2s;
+    transition: color .2s;
 }
 
 main {
@@ -26,7 +35,7 @@ p {
 }
 
 a {
-    color: #3868D6;
+    color: var(--link-color);
     text-decoration: none;
 }
 

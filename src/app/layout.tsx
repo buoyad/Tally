@@ -6,6 +6,7 @@ import './globals.css'
 import { getLoggedInUser } from './lib/hooks'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { SetInitialColors } from './ui/dark-mode'
+import { ThemeProvider } from './ui/theme-context'
 
 const lora = Lora({ subsets: ['latin'] }) // TODO: try some other options https://fonts.google.com/?stroke=Serif&vfonly=true&preview.text=Tally
 
@@ -41,12 +42,16 @@ export default async function RootLayout({
   const { session, userInfo } = await getLoggedInUser()
   return (
     <html lang="en">
-      <body className={lora.className}>
+      <head>
         <SetInitialColors />
-        <Nav userInfo={userInfo} />
-        {children}
-        <Footer />
-        <SpeedInsights />
+      </head>
+      <body className={lora.className}>
+        <ThemeProvider>
+          <Nav userInfo={userInfo} />
+          {children}
+          <Footer />
+          <SpeedInsights />
+        </ThemeProvider>
       </body>
     </html>
   )

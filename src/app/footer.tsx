@@ -12,7 +12,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '12px 0',
-        boxShadow: '0 -1px 2px -2px black',
+        boxShadow: '0 -1px 2px -2px var(--color-text)',
         fontSize: '12px',
         gap: '2px',
     }
