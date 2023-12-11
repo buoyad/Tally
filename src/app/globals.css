@@ -1,5 +1,5 @@
 :root {
-    --link-color: #3868D6;
+    --link-color: #3f73ed;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,8 +15,7 @@
 body {
     background-color: var(--color-background);
     color: var(--color-text);
-    transition: background-color .2s;
-    transition: color .2s;
+    transition: background .3s, background-color .3s, color .3s;
 }
 
 main {
@@ -35,7 +34,7 @@ p {
 }
 
 a {
-    color: var(--link-color);
+    color: var(--color-link);
     text-decoration: none;
 }
 

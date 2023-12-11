@@ -20,14 +20,14 @@ export function Podium({ scores }: PodiumProps) {
             from: {
                 height: '0px',
                 backgroundColor: 'transparent',
-                boxShadow: '0px 0px transparent',
-                border: '0px solid transparent'
+                boxShadow: '0px 0px var(--color-transparent)',
+                border: '0px solid var(--color-transparent)'
             },
             to: {
                 height: `${45 + ((2 - idx) * 50)}px`,
                 backgroundColor: podiumColors[idx],
-                boxShadow: '5px 5px black',
-                border: '2px solid black',
+                boxShadow: '5px 5px var(--color-boxShadow)',
+                border: '2px solid var(--color-boxShadow)',
             },
             delay: idx * 100, // useTrail did not work, every animation landed on the value returned for idx 0.
         })

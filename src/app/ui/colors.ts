@@ -1,18 +1,24 @@
 export const colors = {
     light: {
-        text: '#000',
+        transparent: 'transparent',
+        text: '#33333f',
         background: '#fff',
         tileBackground: '#fff',
         tileBorder: '#000',
-        navBackground: '#fff',
+        navBackground: '#fafaff',
         buttonBorder: '#000',
+        link: '#3868D6',
+        boxShadow: '#000',
     },
     dark: {
-        text: '#d1d1df',
+        transparent: 'transparent',
+        text: '#eaeaef',
         background: '#1a1a1f',
         tileBackground: '#21212f',
         tileBorder: '#000',
-        navBackground: '#2a2a2f',
-        buttonBorder: '#999'
+        navBackground: '#12121f',
+        buttonBorder: '#777',
+        link: '#3f73ed',
+        boxShadow: '#333',
     },
 }

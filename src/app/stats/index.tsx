@@ -123,12 +123,6 @@ const styles: { [key: string]: React.CSSProperties } = {
         justifySelf: 'start',
         width: '100%',
     },
-    divider: {
-        gridColumn: '1 / -1',
-        backgroundColor: 'var(--color-text)',
-        height: '1px',
-        width: '50%',
-    },
     fontWeightBold: {
         fontWeight: 'bold'
     },
