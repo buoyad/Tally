@@ -1,4 +1,6 @@
-:root {}
+:root {
+    --link-color: #3f73ed;
+}
 
 @media (prefers-color-scheme: dark) {
     :root {}
@@ -8,6 +10,32 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+}
+
+div,
+body {
+    transition: background 350ms, background-color 350ms;
+}
+
+p,
+span,
+label,
+strong,
+em,
+a,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--color-text);
+    transition: background 350ms, color 350ms;
+}
+
+body {
+    background-color: var(--color-background);
 }
 
 main {
@@ -26,7 +54,7 @@ p {
 }
 
 a {
-    color: #3868D6;
+    color: var(--color-link);
     text-decoration: none;
 }
 

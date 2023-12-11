@@ -26,11 +26,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fullWidth: {
         gridColumn: '1 / -1',
     },
-    placeholder: {
-        height: '100px',
-        width: '100%',
-        backgroundColor: 'lightgray',
-    },
     tournamentName: {
         overflow: 'hidden',
         textOverflow: 'ellipsis',

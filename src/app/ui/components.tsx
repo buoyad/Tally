@@ -35,7 +35,7 @@ export function LoadingIndicator({ size = 'small' }: { size?: 'small' | 'large' 
 }
 
 type BoxProps = {
-    children: React.ReactNode,
+    children?: React.ReactNode,
     gap?: 'small' | 'medium' | 'large' | 'none',
     style?: React.CSSProperties,
     row?: boolean,

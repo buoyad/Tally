@@ -20,14 +20,16 @@ export function Podium({ scores }: PodiumProps) {
             from: {
                 height: '0px',
                 backgroundColor: 'transparent',
-                boxShadow: '0px 0px transparent',
-                border: '0px solid transparent'
+                boxShadow: '0px 0px var(--color-transparent)',
+                border: '0px solid var(--color-transparent)',
+                transition: 'none 350ms',
             },
             to: {
                 height: `${45 + ((2 - idx) * 50)}px`,
                 backgroundColor: podiumColors[idx],
-                boxShadow: '5px 5px black',
-                border: '2px solid black',
+                boxShadow: '5px 5px var(--color-boxShadow)',
+                border: '2px solid var(--color-boxShadow)',
+                transition: 'background-color 350ms, box-shadow 350ms, border 350ms'
             },
             delay: idx * 100, // useTrail did not work, every animation landed on the value returned for idx 0.
         })
@@ -56,15 +58,15 @@ export function Podium({ scores }: PodiumProps) {
     return <div style={styles.podiumContainer}>
         <div style={styles.podiumBase}>
             <AnimatedPlacer username={placers[1]?.user_name} score={placers[1]?.score} pos={1} style={placerTrails[1]} />
-            <animated.div style={{ ...styles.podium, ...platformTrails[1], borderTopRightRadius: 0 }} />
+            <animated.div style={{ ...styles.podium, ...platformTrails[1], borderTopRightRadius: 0 }} suppressHydrationWarning={true} />
         </div>
         <div style={styles.podiumBase}>
             <AnimatedPlacer username={placers[0]?.user_name} score={placers[0]?.score} pos={0} style={placerTrails[0]} />
-            <animated.div style={{ ...styles.podium, ...platformTrails[0] }} />
+            <animated.div style={{ ...styles.podium, ...platformTrails[0] }} suppressHydrationWarning={true} />
         </div>
         <div style={styles.podiumBase}>
             <AnimatedPlacer username={placers[2]?.user_name} score={placers[2]?.score} pos={2} style={placerTrails[2]} />
-            <animated.div style={{ ...styles.podium, ...platformTrails[2], borderTopLeftRadius: 0 }} />
+            <animated.div style={{ ...styles.podium, ...platformTrails[2], borderTopLeftRadius: 0 }} suppressHydrationWarning={true} />
         </div>
     </div>
 }

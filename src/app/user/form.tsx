@@ -143,7 +143,7 @@ const scoreTableStyles: { [key: string]: React.CSSProperties } = {
     },
     divider: {
         gridColumn: '1 / -1',
-        backgroundColor: 'black',
+        backgroundColor: 'var(--color-text)',
         height: '1px',
         width: '50%',
     },
