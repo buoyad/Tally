@@ -71,14 +71,14 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
         }
     }, [file])
 
-    return <form action={formAction}>
-        <Box gap="medium">
-            <p>Select your completion screenshot</p>
-            <Box row={true}>
-                <input type="file" name="file" accept="image/*" onChange={(e) => e.target.files && setFile(e.target.files[0])} title='Upload' className={styles.fileInput} />
-                {processing && <p>Processing...</p>}
-                {error && <Box className={styles.error}>{error}</Box>}
-            </Box>
+    return <Box gap="medium">
+        <p>Select your completion screenshot</p>
+        <Box row={true}>
+            <input type="file" name="file" accept="image/*" onChange={(e) => e.target.files && setFile(e.target.files[0])} title='Upload' className={styles.fileInput} />
+            {processing && <p>Processing...</p>}
+            {error && <Box className={styles.error}>{error}</Box>}
+        </Box>
+        <form action={formAction}>
             <p>
                 Puzzle completed in{' '}
                 <input type="text" name="minutes" value={minutes} onChange={(e) => setMinutes(e.target.value)} className={styles.textInput} size={2} />{' '}
@@ -94,6 +94,6 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
             <input type="hidden" name="userID" value={userInfo.id} />
             <Button typeSubmit={true} label="Submit" pendingLabel='Submitting...' />
             {state?.message && <Box className={styles.error}>{state.message}</Box>}
-        </Box>
-    </form>
+        </form>
+    </Box>
 }
