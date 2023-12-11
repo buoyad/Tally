@@ -27,7 +27,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         const initialMode = getComputedStyle(root).getPropertyValue('--initial-color-mode')
         // initialMode should always be light or dark, using the preference if saved or the system default.
         rawSetTheme(initialMode === 'light' ? 'light' : 'dark')
-        // getPreference may return return light or dark if one has been set, or undefined if system default.
+        // getThemePreference may return return light or dark if one has been set, or undefined if system default.
         setPreference(getThemePreference())
     }, [])
 
