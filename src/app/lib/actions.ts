@@ -8,8 +8,9 @@ import { revalidatePath } from 'next/cache'
 import { getLoggedInUser } from './hooks'
 import { SentEmailType } from './types'
 
+const reservedTournaments = ['create']
 const createTournamentSchema = validation.z.object({
-    name: validation.z.string().min(3).max(32),
+    name: validation.z.string().min(3).max(32).refine((name) => !reservedTournaments.includes(name.toLowerCase()), { message: "That tournament name is reserved" }),
     userID: validation.z.coerce.number().positive(),
 })
 export async function createTournament(_: any, formData: FormData) {
@@ -25,7 +26,11 @@ export async function createTournament(_: any, formData: FormData) {
         revalidatePath('/user')
     } catch (error) {
         if (error instanceof validation.z.ZodError) {
-            return { message: "Enter a tournament name between 3 and 32 characters long" }
+            const err = error.errors[0]
+            if (err.code === validation.z.ZodIssueCode.custom) {
+                return { message: err.message }
+            }
+            return { message: 'Enter a tournament name between 3 and 32 characters long' }
         } else if (error instanceof db.DBError) {
             return { message: error.message }
         }
@@ -37,9 +42,10 @@ export async function createTournament(_: any, formData: FormData) {
     redirect(`/tournaments/${data.name}`)
 }
 
+const reservedUsernames = ['api', 'lib', 'login', 'score', 'stats', 'tournaments', 'ui']
 const changeUsernameSchema = validation.z.object({
     id: validation.z.coerce.number().positive(),
-    username: validation.z.string().min(3).max(20),
+    username: validation.z.string().min(3).max(20).refine((name) => !reservedUsernames.includes(name.toLowerCase()), { message: "That username is reserved" })
 })
 export async function changeUsername(_: any, formData: FormData) {
     const session = await getLoggedInUser()
@@ -56,7 +62,11 @@ export async function changeUsername(_: any, formData: FormData) {
         await db.changeUsername(data.id, data.username)
     } catch (error) {
         if (error instanceof validation.z.ZodError) {
-            return { message: "Enter a username between 3 and 20 characters long" }
+            const err = error.errors[0]
+            if (err.code === validation.z.ZodIssueCode.custom) {
+                return { message: err.message }
+            }
+            return { message: 'Enter a username between 3 and 20 characters long' }
         } else if (error instanceof db.DBError) {
             return { message: error.message }
         }
