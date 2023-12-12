@@ -2,6 +2,7 @@ import React from "react"
 import { getGlobalTopPerformers, getLongestStreaks } from "./lib/db"
 import { PuzzleType } from "./lib/types"
 import { Box, Ordinal, Subheading, TimeScore } from "./ui/components"
+import { styleSheet } from "./ui/util"
 
 export const GlobalTopPerformers = async () => {
     const globalTopPerformers = await getGlobalTopPerformers(PuzzleType.mini)
@@ -65,7 +66,7 @@ export const GlobalTopStreaksLoading = () => {
     </Box>
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles = styleSheet({
     gridContainer: {
         display: 'grid',
         gridTemplateColumns: '.25fr 1fr .5fr',
@@ -78,4 +79,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     loading: {
         opacity: 0.5
     }
-}
+})

@@ -5,6 +5,7 @@ import isTodaysContest from './isTodaysContest'
 import Link from "next/link"
 import { Podium } from "./client"
 import { getGlobalTopScores } from "../lib/db"
+import { styleSheet } from "../ui/util"
 
 dayjs.extend(isTodaysContest)
 
@@ -100,7 +101,7 @@ export function PodiumLeaderboardLoading() {
         </Box>)
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles = styleSheet({
     container: {
         display: 'grid',
         gridTemplateColumns: '.5fr 3fr 1fr',
@@ -131,4 +132,4 @@ const styles: { [key: string]: React.CSSProperties } = {
         overflow: 'hidden',
         textOverflow: 'ellipsis'
     }
-}
+})

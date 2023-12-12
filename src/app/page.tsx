@@ -3,6 +3,7 @@ import { Box, Subheading, Subtitle } from './ui/components'
 import { PodiumLeaderboard, PodiumLeaderboardLoading } from './stats'
 import { Suspense } from 'react'
 import { GlobalTopPerformers, GlobalTopPerformersLoading, GlobalTopStreaks, GlobalTopStreaksLoading } from './sections'
+import { styleSheet } from './ui/util'
 
 export default function Home() {
   return (
@@ -40,7 +41,7 @@ export default function Home() {
   )
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles = styleSheet({
   gridContainer: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -50,4 +51,4 @@ const styles: { [key: string]: React.CSSProperties } = {
   fullWidth: {
     gridColumn: '1 / -1'
   },
-}
+})

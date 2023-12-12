@@ -1,5 +1,6 @@
 import { Box } from "./ui/components";
 import { ColorMode } from "./ui/theme-context";
+import { styleSheet } from "./ui/util";
 
 export default function Footer() {
     return <Box style={styles.container}>
@@ -9,7 +10,7 @@ export default function Footer() {
     </Box>
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles = styleSheet({
     container: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -21,4 +22,4 @@ const styles: { [key: string]: React.CSSProperties } = {
         color: 'var(--color-text)',
         fontWeight: 500,
     }
-}
+})

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Box, LoadingIndicator, Subheading, Subtitle } from './ui/components'
+import { styleSheet } from './ui/util'
 
 export default function Loading() {
   return (
@@ -19,10 +20,10 @@ export default function Loading() {
   )
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles = styleSheet({
   loadingContainer: {
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   }
-}
+})

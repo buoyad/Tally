@@ -5,6 +5,7 @@ import { Score, UserInfo } from "../lib/types"
 import { Box, TimeScore } from '../ui/components'
 import Link from 'next/link'
 import { timeScoreLargeFont } from '../ui/client-components'
+import { styleSheet } from '../ui/util'
 
 const podiumColors = ['#4d88f9', '#d7d7d7', '#824a02']
 
@@ -100,7 +101,7 @@ export const AnimatedCounter = ({ value }: { value: number }) => {
     return <animated.p className={timeScoreLargeFont.className} style={{ fontSize: '64px', opacity }}>{number}</animated.p>
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles = styleSheet({
     podiumContainer: {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr 1fr',
@@ -136,4 +137,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     placerScore: {
         fontSize: '20px',
     }
-}
+})

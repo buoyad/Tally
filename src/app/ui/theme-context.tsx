@@ -3,6 +3,8 @@ import React from "react"
 import { getThemePreference, setThemePreference } from "./dark-mode"
 import { colors } from "./colors"
 import { Box } from "./components"
+import { animated, useSpring } from "@react-spring/web"
+import { styleSheet, useMeasure } from "./util"
 
 export type Theme = 'light' | 'dark'
 
@@ -64,14 +66,78 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 export const ColorMode = () => {
     const { theme, preference, setTheme } = useTheme()
 
-    if (!theme) return null
+    const [rLight, dimLight] = useMeasure()
+    const [rDark, dimDark] = useMeasure()
+    const [rSys, dimSys] = useMeasure()
 
-    return <Box row={true}>
-        <input type="radio" id="light" onChange={() => setTheme('light')} checked={preference === 'light'} />
-        <label htmlFor="light">light</label>
-        <input type="radio" id="dark" onChange={() => setTheme('dark')} checked={preference === 'dark'} />
-        <label htmlFor="dark">dark</label>
-        <input type="radio" id="systemDefault" onChange={() => setTheme(undefined)} checked={preference === undefined} />
-        <label htmlFor="systemDefault">system</label>
+
+    const [spring, api] = useSpring(() => ({
+        immediate: true,
+        height: 0,
+        width: 0,
+        left: 0,
+    }))
+
+
+    const prevTheme = React.useRef<Theme | undefined>(theme)
+    React.useLayoutEffect(() => {
+        if (theme) {
+            const firstRender = prevTheme.current === undefined && !!theme
+            let target
+            switch (preference) {
+                case 'light': {
+                    target = dimLight
+                    break;
+                }
+                case 'dark': {
+                    target = dimDark
+                    break;
+                }
+                default: {
+                    target = dimSys
+                    break;
+                }
+            }
+            api.start({
+                height: (target.height ?? 0) + 4,
+                width: (target.width ?? 0) + 4,
+                left: (target.offsetLeft ?? 0) - 2,
+                immediate: firstRender,
+            })
+
+            prevTheme.current = theme
+        }
+    }, [theme, preference, dimLight, dimDark, dimSys, api])
+
+    return <Box row={true} style={styles.colorModeContainer}>
+        <AnimatedBox row={true} style={{ ...styles.colorModeIndicator, ...spring }} />
+        <label title="light mode" ref={rLight} onClick={() => setTheme('light')} style={styles.label}>🔆</label>
+        <label title="dark mode" ref={rDark} onClick={() => setTheme('dark')} style={styles.label}>🌚</label>
+        <label title="follow system preference" ref={rSys} onClick={() => setTheme(undefined)} style={styles.label}>🖥️</label>
     </Box>
 }
+
+const AnimatedBox = animated(Box)
+
+const styles = styleSheet({
+    colorModeContainer: {
+        background: 'var(--color-selectBackground)',
+        padding: '6px',
+        borderRadius: '2px',
+        position: 'relative',
+        zIndex: 0,
+    },
+    colorModeIndicator: {
+        background: 'var(--color-selectIndicator)',
+        borderRadius: '2px',
+        position: 'absolute',
+        zIndex: 1,
+    },
+    label: {
+        cursor: 'pointer',
+        zIndex: 2,
+        padding: '0px 2px',
+        fontSize: '1.2em',
+        transform: 'translateY(-1px)'
+    }
+})

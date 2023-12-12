@@ -1,6 +1,7 @@
 import Link from "next/link";
 import * as db from "@/app/lib/db"
 import { Box, Heading } from "../ui/components";
+import { styleSheet } from "../ui/util";
 
 export default async function Page() {
     const tournaments = await db.getPopularTournaments()
@@ -15,7 +16,7 @@ export default async function Page() {
     </main>
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles = styleSheet({
     container: {
         display: 'grid',
         gridTemplateColumns: '2fr 1fr',
@@ -30,4 +31,4 @@ const styles: { [key: string]: React.CSSProperties } = {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     }
-}
+})

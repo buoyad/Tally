@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { PuzzleType } from '../lib/types'
 import { AnimatedCounter } from '../stats/client'
 import { displayScoreDate } from '../lib/util'
+import { styleSheet } from '../ui/util'
 
 export default async function Page({ searchParams }: { searchParams?: any }) {
     const { session, userInfo } = await getLoggedInUser(true)
@@ -95,7 +96,7 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
     </main>
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles = styleSheet({
     container: {
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -104,4 +105,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     fullWidth: {
         gridColumn: '1 / -1'
     },
-}
+})
