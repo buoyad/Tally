@@ -52,7 +52,7 @@ export default async function Page({ searchParams, params }: { searchParams?: an
     return <main style={styles.container}>
         <Message userInfo={userInfo} />
         <Box style={styles.fullWidth}>
-            <Heading>{userPageInfo.name}{isMe ? ' (me)' : ''}</Heading>
+            <Heading>{userPageInfo.name}</Heading>
         </Box>
         {hasMiniStats && <>
             <Box>

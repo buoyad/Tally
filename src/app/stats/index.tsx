@@ -1,5 +1,5 @@
 import { PuzzleType, Score, UserInfo } from "@/app/lib/types"
-import { Box, Subheading, TimeScore, Ordinal, Subtitle, LoadingIndicator } from "@/app/ui/components"
+import { Box, Subheading, TimeScore, Ordinal, Subtitle, LoadingIndicator, Username } from "@/app/ui/components"
 import dayjs from 'dayjs'
 import isTodaysContest from './isTodaysContest'
 import Link from "next/link"
@@ -37,7 +37,7 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
             <Subheading key="score-heading">Score</Subheading>,
             todayScores.flatMap((s, idx) => [
                 <Ordinal key={`rank-${s.id}`} position={idx + 1} />,
-                <p key={`name-${s.id}`} style={s.user_id === loggedInUser?.id ? styles.fontWeightBold : {}}>{usersByID[s.user_id].name}</p>,
+                <Username key={`name-${s.id}`} style={s.user_id === loggedInUser?.id ? styles.fontWeightBold : {}} name={usersByID[s.user_id].name} />,
                 <TimeScore key={`score-${s.id}`} score={s.score} />,
             ])
         )
@@ -81,14 +81,15 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
 }
 
 export async function PodiumLeaderboard() {
-    const scores = await getGlobalTopScores(PuzzleType.mini)
+    let scores = await getGlobalTopScores(PuzzleType.mini)
+    scores = Array(10).fill({ user_name: 'ayoub', score: 100, id: 1, user_id: 1, for_day: 'a', puzzle_type: PuzzleType.mini })
     return (
         <Box style={{ ...styles.container, ...styles.whiteSpaceNowrap }}>
             {scores.length === 0 && <p style={styles.fullWidth}>No scores yet today</p>}
             {scores.length > 0 && <div style={styles.fullWidth}><Podium scores={scores} /></div>}
             {scores.slice(3).flatMap((s, idx) => [
                 <Ordinal position={idx + 4} key={`ordinal-${idx}`} />,
-                <p key={`name=${idx}`} style={styles.username}>{s.user_name}</p>,
+                <Username key={`name=${idx}`} style={styles.username} name={s.user_name} />,
                 <TimeScore score={s.score} key={`score-${idx}`} />,
             ])}
         </Box>)
@@ -107,7 +108,7 @@ const styles = styleSheet({
         gridTemplateColumns: '.5fr 3fr 1fr',
         gap: '.5rem',
         width: '100%',
-        alignItems: 'start',
+        alignItems: 'baseline',
         justifyItems: 'start'
     },
     loadingContainer: {

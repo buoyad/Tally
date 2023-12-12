@@ -1,8 +1,8 @@
 'use client'
 import * as React from 'react'
 import { animated, useSpring, useSprings } from "@react-spring/web"
-import { Score, UserInfo } from "../lib/types"
-import { Box, TimeScore } from '../ui/components'
+import { Score } from "../lib/types"
+import { Box, TimeScore, Username } from '../ui/components'
 import Link from 'next/link'
 import { timeScoreLargeFont } from '../ui/client-components'
 import { styleSheet } from '../ui/util'
@@ -77,7 +77,7 @@ const placerIcons = ['👑', '🥈', '🥉']
 const Placer = ({ username, score, pos, style }: { username: string, score: number, pos: number, style?: React.CSSProperties }) => {
     return <Box style={{ ...styles.placerContainer, top: pos * 50, ...style }}>
         <p style={styles.placerIcon}>{placerIcons[pos]}</p>
-        <p style={styles.placerName}>{username || <Link href='/score'>You?</Link>}</p>
+        {username && <Username name={username} style={styles.placerName} /> || <Link href='/score'>You?</Link>}
         {score && <TimeScore score={score} style={styles.placerScore} />}
     </Box>
 }

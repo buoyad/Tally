@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import { Baloo_2 } from 'next/font/google'
 import { TimeScoreLarge } from './client-components'
 import { displaySeconds } from '@/app/lib/util'
+import Link from 'next/link'
 
 const timeScoreFont = Baloo_2({ subsets: ['latin'], weight: '500' })
 
@@ -32,6 +33,10 @@ export function LoadingIndicator({ size = 'small' }: { size?: 'small' | 'large' 
             <div></div><div></div><div></div><div></div>
         </div>
     </div>
+}
+
+export function Username({ name, style }: { name: string, style?: React.CSSProperties }) {
+    return <span style={style}><Link href={`/${name}`}>{name}</Link></span>
 }
 
 type BoxProps = {

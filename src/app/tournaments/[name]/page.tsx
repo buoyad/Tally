@@ -1,5 +1,5 @@
 import { getScoresForUsers, getTournamentInfo, getTournamentInvites } from "@/app/lib/db"
-import { Box, Heading, Subheading } from "@/app/ui/components"
+import { Box, Heading, Subheading, Username } from "@/app/ui/components"
 import { redirect } from "next/navigation"
 import { InviteToTournamentForm, InviteRow, LeaveTournamentForm } from "./form"
 import { getLoggedInUser } from "@/app/lib/hooks"
@@ -41,7 +41,7 @@ export default async function Page({ params }: { params: { name: string } }) {
         </Box>
         <Box>
             <Subheading>Players</Subheading>
-            {info.users.map(p => <p key={p.id}>{p.name}</p>)}
+            {info.users.map(p => <Username key={p.id} name={p.name} />)}
         </Box>
         {currentUserIsParticipant && <Box>
             <Subheading>Invite participants</Subheading>

@@ -1,7 +1,7 @@
 import React from "react"
 import { getGlobalTopPerformers, getLongestStreaks } from "./lib/db"
 import { PuzzleType } from "./lib/types"
-import { Box, Ordinal, Subheading, TimeScore } from "./ui/components"
+import { Box, Ordinal, Subheading, TimeScore, Username } from "./ui/components"
 import { styleSheet } from "./ui/util"
 
 export const GlobalTopPerformers = async () => {
@@ -13,7 +13,7 @@ export const GlobalTopPerformers = async () => {
         {globalTopPerformers.map((p, i) => {
             return <React.Fragment key={p.user_name}>
                 <strong><Ordinal position={i + 1} /></strong>
-                <p>{p.user_name}</p>
+                <Username name={p.user_name} />
                 <TimeScore score={p.avg_score} />
             </React.Fragment>
         })}
@@ -44,7 +44,7 @@ export const GlobalTopStreaks = async () => {
         {globalTopStreaks.map((p, i) => {
             return <React.Fragment key={p.user_name}>
                 <strong><Ordinal position={i + 1} /></strong>
-                <p>{p.user_name}</p>
+                <Username name={p.user_name} />
                 <p>{p.length} {p.length === 1 ? 'day' : 'days'}</p>
             </React.Fragment>
         })}
@@ -71,7 +71,8 @@ const styles = styleSheet({
         display: 'grid',
         gridTemplateColumns: '.25fr 1fr .5fr',
         gap: '1rem',
-        width: '100%'
+        width: '100%',
+        alignItems: 'baseline'
     },
     fullWidth: {
         gridColumn: '1 / -1'
