@@ -17,6 +17,7 @@ dayjs.extend(timezone)
 const loadWorker = createWorker('eng')
 
 const timeRegex = /(\d{1,2}):(\d{2})/g
+const timeRegexAlt = /(\d{1,2}).*seconds?/g
 
 const getDefaultDay = () => {
     const timeInNY = dayjs().tz('America/New_York')
@@ -47,20 +48,24 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
             setError('')
             const worker = await loadWorker
             await worker.setParameters({
-                tessedit_char_whitelist: '0123456789:',
+                tessedit_char_whitelist: '0123456789:seconds',
                 tessedit_pageseg_mode: PSM.SINGLE_COLUMN,
             })
             const { data: { text } } = await worker.recognize(file!)
 
             const matches = [...(text.matchAll(timeRegex))]
             let lastMatch = matches[matches.length - 1]
+            let matchesAlt = [...text.matchAll(timeRegexAlt)]
+            let lastMatchAlt = matchesAlt[matchesAlt.length - 1]
             if (lastMatch) {
                 const [_, minutes, seconds] = lastMatch
-                const parsedMinutes = parseInt(minutes)
-                const parsedSeconds = parseInt(seconds)
                 setMinutes(minutes)
                 setSeconds(seconds)
                 setError('')
+            } else if (lastMatchAlt) {
+                const [_, seconds] = lastMatchAlt
+                setMinutes('0')
+                setSeconds(seconds)
             } else {
                 setError('unable to read time, try again or enter manually')
             }
