@@ -9,8 +9,8 @@ export const colors = {
         buttonBorder: '#000',
         link: '#3868D6',
         boxShadow: '#000',
-        selectBackground: '#eaeaef',
-        selectIndicator: '#cccccf'
+        selectTrack: '#dadadf',
+        selectIndicator: '#efeffa',
     },
     dark: {
         transparent: 'transparent',
@@ -21,8 +21,8 @@ export const colors = {
         navBackground: '#12121f',
         buttonBorder: '#777',
         link: '#3f73ed',
-        boxShadow: '#333',
-        selectBackground: '#02020f',
-        selectIndicator: '#22222f'
+        boxShadow: '#000',
+        selectTrack: '#10101f',
+        selectIndicator: '#22222f',
     },
 }

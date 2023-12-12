@@ -72,7 +72,6 @@ export const ColorMode = () => {
 
 
     const [spring, api] = useSpring(() => ({
-        immediate: true,
         height: 0,
         width: 0,
         left: 0,
@@ -101,7 +100,7 @@ export const ColorMode = () => {
             api.start({
                 height: (target.height ?? 0) + 4,
                 width: (target.width ?? 0) + 4,
-                left: (target.offsetLeft ?? 0) - 2,
+                left: (target.offsetLeft ?? 0) - 2.5,
                 immediate: firstRender,
             })
 
@@ -109,7 +108,7 @@ export const ColorMode = () => {
         }
     }, [theme, preference, dimLight, dimDark, dimSys, api])
 
-    return <Box row={true} style={styles.colorModeContainer}>
+    return <Box row={true} style={styles.switchTrack}>
         <AnimatedBox row={true} style={{ ...styles.colorModeIndicator, ...spring }} />
         <label title="light mode" ref={rLight} onClick={() => setTheme('light')} style={styles.label}>🔆</label>
         <label title="dark mode" ref={rDark} onClick={() => setTheme('dark')} style={styles.label}>🌚</label>
@@ -120,15 +119,17 @@ export const ColorMode = () => {
 const AnimatedBox = animated(Box)
 
 const styles = styleSheet({
-    colorModeContainer: {
-        background: 'var(--color-selectBackground)',
-        padding: '6px',
+    switchTrack: {
+        background: 'var(--color-selectTrack)',
+        boxShadow: '0 1px 1px var(--color-boxShadow) inset',
         borderRadius: '2px',
+        padding: '4px',
         position: 'relative',
         zIndex: 0,
     },
     colorModeIndicator: {
         background: 'var(--color-selectIndicator)',
+        boxShadow: '0px 1px 2px var(--color-boxShadow)',
         borderRadius: '2px',
         position: 'absolute',
         zIndex: 1,
@@ -137,7 +138,6 @@ const styles = styleSheet({
         cursor: 'pointer',
         zIndex: 2,
         padding: '0px 2px',
-        fontSize: '1.2em',
-        transform: 'translateY(-1px)'
+        fontSize: '1.2em'
     }
 })
