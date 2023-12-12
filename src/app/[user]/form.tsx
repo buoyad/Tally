@@ -12,6 +12,7 @@ import { useSearchParams } from 'next/navigation'
 import dayjs from 'dayjs'
 import isToday from 'dayjs/plugin/isToday'
 import { displayScoreDate } from '../lib/util'
+import { styleSheet } from '../ui/util'
 
 dayjs.extend(isToday)
 
@@ -100,34 +101,34 @@ function RejectInvite({ inviteID, tournamentName }: { inviteID: number, tourname
     </form>
 }
 
-export function ScoreTable({ scores, userID }: { scores: Score[], userID: number }) {
+export function ScoreTable({ scores, userID, isMe }: { scores: Score[], userID: number, isMe: boolean }) {
     return <div style={scoreTableStyles.container}>
         {scores.length === 0 &&
             <div style={scoreTableStyles.fullWidth}><p>None yet. <Link href="/score">Submit one now!</Link></p></div>}
         {scores.map((s, idx) =>
-            <ScoreRow key={s.id} score={s} last={idx === scores.length - 1} />
+            <ScoreRow key={s.id} score={s} last={idx === scores.length - 1} isMe={isMe} />
         )}
     </div>
 }
 
-function ScoreRow({ score, last }: { score: Score, last: boolean }) {
+function ScoreRow({ score, last, isMe }: { score: Score, last: boolean, isMe: boolean }) {
     const { id, user_id, for_day, score: seconds } = score
     const [state, formAction] = useFormState(deleteScore, { message: '' })
     const deleteLabel = !!(state?.message) ? 'Error!' : 'Delete'
     return <>
-        <p style={scoreTableStyles.justifySelfStart}>{displayScoreDate(for_day)}</p>
+        <p style={{ ...scoreTableStyles.justifySelfStart, ...(!isMe ? scoreTableStyles.wideDate : {}) }}>{displayScoreDate(for_day)}</p>
         <TimeScore score={seconds} />
-        <form action={formAction}>
+        {isMe && <form action={formAction}>
             <input type="hidden" name="scoreID" value={id} />
             <input type="hidden" name="userID" value={user_id} />
             <Button typeSubmit={true} label={deleteLabel} pendingLabel="Deleting..." role="destroy" />
-        </form>
+        </form>}
         {!last && <div style={scoreTableStyles.divider}></div>}
     </>
 
 }
 
-const scoreTableStyles: { [key: string]: React.CSSProperties } = {
+const scoreTableStyles = styleSheet({
     container: {
         display: 'grid',
         gridTemplateColumns: '3fr .5fr 1fr',
@@ -135,6 +136,9 @@ const scoreTableStyles: { [key: string]: React.CSSProperties } = {
         width: '100%',
         alignItems: 'center',
         justifyItems: 'center',
+    },
+    wideDate: {
+        gridColumn: '1 / 3',
     },
     justifySelfStart: { justifySelf: 'start' },
     fullWidth: {
@@ -147,4 +151,4 @@ const scoreTableStyles: { [key: string]: React.CSSProperties } = {
         height: '1px',
         width: '50%',
     },
-}
+})

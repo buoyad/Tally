@@ -47,6 +47,12 @@ export const getUser = cache(async (email: string) => {
     return res.rows[0]
 })
 
+export const getUserByName = cache(async (name: string) => {
+    log.info('cache miss: getUserByName: %s', name)
+    const res = await pool.query<UserInfo>(`SELECT * FROM userinfo WHERE LOWER(name) = LOWER($1)`, [name])
+    return res.rows[0]
+})
+
 export const changeUsername = async (id: number, newName: string) => {
     log.info('changeUsername: %d %s', id, newName)
     try {

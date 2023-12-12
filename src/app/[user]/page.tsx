@@ -2,21 +2,37 @@ import React from 'react'
 import { Box, Heading, Subheading, TimeScore } from '@/app/ui/components'
 import { ChangeUsernameForm, LogoutButton, InviteRow, ScoreTable, Message } from './form'
 import { getLoggedInUser } from '../lib/hooks'
-import { getUserTournaments, getUserInvites, getUserScores, getUserStats, getUserStreak } from '../lib/db'
+import { getUserTournaments, getUserInvites, getUserScores, getUserStats, getUserStreak, getUserByName } from '../lib/db'
 import Link from 'next/link'
-import { PuzzleType } from '../lib/types'
+import { PuzzleType, UserInfo } from '../lib/types'
 import { AnimatedCounter } from '../stats/client'
 import { displayScoreDate } from '../lib/util'
 import { styleSheet } from '../ui/util'
 
-export default async function Page({ searchParams }: { searchParams?: any }) {
-    const { session, userInfo } = await getLoggedInUser(true)
+export default async function Page({ searchParams, params }: { searchParams?: any, params: { user: string } }) {
+    const { session, userInfo } = await getLoggedInUser()
     if (!session) return null
-    const tournaments = await getUserTournaments(userInfo.id)
-    const invites = await getUserInvites(userInfo.email)
-    const scores = await getUserScores(userInfo.id)
 
-    const userStats = await getUserStats(userInfo.id)
+    let userPageInfo: UserInfo | undefined
+    let isMe = false
+    if (userInfo.name.toLowerCase() === params.user.toLowerCase()) {
+        userPageInfo = userInfo
+        isMe = true
+    } else {
+        userPageInfo = await getUserByName(params.user)
+    }
+
+    if (!userPageInfo) return (
+        <main>
+            <Heading>That user doesn&apos;t exist</Heading>
+        </main>
+    )
+
+    const tournaments = await getUserTournaments(userPageInfo.id)
+    const invites = await getUserInvites(userPageInfo.email)
+    const scores = await getUserScores(userPageInfo.id)
+
+    const userStats = await getUserStats(userPageInfo.id)
     const miniStats = userStats.mini
     let avg, recentAvg, hasTrends, percentChange, percentChangeSign
     if (miniStats) {
@@ -29,15 +45,14 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
     }
     const hasMiniStats = !!avg
 
-    const streaks = await getUserStreak(userInfo.id, PuzzleType.mini)
+    const streaks = await getUserStreak(userPageInfo.id, PuzzleType.mini)
     const currentMiniStreak = streaks.find(s => s.current)
     const maxMiniStreak = streaks.find(s => !s.current) || currentMiniStreak
 
     return <main style={styles.container}>
         <Message userInfo={userInfo} />
         <Box style={styles.fullWidth}>
-            <Heading>My account</Heading>
-            <p>Welcome back {userInfo.name}</p>
+            <Heading>{userPageInfo.name}{isMe ? ' (me)' : ''}</Heading>
         </Box>
         {hasMiniStats && <>
             <Box>
@@ -48,8 +63,10 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
                 <Subheading>Trends</Subheading>
                 {!hasTrends && <p>Keep logging scores to calculate trends.</p>}
                 {hasTrends &&
-                    <p>Over the last week, your average solve time was <TimeScore score={recentAvg || 0} />, which is {' '}
-                        {percentChange?.toFixed(1)}% {percentChangeSign === 'pos' ? <strong>faster</strong> : <strong>slower</strong>} than your lifetime average.</p>}
+                    <p>Past 7 days:
+                        average solve time was <TimeScore score={recentAvg!} />,{' '}
+                        {percentChange?.toFixed(1)}% {percentChangeSign === 'pos' ? <strong>faster</strong> : <strong>slower</strong>}{' '}
+                        than lifetime average.</p>}
             </Box>
             <Box>
                 <Subheading>Current streak</Subheading>
@@ -57,7 +74,7 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
                     <AnimatedCounter value={currentMiniStreak?.length ?? 0} />
                     <p>{currentMiniStreak?.length === 1 ? 'day' : 'days'}</p>
                 </Box>
-                {!currentMiniStreak && <p>Get a streak going!</p>}
+                {!currentMiniStreak && isMe && <p>Get a streak going!</p>}
                 {currentMiniStreak && <p>started on {displayScoreDate(currentMiniStreak.start_date)}</p>}
             </Box>
             <Box>
@@ -67,7 +84,6 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
                     <p>days</p>
                 </Box>
                 {maxMiniStreak && maxMiniStreak.length !== currentMiniStreak?.length && <p>{displayScoreDate(maxMiniStreak.start_date)} - {displayScoreDate(maxMiniStreak.end_date)}</p>}
-                {maxMiniStreak?.length === currentMiniStreak?.length && <p>You&apos;re in your longest streak! Keep it going!</p>}
             </Box>
         </>}
         <Box>
@@ -75,24 +91,26 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
             {tournaments.length === 0 && <p>None yet. <Link href="/tournaments/create">Make one now!</Link></p>}
             {tournaments.map(t => <p key={t.id}><Link href={`/tournaments/${t.name}`}>{t.name}</Link></p>)}
         </Box>
-        <Box>
+        {isMe && <Box>
             <Subheading>Invites</Subheading>
             {invites.length === 0 && <p>None yet.</p>}
-            {invites.map(i => <InviteRow key={i.id} inviterName={i.inviter_name} tournamentName={i.tournament_name} id={i.id} userID={userInfo.id} />)}
-        </Box>
+            {invites.map(i => <InviteRow key={i.id} inviterName={i.inviter_name} tournamentName={i.tournament_name} id={i.id} userID={userPageInfo!.id} />)}
+        </Box>}
         <Box>
             <Box row={true} gap="large">
                 <Subheading>Recent scores</Subheading>
-                <Link href="/score">Add</Link>
+                {isMe && <Link href="/score">Add</Link>}
             </Box>
-            <ScoreTable scores={scores.slice(0, 10)} userID={userInfo.id} />
+            <ScoreTable scores={scores.slice(0, 10)} userID={userPageInfo.id} isMe={isMe} />
         </Box>
-        <Box>
-            <ChangeUsernameForm id={userInfo.id} username={userInfo.name} />
-        </Box>
-        <Box>
-            <LogoutButton />
-        </Box>
+        {isMe && <>
+            <Box>
+                <ChangeUsernameForm id={userInfo.id} username={userInfo.name} />
+            </Box>
+            <Box>
+                <LogoutButton />
+            </Box>
+        </>}
     </main>
 }
 

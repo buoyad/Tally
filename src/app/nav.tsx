@@ -21,7 +21,7 @@ export default function Nav({ userInfo }: { userInfo: UserInfo | null }) {
         <div className={styles.container}>
             <header className={styles.header}><Link href="/"><CWTally /></Link></header>
             {userInfo &&
-                <Link href="/user" className={clsx({ [styles.active]: pathname === '/user' })}>Me</Link>
+                <Link href={`/${userInfo.name}`} className={clsx({ [styles.active]: pathname.toLowerCase() === `/${userInfo.name.toLowerCase()}` })}>Me</Link>
             }
             {!userInfo && <Link href="/login" className={clsx({ [styles.active]: pathname === '/login' })}>Log in</Link>}
         </div>
