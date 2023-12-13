@@ -40,7 +40,7 @@ export function TimeScoreLarge({ score, className, style, placeholder }: { score
     </div>
 }
 
-function AnimatedText({ children, placeholder = ['0', ':', '0', '0', '.', '0'] }: { children: string, placeholder?: string[] }) {
+export function AnimatedText({ children, placeholder = ['0', ':', '0', '0', '.', '0'], className, style }: { children: string, placeholder?: string[], className?: string, style?: React.CSSProperties }) {
     let chars = children.split('')
     const commonConfig: UseTransitionProps = {
         trail: 75,
@@ -73,7 +73,7 @@ function AnimatedText({ children, placeholder = ['0', ':', '0', '0', '.', '0'] }
     )
 
     // placeholder chars set the height of the top level Box, then the children are absolutely positioned to occupy the same space.
-    return <Box row={true} gap="none" style={{ overflow: 'hidden', position: 'relative', width: '100%' }}>
+    return <Box row={true} gap="none" style={{ overflow: 'hidden', position: 'relative', width: '100%', ...style }} className={className}>
         <Box row={true} gap="none" style={{ position: 'absolute' }}>
             {transitions((style, item, _, idx) => <animated.span style={{ display: 'inline-block', ...style }}>{item}</animated.span>)}
         </Box>

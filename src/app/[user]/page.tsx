@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Heading, Subheading, TimeScore } from '@/app/ui/components'
+import { Box, Heading, Subheading, Subtitle, TimeScore } from '@/app/ui/components'
 import { ChangeUsernameForm, LogoutButton, InviteRow, ScoreTable, Message } from './form'
 import { getLoggedInUser } from '../lib/hooks'
 import { getUserTournaments, getUserInvites, getUserScores, getUserStats, getUserStreak, getUserByName } from '../lib/db'
@@ -8,14 +8,18 @@ import { PuzzleType, UserInfo } from '../lib/types'
 import { AnimatedCounter } from '../stats/client'
 import { displayScoreDate } from '../lib/util'
 import { styleSheet } from '../ui/util'
+import { AnimatedText } from '../ui/client-components'
+import { Tilt_Warp } from 'next/font/google'
+import * as C from '@/app/lib/constants'
+
+export const largeFont = Tilt_Warp({ subsets: ['latin'], weight: '400' })
 
 export default async function Page({ searchParams, params }: { searchParams?: any, params: { user: string } }) {
-    const { session, userInfo } = await getLoggedInUser()
-    if (!session) return null
+    const { userInfo } = await getLoggedInUser()
 
     let userPageInfo: UserInfo | undefined
     let isMe = false
-    if (userInfo.name.toLowerCase() === params.user.toLowerCase()) {
+    if (userInfo?.name.toLowerCase() === params.user.toLowerCase()) {
         userPageInfo = userInfo
         isMe = true
     } else {
@@ -34,16 +38,14 @@ export default async function Page({ searchParams, params }: { searchParams?: an
 
     const userStats = await getUserStats(userPageInfo.id)
     const miniStats = userStats.mini
-    let avg, recentAvg, hasTrends, percentChange, percentChangeSign
+    let percentChange, percentChangeSign
     if (miniStats) {
-        avg = miniStats.avg; recentAvg = miniStats.recentAvg, hasTrends = miniStats.hasTrends;
-        if (hasTrends) {
-            percentChange = ((avg - recentAvg) / avg) * 100
+        if (miniStats.hasTrends) {
+            percentChange = ((miniStats.avg - miniStats.recentAvg) / miniStats.avg) * 100
             percentChangeSign = percentChange > 0 ? 'pos' : 'neg'
             percentChange = Math.abs(percentChange)
         }
     }
-    const hasMiniStats = !!avg
 
     const streaks = await getUserStreak(userPageInfo.id, PuzzleType.mini)
     const currentMiniStreak = streaks.find(s => s.current)
@@ -54,17 +56,17 @@ export default async function Page({ searchParams, params }: { searchParams?: an
         <Box style={styles.fullWidth}>
             <Heading>{userPageInfo.name}</Heading>
         </Box>
-        {hasMiniStats && <>
+        {miniStats && <>
             <Box>
                 <Subheading>Average score on the mini</Subheading>
-                <TimeScore large={true} score={avg!} />
+                <TimeScore large={true} score={miniStats.avg} />
             </Box>
             <Box>
                 <Subheading>Trends</Subheading>
-                {!hasTrends && <p>Keep logging scores to calculate trends.</p>}
-                {hasTrends &&
+                {!miniStats.hasTrends && <p>Keep logging scores to calculate trends.</p>}
+                {miniStats.hasTrends &&
                     <p>Past 7 days:
-                        average solve time was <TimeScore score={recentAvg!} />,{' '}
+                        average solve time was <TimeScore score={miniStats.recentAvg} />,{' '}
                         {percentChange?.toFixed(1)}% {percentChangeSign === 'pos' ? <strong>faster</strong> : <strong>slower</strong>}{' '}
                         than lifetime average.</p>}
             </Box>
@@ -85,16 +87,40 @@ export default async function Page({ searchParams, params }: { searchParams?: an
                 </Box>
                 {maxMiniStreak && maxMiniStreak.length !== currentMiniStreak?.length && <p>{displayScoreDate(maxMiniStreak.start_date)} - {displayScoreDate(maxMiniStreak.end_date)}</p>}
             </Box>
+            <Box>
+                <Subheading>Best score</Subheading>
+                <TimeScore large={true} score={miniStats.minScore} />
+            </Box>
+            <Box>
+                <Subheading>Completion rate</Subheading>
+                <AnimatedText className={largeFont.className} placeholder={['0', '0', '.', '0', '0', '%']} style={{ fontSize: '64px' }}>{(miniStats.completionRate * 100).toFixed(2) + '%'}</AnimatedText>
+            </Box>
+            <Box>
+                <Subheading>Consistency</Subheading>
+                <p>Half of scores are between <TimeScore score={miniStats.percentile25} /> and <TimeScore score={miniStats.percentile75} /></p>
+            </Box>
+            <Box>
+                <Subheading>Global ranking</Subheading>
+                {!miniStats.hasGlobalRank && <>
+                    <Subtitle>Must have at least {C.mini.minScoresForGlobalRank} scores to compete in site-wide ranking</Subtitle>
+                    <AnimatedText className={largeFont.className} style={{ fontSize: '64px' }} placeholder={['#', '0', '0']}>N/A</AnimatedText>
+                </>}
+                {miniStats.hasGlobalRank && <>
+                    <Subtitle>by average score out of {miniStats.maxGlobalRank} {miniStats.maxGlobalRank === 1 ? 'player' : 'players'}</Subtitle>
+                    <AnimatedText className={largeFont.className} style={{ fontSize: '64px' }} placeholder={['#', '0', '0']}>{'#' + miniStats.globalRank}</AnimatedText>
+                </>
+                }
+            </Box>
         </>}
         <Box>
             <Subheading>Tournaments</Subheading>
             {tournaments.length === 0 && <p>None yet. <Link href="/tournaments/create">Make one now!</Link></p>}
             {tournaments.map(t => <p key={t.id}><Link href={`/tournaments/${t.name}`}>{t.name}</Link></p>)}
         </Box>
-        {isMe && <Box>
+        {userInfo && isMe && <Box>
             <Subheading>Invites</Subheading>
             {invites.length === 0 && <p>None yet.</p>}
-            {invites.map(i => <InviteRow key={i.id} inviterName={i.inviter_name} tournamentName={i.tournament_name} id={i.id} userID={userPageInfo!.id} />)}
+            {invites.map(i => <InviteRow key={i.id} inviterName={i.inviter_name} tournamentName={i.tournament_name} id={i.id} userID={userInfo.id} />)}
         </Box>}
         <Box>
             <Box row={true} gap="large">
@@ -103,7 +129,7 @@ export default async function Page({ searchParams, params }: { searchParams?: an
             </Box>
             <ScoreTable scores={scores.slice(0, 10)} userID={userPageInfo.id} isMe={isMe} />
         </Box>
-        {isMe && <>
+        {userInfo && isMe && <>
             <Box>
                 <ChangeUsernameForm id={userInfo.id} username={userInfo.name} />
             </Box>

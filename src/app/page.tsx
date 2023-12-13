@@ -4,6 +4,7 @@ import { PodiumLeaderboard, PodiumLeaderboardLoading } from './stats'
 import { Suspense } from 'react'
 import { GlobalTopPerformers, GlobalTopPerformersLoading, GlobalTopStreaks, GlobalTopStreaksLoading } from './sections'
 import { styleSheet } from './ui/util'
+import * as C from '@/app/lib/constants'
 
 export default function Home() {
   return (
@@ -23,7 +24,7 @@ export default function Home() {
         <Box style={styles.gridContainer}>
           <Box>
             <Subheading>Fastest average</Subheading>
-            <Subtitle>Users must have at least 10 scores to appear in this list</Subtitle>
+            <Subtitle>Users must have at least {C.mini.minScoresForGlobalRank} scores to appear in this list</Subtitle>
             <Suspense fallback={<GlobalTopPerformersLoading />}>
               <GlobalTopPerformers />
             </Suspense>
