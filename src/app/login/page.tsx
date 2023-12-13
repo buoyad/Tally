@@ -8,8 +8,8 @@ import { Message } from './message'
 
 export default async function Page({ searchParams }: { searchParams?: any }) {
     const email = searchParams?.inviteEmail || null
-    const redirectPath = email ? `/user?inviteEmail=${email}` : `/user`
-    await redirectIfLoggedIn(redirectPath)
+    const redirectParams = email ? `?inviteEmail=${email}` : ``
+    await redirectIfLoggedIn(undefined, redirectParams)
     return <main>
         <Box>
             <Message />

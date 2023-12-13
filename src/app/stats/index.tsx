@@ -81,8 +81,7 @@ export function LeaderboardToday({ scores, usersByID, loggedInUser, currentUserI
 }
 
 export async function PodiumLeaderboard() {
-    let scores = await getGlobalTopScores(PuzzleType.mini)
-    scores = Array(10).fill({ user_name: 'ayoub', score: 100, id: 1, user_id: 1, for_day: 'a', puzzle_type: PuzzleType.mini })
+    const scores = await getGlobalTopScores(PuzzleType.mini)
     return (
         <Box style={{ ...styles.container, ...styles.whiteSpaceNowrap }}>
             {scores.length === 0 && <p style={styles.fullWidth}>No scores yet today</p>}

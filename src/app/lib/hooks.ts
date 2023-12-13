@@ -3,10 +3,10 @@ import { authOptions } from "../api/auth/[...nextauth]/auth"
 import { redirect } from "next/navigation"
 import * as db from "./db"
 
-export async function redirectIfLoggedIn(toPath?: string) {
-    const session = await getServerSession(authOptions)
+export async function redirectIfLoggedIn(toPath?: string, params?: string) {
+    const { session, userInfo } = await getLoggedInUser()
     if (session?.user) {
-        redirect(toPath || '/user')
+        redirect(toPath || `/${userInfo.name}${params}`)
     }
 }
 
