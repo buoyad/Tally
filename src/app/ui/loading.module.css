@@ -8,11 +8,11 @@
     }
 
     25.25% {
-        background: var(--color-tileBackground);
+        background: #fff;
     }
 
     100% {
-        background: var(--color-tileBackground);
+        background: #fff;
     }
 }
 
@@ -30,21 +30,21 @@
 .loading_box div:nth-child(2) {
     top: 6.66666666%;
     left: 53.3333333%;
-    background: var(--color-tileBackground);
+    background: #fff;
     animation-delay: 0.25s;
 }
 
 .loading_box div:nth-child(3) {
     top: 53.3333333%;
     left: 6.66666666%;
-    background: var(--color-tileBackground);
+    background: #fff;
     animation-delay: 0.75s;
 }
 
 .loading_box div:nth-child(4) {
     top: 53.3333333%;
     left: 53.3333333%;
-    background: var(--color-tileBackground);
+    background: #fff;
     animation-delay: 0.5s;
 }
 
