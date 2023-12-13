@@ -8,6 +8,7 @@
     "dev:build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "analyze": "ANALYZE=true next build",
     "db:up": "db-migrate up",
     "db:down": "db-migrate down"
   },
@@ -15,6 +16,8 @@
     "@auth/pg-adapter": "^0.2.7",
     "@react-spring/web": "^9.7.3",
     "@vercel/speed-insights": "^1.0.1",
+    "@visx/stats": "^3.5.0",
+    "@visx/visx": "^3.6.0",
     "clsx": "^2.0.0",
     "dayjs": "^1.11.10",
     "db-migrate": "^0.11.14",
@@ -31,6 +34,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^14.0.4",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.14",

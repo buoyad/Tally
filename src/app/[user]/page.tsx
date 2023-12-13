@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, Heading, Subheading, Subtitle, TimeScore } from '@/app/ui/components'
+import { ScoreBoxPlot } from '@/app/ui/common'
 import { ChangeUsernameForm, LogoutButton, InviteRow, ScoreTable, Message } from './form'
 import { getLoggedInUser } from '../lib/hooks'
 import { getUserTournaments, getUserInvites, getUserScores, getUserStats, getUserStreak, getUserByName } from '../lib/db'
@@ -12,7 +13,7 @@ import { AnimatedText } from '../ui/client-components'
 import { Tilt_Warp } from 'next/font/google'
 import * as C from '@/app/lib/constants'
 
-export const largeFont = Tilt_Warp({ subsets: ['latin'], weight: '400' })
+const largeFont = Tilt_Warp({ subsets: ['latin'], weight: '400' })
 
 export default async function Page({ searchParams, params }: { searchParams?: any, params: { user: string } }) {
     const { userInfo } = await getLoggedInUser()
@@ -87,17 +88,18 @@ export default async function Page({ searchParams, params }: { searchParams?: an
                 </Box>
                 {maxMiniStreak && maxMiniStreak.length !== currentMiniStreak?.length && <p>{displayScoreDate(maxMiniStreak.start_date)} - {displayScoreDate(maxMiniStreak.end_date)}</p>}
             </Box>
-            <Box>
-                <Subheading>Best score</Subheading>
-                <TimeScore large={true} score={miniStats.minScore} />
+            <Box style={{ overflow: 'visible' }}>
+                <Subheading>Consistency</Subheading>
+                <ScoreBoxPlot scores={scores} />
+                <p>Half of scores are between <TimeScore score={miniStats.percentile25} /> and <TimeScore score={miniStats.percentile75} /></p>
             </Box>
             <Box>
                 <Subheading>Completion rate</Subheading>
                 <AnimatedText className={largeFont.className} placeholder={['0', '0', '.', '0', '0', '%']} style={{ fontSize: '64px' }}>{(miniStats.completionRate * 100).toFixed(2) + '%'}</AnimatedText>
             </Box>
             <Box>
-                <Subheading>Consistency</Subheading>
-                <p>Half of scores are between <TimeScore score={miniStats.percentile25} /> and <TimeScore score={miniStats.percentile75} /></p>
+                <Subheading>Best score</Subheading>
+                <TimeScore large={true} score={miniStats.minScore} />
             </Box>
             <Box>
                 <Subheading>Global ranking</Subheading>

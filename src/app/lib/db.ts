@@ -307,8 +307,10 @@ export const getUserStats = cache(async (userID: number): Promise<UserStats> => 
         total_scores: string,
         days_since_first_play: string,
         min_score: string,
+        max_score: string,
         completion_rate: string,
         percentile_75: string,
+        median: string,
         percentile_25: string,
     }>(`
         SELECT 
@@ -319,9 +321,11 @@ export const getUserStats = cache(async (userID: number): Promise<UserStats> => 
             COUNT(scores.score) FILTER (WHERE scores.for_day >= $2) AS recent_scores,
             COUNT(scores.score) AS total_scores,
             MIN(scores.score) AS min_score,
+            MAX(scores.score) AS max_score,
             (CURRENT_DATE - MIN(scores.for_day) + 1) AS days_since_first_play,
             COUNT(scores.score)::numeric / (CURRENT_DATE - MIN(scores.for_day) + 1) AS completion_rate,
             PERCENTILE_DISC(.75) WITHIN GROUP (ORDER BY scores.score) AS percentile_75, 
+            PERCENTILE_DISC(.50) WITHIN GROUP (ORDER BY scores.score) AS median,
             PERCENTILE_DISC(.25) WITHIN GROUP (ORDER BY scores.score) AS percentile_25
         FROM scores
         WHERE scores.user_id = $1
@@ -333,10 +337,12 @@ export const getUserStats = cache(async (userID: number): Promise<UserStats> => 
             recentAvg: parseFloat(row.recent_avg),
             hasTrends: parseFloat(row.recent_scores) > 3 && parseFloat(row.total_scores) > 7,
             minScore: parseFloat(row.min_score),
+            maxScore: parseFloat(row.max_score),
             totalScores: parseInt(row.total_scores),
             daysSinceFirstPlay: parseInt(row.days_since_first_play),
             completionRate: parseFloat(row.completion_rate),
             percentile75: parseFloat(row.percentile_75),
+            median: parseFloat(row.median),
             percentile25: parseFloat(row.percentile_25),
             hasGlobalRank: false,
             globalRank: 0,

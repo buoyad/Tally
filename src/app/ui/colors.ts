@@ -11,6 +11,8 @@ export const colors = {
         boxShadow: '#000',
         selectTrack: '#eaeaef',
         selectIndicator: '#efeffa',
+        boxPlotFill: 'rgba(107, 188, 255, 0.5)',
+        boxPlotStroke: 'rgba(107, 188, 255, 0.9)'
     },
     dark: {
         transparent: 'transparent',
@@ -24,5 +26,7 @@ export const colors = {
         boxShadow: '#000',
         selectTrack: '#10101f',
         selectIndicator: '#22222f',
+        boxPlotFill: 'rgba(107, 188, 255, 0.5)',
+        boxPlotStroke: 'rgba(107, 188, 255, 0.9)'
     },
 }
