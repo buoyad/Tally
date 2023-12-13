@@ -98,7 +98,7 @@ function _ScoreBoxPlot({ scores, parentWidth, parentHeight }: Props) {
                     tickFormat={v => displaySeconds(v.valueOf())}
                     stroke={'var(--color-text)'}
                     tickStroke={'var(--color-text)'}
-                    tickLabelProps={{ fill: 'var(--color-text)', fontFamily: timeScoreFont.style.fontFamily, fontSize: 12 }} />
+                    tickLabelProps={{ fill: 'var(--color-text)', fontFamily: timeScoreFont.style.fontFamily, fontSize: 12, transform: 'rotate(45, -5, -5)' }} />
             </Group>
         </svg>
     </div>
