@@ -10,12 +10,11 @@ import { displayScoreDate } from '../lib/util'
 import { styleSheet } from '../ui/util'
 
 export default async function Page({ searchParams, params }: { searchParams?: any, params: { user: string } }) {
-    const { session, userInfo } = await getLoggedInUser()
-    if (!session) return null
+    const { userInfo } = await getLoggedInUser()
 
     let userPageInfo: UserInfo | undefined
     let isMe = false
-    if (userInfo.name.toLowerCase() === params.user.toLowerCase()) {
+    if (userInfo?.name.toLowerCase() === params.user.toLowerCase()) {
         userPageInfo = userInfo
         isMe = true
     } else {
@@ -103,7 +102,7 @@ export default async function Page({ searchParams, params }: { searchParams?: an
             </Box>
             <ScoreTable scores={scores.slice(0, 10)} userID={userPageInfo.id} isMe={isMe} />
         </Box>
-        {isMe && <>
+        {userInfo && isMe && <>
             <Box>
                 <ChangeUsernameForm id={userInfo.id} username={userInfo.name} />
             </Box>
