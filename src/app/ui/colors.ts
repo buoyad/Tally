@@ -9,7 +9,7 @@ export const colors = {
         buttonBorder: '#000',
         link: '#3868D6',
         boxShadow: '#000',
-        selectTrack: '#dadadf',
+        selectTrack: '#eaeaef',
         selectIndicator: '#efeffa',
     },
     dark: {
