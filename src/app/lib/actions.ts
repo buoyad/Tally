@@ -52,9 +52,10 @@ export async function changeUsername(_: any, formData: FormData) {
         return { message: "You must be logged in to change usernames" }
     }
 
+    let data
     try {
         const rawFormData = { username: formData.get("username"), id: formData.get('id') }
-        const data = changeUsernameSchema.parse(rawFormData)
+        data = changeUsernameSchema.parse(rawFormData)
         if (data.id !== session.userInfo.id) {
             return { message: "You can't change someone else's username" }
         }
@@ -73,9 +74,9 @@ export async function changeUsername(_: any, formData: FormData) {
         return { message: 'An unknown error occurred' }
     }
 
-    revalidatePath('/')
-    revalidatePath('/tournaments/[name]', 'page') // just invalidate all tournaments, in the future we can invalidate only the ones the user is in
-    revalidatePath(`/${session.userInfo.name}`)
+    // invalidate everything
+    revalidatePath('/', 'layout')
+    redirect(`/${data.username}`)
 }
 
 const inviteToTournamentSchema = validation.z.object({
