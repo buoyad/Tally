@@ -96,6 +96,7 @@ export default async function Page({ searchParams, params }: { searchParams?: an
             <Box>
                 <Subheading>Completion rate</Subheading>
                 <AnimatedText className={largeFont.className} placeholder={['0', '0', '.', '0', '0', '%']} style={{ fontSize: '64px' }}>{(miniStats.completionRate * 100).toFixed(2) + '%'}</AnimatedText>
+                <p>{miniStats.totalScores} completed / {miniStats.daysSinceFirstPlay} days since first submitted score</p>
             </Box>
             <Box>
                 <Subheading>Best score</Subheading>
