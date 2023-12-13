@@ -68,6 +68,11 @@ function _ScoreBoxPlot({ scores, parentWidth, parentHeight }: Props) {
         domain: [stats.min, stats.max],
         range: [0, innerWidth],
     })
+
+    if (parentWidth === 0) {
+        return <div style={{ height }} />
+    }
+
     return <div style={{ position: 'relative' }}>
         <svg width={parentWidth} height={height} style={{ overflow: 'visible' }}>
             <Group left={margin.left} top={margin.top}>
