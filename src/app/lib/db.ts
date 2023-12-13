@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import tz from 'dayjs/plugin/timezone'
 import { unstable_cache as _cache } from 'next/cache'
+import * as C from './constants'
 dayjs.extend(utc)
 dayjs.extend(tz)
 
@@ -297,14 +298,35 @@ export const getUserStats = cache(async (userID: number): Promise<UserStats> => 
     log.info('cache miss: getUserStats %d', userID)
     const nyNow = dayjs().tz('America/New_York')
     const recencyCutoff = dayjs().tz('America/New_York').year(nyNow.year()).month(nyNow.month()).date(nyNow.date()).hour(22).minute(0).second(0).millisecond(0).subtract(7, 'days')
-    const res = await pool.query<{ user_id: number, puzzle_type: PuzzleType, avg: string, recent_avg: string, recent_scores: string, total_scores: string }>(`
+    const res = await pool.query<{
+        user_id: number,
+        puzzle_type: PuzzleType,
+        avg: string,
+        recent_avg: string,
+        recent_scores: string,
+        total_scores: string,
+        days_since_first_play: string,
+        min_score: string,
+        max_score: string,
+        completion_rate: string,
+        percentile_75: string,
+        median: string,
+        percentile_25: string,
+    }>(`
         SELECT 
             scores.user_id, 
             scores.puzzle_type, 
             AVG(scores.score) AS avg, 
             AVG(scores.score) FILTER (WHERE scores.for_day >= $2) AS recent_avg,
             COUNT(scores.score) FILTER (WHERE scores.for_day >= $2) AS recent_scores,
-            COUNT(scores.score) AS total_scores
+            COUNT(scores.score) AS total_scores,
+            MIN(scores.score) AS min_score,
+            MAX(scores.score) AS max_score,
+            (CURRENT_DATE - MIN(scores.for_day) + 1) AS days_since_first_play,
+            COUNT(scores.score)::numeric / (CURRENT_DATE - MIN(scores.for_day) + 1) AS completion_rate,
+            PERCENTILE_DISC(.75) WITHIN GROUP (ORDER BY scores.score) AS percentile_75, 
+            PERCENTILE_DISC(.50) WITHIN GROUP (ORDER BY scores.score) AS median,
+            PERCENTILE_DISC(.25) WITHIN GROUP (ORDER BY scores.score) AS percentile_25
         FROM scores
         WHERE scores.user_id = $1
         GROUP BY scores.user_id, scores.puzzle_type
@@ -314,9 +336,43 @@ export const getUserStats = cache(async (userID: number): Promise<UserStats> => 
             avg: parseFloat(row.avg),
             recentAvg: parseFloat(row.recent_avg),
             hasTrends: parseFloat(row.recent_scores) > 3 && parseFloat(row.total_scores) > 7,
+            minScore: parseFloat(row.min_score),
+            maxScore: parseFloat(row.max_score),
+            totalScores: parseInt(row.total_scores),
+            daysSinceFirstPlay: parseInt(row.days_since_first_play),
+            completionRate: parseFloat(row.completion_rate),
+            percentile75: parseFloat(row.percentile_75),
+            median: parseFloat(row.median),
+            percentile25: parseFloat(row.percentile_25),
+            hasGlobalRank: false,
+            globalRank: 0,
+            maxGlobalRank: 0
         }
         return acc
     }, {} as UserStats)
+    const rankRes = await pool.query<{ puzzle_type: PuzzleType, rank: string, max_rank: string }>(`
+        WITH ranks AS (
+            SELECT 
+                user_id, 
+                puzzle_type, 
+                RANK() OVER (
+                    PARTITION BY puzzle_type ORDER BY AVG(score) ASC
+                    ) AS rank 
+                from scores GROUP BY user_id, puzzle_type HAVING COUNT(score) >= $1
+        ), max_ranks AS (
+            SELECT *, MAX(rank) OVER (PARTITION BY puzzle_type) AS max_rank FROM ranks
+        )
+        SELECT puzzle_type, rank, max_rank FROM max_ranks WHERE user_id = $2
+    `, [C.mini.minScoresForGlobalRank, userID])
+
+    rankRes.rows.forEach(row => {
+        const stat = stats[row.puzzle_type]
+        if (stat) {
+            stat.hasGlobalRank = true
+            stat.globalRank = parseInt(row.rank)
+            stat.maxGlobalRank = parseInt(row.max_rank)
+        }
+    })
     return stats
 })
 
@@ -400,7 +456,7 @@ export const getGlobalTopScores = cache(async (type: PuzzleType) => {
     return res.rows
 })
 
-export const getGlobalTopPerformers = cache(async (type: PuzzleType, timePeriodDays?: number, minScoreCount: number = 10) => {
+export const getGlobalTopPerformers = cache(async (type: PuzzleType, timePeriodDays?: number, minScoreCount: number = C.mini.minScoresForGlobalRank) => {
     log.info('cache miss: getGlobalTopPerformers %s %s', type, timePeriodDays || 'all time')
     let timePeriodCutoff
     if (timePeriodDays) {
@@ -419,7 +475,7 @@ export const getGlobalTopPerformers = cache(async (type: PuzzleType, timePeriodD
             WHERE scores.puzzle_type = $1
             AND scores.for_day >= $2
             GROUP BY scores.user_id, userinfo.name
-            HAVING COUNT(scores.score) > $3
+            HAVING COUNT(scores.score) >= $3
             ORDER BY avg_score ASC
             LIMIT 10
         `, [type, timePeriodCutoff, minScoreCount])

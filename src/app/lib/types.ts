@@ -37,6 +37,17 @@ export type UserStats = {
         avg: number,
         recentAvg: number,
         hasTrends: boolean,
+        totalScores: number,
+        daysSinceFirstPlay: number,
+        completionRate: number,
+        minScore: number,
+        percentile75: number,
+        median: number,
+        percentile25: number,
+        maxScore: number,
+        hasGlobalRank: boolean,
+        globalRank: number,
+        maxGlobalRank: number,
     }
 }
 

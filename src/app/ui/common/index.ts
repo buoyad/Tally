@@ -1,0 +1,1 @@
+export { default as ScoreBoxPlot } from './box-plot'
