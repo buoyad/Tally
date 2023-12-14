@@ -296,7 +296,7 @@ export const getUserScores = cache(async (userID: number) => {
 
 export const getUserStats = cache(async (userID: number): Promise<UserStats> => {
     log.info('cache miss: getUserStats %d', userID)
-    const nyNow = dayjs().tz('America/New_York')
+    const nyNow = dayjs().tz('America/New_York').hour(18)
     const recencyCutoff = dayjs().tz('America/New_York').year(nyNow.year()).month(nyNow.month()).date(nyNow.date()).hour(22).minute(0).second(0).millisecond(0).subtract(7, 'days')
     const res = await pool.query<{
         user_id: number,
@@ -322,15 +322,15 @@ export const getUserStats = cache(async (userID: number): Promise<UserStats> => 
             COUNT(scores.score) AS total_scores,
             MIN(scores.score) AS min_score,
             MAX(scores.score) AS max_score,
-            (CURRENT_DATE - MIN(scores.for_day) + 1) AS days_since_first_play,
-            COUNT(scores.score)::numeric / (CURRENT_DATE - MIN(scores.for_day) + 1) AS completion_rate,
+            ($3::DATE - MIN(scores.for_day) + 1) AS days_since_first_play,
+            COUNT(scores.score)::numeric / ($3::DATE - MIN(scores.for_day) + 1) AS completion_rate,
             PERCENTILE_DISC(.75) WITHIN GROUP (ORDER BY scores.score) AS percentile_75, 
             PERCENTILE_DISC(.50) WITHIN GROUP (ORDER BY scores.score) AS median,
             PERCENTILE_DISC(.25) WITHIN GROUP (ORDER BY scores.score) AS percentile_25
         FROM scores
         WHERE scores.user_id = $1
         GROUP BY scores.user_id, scores.puzzle_type
-    `, [userID, recencyCutoff])
+    `, [userID, recencyCutoff, nyNow])
     const stats = res.rows.reduce((acc, row) => {
         acc[row.puzzle_type] = {
             avg: parseFloat(row.avg),
