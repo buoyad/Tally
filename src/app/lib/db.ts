@@ -489,7 +489,7 @@ export const getGlobalTopPerformers = cache(async (type: PuzzleType, timePeriodD
             INNER JOIN userinfo ON scores.user_id = userinfo.id
             WHERE scores.puzzle_type = $1
             GROUP BY scores.user_id, userinfo.name
-            HAVING COUNT(scores.score) > $2
+            HAVING COUNT(scores.score) >= $2
             ORDER BY avg_score ASC
             LIMIT 10
         `, [type, minScoreCount])
