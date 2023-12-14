@@ -1,5 +1,7 @@
 import * as React from 'react'
 
+// this file is named icon-component because next.js reserves icon.tsx
+
 type IconName = 'user' | 'key'
 
 type Props = {
