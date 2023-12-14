@@ -5,10 +5,13 @@ import { ParentSize } from '@visx/responsive'
 import { Group } from "@visx/group"
 import { BoxPlot } from '@visx/stats'
 import { AnimatedAxis } from '@visx/react-spring'
-import { Annotation, HtmlLabel, Connector, LineSubject } from '@visx/annotation'
 import { Baloo_2 } from "next/font/google"
 import { displaySeconds } from "@/app/lib/util"
+import { styleSheet, useMeasure } from '../util'
 import { Score } from "@/app/lib/types"
+import { Info } from 'react-feather'
+import { Box, TimeScore } from '../components'
+import { animated, useSpring } from '@react-spring/web'
 
 const timeScoreFont = Baloo_2({ subsets: ['latin'], weight: '500' })
 
@@ -52,8 +55,18 @@ type Props = {
 function _ScoreBoxPlot({ scores, parentWidth, parentHeight }: Props) {
     const stats = getScoreStats(scores)
 
-    const [showHelp, setShowHelp] = React.useState(true)
-
+    const [infoOpen, setInfoOpen] = React.useState(false)
+    const [ref, tooltipSize] = useMeasure()
+    const infoSpring = useSpring({
+        height: 0,
+        boxShadow: '0px 0px transparent',
+        border: '0px solid transparent',
+        to: {
+            height: infoOpen ? tooltipSize.height : 0,
+            boxShadow: infoOpen ? '2px 2px var(--color-boxShadow)' : '0px 0px transparent',
+            border: infoOpen ? '1px solid var(--color-boxShadow)' : '0px solid transparent',
+        }
+    })
 
     const margin = {
         top: 12, right: 12, bottom: 40, left: 12,
@@ -73,8 +86,11 @@ function _ScoreBoxPlot({ scores, parentWidth, parentHeight }: Props) {
         return <div style={{ height }} />
     }
 
-    return <div style={{ position: 'relative' }}>
-        <svg width={parentWidth} height={height} style={{ overflow: 'visible' }}>
+    return <div style={styles.container}>
+        <div style={styles.infoIcon} onClick={() => setInfoOpen(!infoOpen)}>
+            <p><Info size="1em" /></p>
+        </div>
+        <svg width={parentWidth} height={height}>
             <Group left={margin.left} top={margin.top}>
                 <BoxPlot
                     valueScale={scale}
@@ -101,8 +117,49 @@ function _ScoreBoxPlot({ scores, parentWidth, parentHeight }: Props) {
                     tickLabelProps={{ fill: 'var(--color-text)', fontFamily: timeScoreFont.style.fontFamily, fontSize: 12, transform: 'rotate(45, -5, -5)' }} />
             </Group>
         </svg>
+        <animated.div style={{
+            top: height,
+            ...styles.infoContainer,
+            ...infoSpring,
+        }}>
+            <div ref={ref} style={styles.infoInner}>
+                <Box style={styles.infoLayout}>
+                    <p>minimum</p>
+                    <p><TimeScore score={stats.min} /></p>
+                    <p>25% of scores below</p>
+                    <p><TimeScore score={stats.firstQuartile} /></p>
+                    <p>median</p>
+                    <p><TimeScore score={stats.median} /></p>
+                    <p>75% of scores below</p>
+                    <p><TimeScore score={stats.thirdQuartile} /></p>
+                    <p>maximum</p>
+                    <p><TimeScore score={stats.max} /></p>
+                    <p>outliers</p>
+                    <p>{stats.outliers.length}</p>
+                </Box>
+            </div>
+        </animated.div>
     </div>
 }
+
+const styles = styleSheet({
+    container: { position: 'relative' },
+    infoIcon: { position: 'absolute', top: '4px', right: '4px', cursor: 'pointer' },
+    infoContainer: {
+        position: 'absolute',
+        background: 'var(--color-background)',
+        left: 0,
+        zIndex: 1,
+        overflow: 'hidden',
+        width: '100%',
+    },
+    infoInner: {
+        fontSize: '14px',
+        lineHeight: '.8rem',
+        padding: '0.5rem 0.5rem',
+    },
+    infoLayout: { display: 'grid', gridTemplateColumns: '.7fr .25fr 1fr .25fr', gap: '.5rem', width: '100%' }
+})
 
 type ExternalProps = {
     scores: Score[],

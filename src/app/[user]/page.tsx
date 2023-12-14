@@ -89,9 +89,9 @@ export default async function Page({ searchParams, params }: { searchParams?: an
                 {maxMiniStreak && maxMiniStreak.length !== currentMiniStreak?.length && <p>{displayScoreDate(maxMiniStreak.start_date)} - {displayScoreDate(maxMiniStreak.end_date)}</p>}
             </Box>
             <Box style={{ overflow: 'visible' }}>
-                <Subheading>Consistency</Subheading>
-                <ScoreBoxPlot scores={scores} />
-                <p>Half of scores are between <TimeScore score={miniStats.percentile25} /> and <TimeScore score={miniStats.percentile75} /></p>
+                <Subheading>The juicy math</Subheading>
+                {scores.length > 4 && <ScoreBoxPlot scores={scores} />}
+                {scores.length <= 4 && <p>Need at least 5 scores to do juicy math</p>}
             </Box>
             <Box>
                 <Subheading>Completion rate</Subheading>
