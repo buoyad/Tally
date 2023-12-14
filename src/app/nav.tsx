@@ -5,6 +5,7 @@ import styles from '@/app/nav.module.css'
 import { Roboto_Mono } from 'next/font/google'
 import { clsx } from 'clsx'
 import { UserInfo } from "./lib/types"
+import { Icon } from "./ui/common"
 
 const RoboMono = Roboto_Mono({ subsets: ['latin'] })
 
@@ -21,9 +22,18 @@ export default function Nav({ userInfo }: { userInfo: UserInfo | null }) {
         <div className={styles.container}>
             <header className={styles.header}><Link href="/"><CWTally /></Link></header>
             {userInfo &&
-                <Link href={`/${userInfo.name}`} className={clsx({ [styles.active]: pathname.toLowerCase() === `/${userInfo.name.toLowerCase()}` })}>Me</Link>
+                <Link href={`/${userInfo.name}`} className={clsx(RoboMono.className)}>
+                    <span className={styles.iconContainer}>
+                        <Icon name="user" width={24} height={24} strokeWidth={pathname.toLowerCase() === `/${userInfo.name.toLowerCase()}` ? 2.5 : 1.5} />
+                    </span>
+                </Link>
             }
-            {!userInfo && <Link href="/login" className={clsx({ [styles.active]: pathname === '/login' })}>Log in</Link>}
+            {!userInfo &&
+                <Link href="/login" className={clsx(RoboMono.className)}>
+                    <span className={styles.iconContainer}>
+                        <Icon name="key" width={24} height={24} strokeWidth={pathname === '/login' ? 2.5 : 1.5} />
+                    </span>
+                </Link>}
         </div>
     )
 }
