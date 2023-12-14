@@ -6,7 +6,7 @@ import * as db from "./db"
 export async function redirectIfLoggedIn(toPath?: string, params?: string) {
     const { session, userInfo } = await getLoggedInUser()
     if (session?.user) {
-        redirect(toPath || `/${userInfo.name}${params}`)
+        redirect(toPath ?? `/${userInfo.name}${!!params ? params : ''}`)
     }
 }
 

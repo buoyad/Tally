@@ -88,7 +88,7 @@ function _ScoreBoxPlot({ scores, parentWidth, parentHeight }: Props) {
 
     return <div style={styles.container}>
         <div style={styles.infoIcon} onClick={() => setInfoOpen(!infoOpen)}>
-            <p><Info size="1em" /></p>
+            <p><Info size="1em" strokeWidth={infoOpen ? 3 : 2} style={{ transition: 'stroke-width .2s' }} /></p>
         </div>
         <svg width={parentWidth} height={height}>
             <Group left={margin.left} top={margin.top}>
