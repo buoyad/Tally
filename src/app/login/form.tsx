@@ -49,6 +49,7 @@ const EnterEmail = ({ initialEmail, onSuccess }: { initialEmail: string | null, 
 const VerifyCode = ({ email }: { email: string }) => {
     const [code, setCode] = React.useState('')
     const [disabled, setDisabled] = React.useState(true)
+    const [pending, setPending] = React.useState(false)
     const router = useRouter()
 
     React.useEffect(() => {
@@ -56,6 +57,7 @@ const VerifyCode = ({ email }: { email: string }) => {
     }, [code])
 
     const handleSubmit = async () => {
+        setPending(true)
         const res = await fetch(`/api/auth/callback/email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(code)}&callbackUrl=${encodeURIComponent('/login-success')}`)
         const redirectUrl = res.url
         // this is hacky, but the alternative leads to a terrible UX of multiple reloads before we land on the user page
@@ -63,6 +65,7 @@ const VerifyCode = ({ email }: { email: string }) => {
             router.refresh() // this will redirect to the user page
         } else {
             router.replace('/login?error=Verification')
+            setPending(false)
         }
     }
 
@@ -77,7 +80,7 @@ const VerifyCode = ({ email }: { email: string }) => {
                 className={styles.textInput}
                 required={true}
                 value={code} onChange={e => setCode(e.target.value)} />
-            <Button disabled={disabled} label="Verify" role="success" onClick={handleSubmit} />
+            <Button disabled={disabled} pending={pending} label="Verify" pendingLabel='Verifying...' role="success" onClick={handleSubmit} />
         </div>
         <Subtitle>Enter the code you received in your email.</Subtitle>
     </form>
