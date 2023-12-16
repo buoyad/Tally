@@ -22,6 +22,10 @@ export const metadata: Metadata = {
   icons: [
     { rel: 'icon', url: '/favicon.ico' },
   ],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+  },
   openGraph: {
     type: 'website',
     url: 'https://tally.ayoubd.com',
