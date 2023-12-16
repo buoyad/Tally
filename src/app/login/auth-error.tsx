@@ -13,7 +13,7 @@ export default function AuthError() {
 }
 
 const errorMessages: { [key: string]: string } = {
-    'Configuration': 'Danny messed up configurating the authentication system. Please let me know about this.',
+    'configuration': 'Danny messed up configurating the authentication system. Please let me know about this.',
     'Verification': 'This verification token has expired.',
     'EmailCreateAccount': 'There was a problem creating your account. Please try again.',
     'EmailSignin': 'There was a problem sending the verification email. If the problem persists, please contact Danny.',
