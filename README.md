@@ -16,6 +16,37 @@ connect to their hosted database service. Copy the `NON_POOLING` url to the
 Use your node package manager of choice to `install` the project. I use `bun`
 and that is the only one I have tested.
 
+### Setting up DB
+
+Install & run postgres locally. Populate the `.env` with the details of your
+local connection. Populate `NODE_ENV` with `development`, which `db-migrate`
+will use to know not to try to use ssl locally (see `db-migrate.json`). Example
+env:
+
+```
+POSTGRES_URL="postgres://user@localhost:5432/user"
+POSTGRES_PRISMA_URL="postgres://user@localhost:5432/user"
+POSTGRES_URL_NON_POOLING="postgres://user@localhost:5432/user"
+POSTGRES_USER="user"
+POSTGRES_HOST="localhost:5432"
+POSTGRES_PASSWORD=""
+POSTGRES_DATABASE="user"
+
+# db-migrate automatically reads this
+NODE_ENV="development"
+DATABASE_URL="postgres://user@localhost:5432/user"
+
+...
+```
+
+Now, to initialize the DB and start the dev environment:
+
+```sh
+bun install
+bun db:up
+bun dev
+```
+
 ### Commands
 
 | Command                             | Usage                               |
