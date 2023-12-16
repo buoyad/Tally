@@ -7,12 +7,22 @@ import { createTransport } from "nodemailer"
 import * as db from "@/app/lib/db"
 import log from "@/app/lib/log"
 import { SentEmailType } from "@/app/lib/types"
+import { randomInt } from 'crypto'
 
 const pool = new Pool({
     connectionString: process.env.POSTGRES_URL + (process.env.NODE_ENV === "production" ? "?sslmode=require" : "")
 })
 
-const verifyEmailMaxAge = 15 * 60 // 15 minutes
+const verifyEmailMaxAge = 5 * 60 // 5 minutes
+
+const verificationTokenLength = 5
+const newToken = () => {
+    let token = ""
+    for (let i = 0; i < verificationTokenLength; i++) {
+        token += randomInt(10).toString()
+    }
+    return token
+}
 
 export const authOptions: AuthOptions = {
     adapter: PostgresAdapter(pool),
@@ -28,15 +38,18 @@ export const authOptions: AuthOptions = {
                 }
             },
             from: process.env.EMAIL_FROM,
+            generateVerificationToken: () => {
+                return newToken()
+            },
             sendVerificationRequest: async (params) => {
-                const { identifier, url, provider } = params
+                const { identifier, token, provider } = params
                 const transport = createTransport(provider.server)
                 const result = await transport.sendMail({
                     to: identifier,
                     from: provider.from,
-                    subject: `Sign in to Tally`,
-                    text: `${url}\nThis link will expire in 15 minutes.\n\n`,
-                    html: `<a href="${url}">Sign in to Tally</a><br><br>This link will expire in 15 minutes.<br><br>`
+                    subject: `Your Tally login code is ${token}`,
+                    text: `${token}\n\nThis code will expire in 5 minutes.\n\n`,
+                    html: `${token}<br><br>This code will expire in 5 minutes.<br><br>`
                 })
                 const failed = result.rejected.concat(result.pending).filter(Boolean)
                 if (failed.length) {

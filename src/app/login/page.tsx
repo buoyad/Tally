@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Heading, Subtitle } from '@/app/ui/components'
+import { Box, Heading } from '@/app/ui/components'
 import Form from './form'
 import { Metadata } from 'next'
 import { redirectIfLoggedIn } from '../lib/hooks'
@@ -16,7 +16,6 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
             <Heading>Log in to Tally</Heading>
             <AuthError />
             <Form initialEmail={email} />
-            <Subtitle>Tally will email you a link to create your account or login to your existing account.</Subtitle>
         </Box>
     </main>
 }
