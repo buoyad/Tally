@@ -57,15 +57,15 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
             let lastMatch = matches[matches.length - 1]
             let matchesAlt = [...text.matchAll(timeRegexAlt)]
             let lastMatchAlt = matchesAlt[matchesAlt.length - 1]
-            if (lastMatch) {
+            if (lastMatchAlt) {
+                const [_, seconds] = lastMatchAlt
+                setMinutes('0')
+                setSeconds(seconds)
+            } else if (lastMatch) {
                 const [_, minutes, seconds] = lastMatch
                 setMinutes(minutes)
                 setSeconds(seconds)
                 setError('')
-            } else if (lastMatchAlt) {
-                const [_, seconds] = lastMatchAlt
-                setMinutes('0')
-                setSeconds(seconds)
             } else {
                 setError('unable to read time, try again or enter manually')
             }
