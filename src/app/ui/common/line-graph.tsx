@@ -60,8 +60,9 @@ function _MovingAvgLineGraph({ avgs, parentWidth, parentHeight }: Props) {
     const theme = buildChartTheme({
         backgroundColor: 'var(--color-background)',
         colors: ['#18B15C', '#2C8ADB', '#DBC11B', '#DB3041', '#53E176', '#6DCDFF', '#FFED5C', '#FF7B71'],
-        gridColor: 'rgba(0, 0, 0, .1)',
-        gridColorDark: 'rgba(0, 0, 0, .1)',
+        gridColor: 'var(--color-text)',
+        gridColorDark: 'rgba(255, 255, 255, .1)',
+        gridStyles: { opacity: 0.1 },
         tickLength: 4
     })
 
@@ -71,8 +72,10 @@ function _MovingAvgLineGraph({ avgs, parentWidth, parentHeight }: Props) {
             {Object.entries(data).map(([name, data]) =>
                 <AnimatedLineSeries key={name} dataKey={name} data={data} {...accessors} />
             )}
-            <AnimatedAxis orientation="bottom" tickFormat={(val) => displayDate(val)} strokeWidth={1} numTicks={6} tickLabelProps={{ className: textFont.className }} />
-            <AnimatedAxis orientation="left" tickFormat={(val) => displaySeconds(val)} strokeWidth={1} tickLabelProps={{ className: textFont.className }} />
+            <AnimatedAxis orientation="bottom" tickFormat={(val) => displayDate(val)} strokeWidth={1} numTicks={6} stroke={'var(--color-text)'}
+                tickStroke={'var(--color-text)'} tickLabelProps={{ className: textFont.className, fill: 'var(--color-text)' }} />
+            <AnimatedAxis orientation="left" tickFormat={(val) => displaySeconds(val)} strokeWidth={1} stroke={'var(--color-text)'}
+                tickStroke={'var(--color-text)'} tickLabelProps={{ className: textFont.className, fill: 'var(--color-text)' }} />
             <AnimatedGrid numTicks={15} strokeDasharray='10,5' />
         </XYChart>
     </DataProvider>
@@ -86,14 +89,14 @@ const PlotLegend = () => {
         itemMargin="8px 8px 8px 0"
         scale={colorScale!}
         labelFormat={(label) => label.replace("-", " ")}
-        legendLabelProps={{ color: "black" }}
+        legendLabelProps={{ color: "var(--color-text)" }}
         shape="line"
         className={textFont.className}
         style={{
             backgroundColor: theme?.backgroundColor,
             paddingLeft: margin?.left,
             marginBottom: -28,
-            color: 'black',
+            color: 'var(--color-text)',
             display: 'flex', // required in addition to `direction` if overriding styles
         }}
     />
