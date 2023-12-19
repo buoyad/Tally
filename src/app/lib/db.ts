@@ -432,7 +432,28 @@ export const getUserStreak = cache(async (userID: number, type: PuzzleType) => {
 
 export const getScoresForUsers = cache(async (userIDs: number[]) => {
     log.info('cache miss: getScoresForUsers %s', userIDs.join(','))
-    const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = ANY($1) ORDER BY for_day DESC, score ASC', [userIDs])
+    const res = await pool.query<Score>('SELECT * FROM scores WHERE user_id = ANY($1) ORDER BY for_day DESC, score ASC, created_at ASC', [userIDs])
+    return res.rows
+})
+
+export const getMovingAverageForUsers = cache(async (userIDs: number[], type: PuzzleType, windowSize: number, numDays: number) => {
+    log.info('cache miss: getMovingAverageForUsers %s %s %d', userIDs.join(','), type, windowSize)
+    const recencyCutoff = dayjs().tz('America/New_York').subtract(numDays, 'day').format('YYYY-MM-DD')
+    const res = await pool.query<{ user_id: number, name: string, for_day: string, moving_avg: string }>(`
+        SELECT 
+            user_id,
+            userinfo.name,
+            for_day,
+            AVG(score) OVER (
+                PARTITION BY user_id ORDER BY for_day ASC ROWS BETWEEN $3 PRECEDING AND CURRENT ROW
+            ) AS moving_avg
+        FROM scores
+        INNER JOIN userinfo ON scores.user_id = userinfo.id
+        WHERE user_id = ANY($1) 
+        AND puzzle_type = $2
+        AND for_day >= $4
+        ORDER BY user_id, for_day
+    `, [userIDs, type, windowSize - 1, recencyCutoff])
     return res.rows
 })
 
@@ -450,7 +471,7 @@ export const getGlobalTopScores = cache(async (type: PuzzleType) => {
         INNER JOIN userinfo ON scores.user_id = userinfo.id
         WHERE scores.puzzle_type = $1
         AND scores.for_day = $2
-        ORDER BY scores.score ASC
+        ORDER BY scores.score ASC, scores.created_at ASC
         LIMIT 10
     `, [type, recencyCutoff])
     return res.rows

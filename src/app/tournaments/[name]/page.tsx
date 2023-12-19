@@ -1,9 +1,11 @@
-import { getScoresForUsers, getTournamentInfo, getTournamentInvites } from "@/app/lib/db"
+import { getMovingAverageForUsers, getScoresForUsers, getTournamentInfo, getTournamentInvites } from "@/app/lib/db"
 import { Box, Heading, Subheading, Username } from "@/app/ui/components"
+import { MovingAvgLineGraph } from "@/app/ui/common"
 import { redirect } from "next/navigation"
 import { InviteToTournamentForm, InviteRow, LeaveTournamentForm } from "./form"
 import { getLoggedInUser } from "@/app/lib/hooks"
 import { LeaderboardToday } from "@/app/stats"
+import { PuzzleType } from "@/app/lib/types"
 
 export default async function Page({ params }: { params: { name: string } }) {
     const session = await getLoggedInUser()
@@ -22,6 +24,7 @@ export default async function Page({ params }: { params: { name: string } }) {
     }, {} as { [key: number]: { id: number, name: string } })
 
     const scores = await getScoresForUsers(info.users.map(u => u.id))
+    const movingAvgs = await getMovingAverageForUsers(info.users.map(u => u.id), PuzzleType.mini, 7, 60)
 
     return <main style={styles.container}>
         <Box style={styles.fullWidth}>
@@ -36,8 +39,9 @@ export default async function Page({ params }: { params: { name: string } }) {
             <div style={styles.placeholder} />
         </Box>
         <Box style={styles.fullWidth}>
-            <Subheading>All time stats</Subheading>
-            <div style={styles.placeholder} />
+            <Subheading>7-day moving average over the last 60 days</Subheading>
+            {movingAvgs.length > 2 && <MovingAvgLineGraph avgs={movingAvgs} />}
+            {movingAvgs.length <= 2 && <p>Not enough data to display a moving average.</p>}
         </Box>
         <Box>
             <Subheading>Players</Subheading>
