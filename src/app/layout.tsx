@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: 'Score and competition tracker for crossword puzzles.',
   applicationName: 'Tally',
   authors: { name: 'Danny Ayoub', url: 'https://ayoubd.com' },
-  keywords: ['crossword', 'scorekeeper', 'competition', 'puzzle', 'game', 'tally', 'crossword puzzle', 'crossword puzzles', 'crossword puzzle competition', 'crossword puzzle game', 'crossword puzzle scorekeeper', 'crossword puzzle competition score'],
+  keywords: ['crossword', 'scorekeeper', 'competition', 'mini crossword', 'mini crossword puzzle', 'puzzle', 'game', 'tally', 'crossword puzzle', 'crossword puzzles', 'crossword puzzle competition', 'crossword puzzle game', 'crossword puzzle scorekeeper', 'crossword puzzle competition score'],
   creator: 'Danny Ayoub',
   alternates: { canonical: 'https://tally.ayoubd.com' },
   icons: [
