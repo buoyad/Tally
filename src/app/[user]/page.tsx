@@ -12,6 +12,7 @@ import { styleSheet } from '../ui/util'
 import { AnimatedText } from '../ui/client-components'
 import { Tilt_Warp } from 'next/font/google'
 import * as C from '@/app/lib/constants'
+import NotFound from '../not-found'
 
 const largeFont = Tilt_Warp({ subsets: ['latin'], weight: '400' })
 
@@ -28,9 +29,7 @@ export default async function Page({ searchParams, params }: { searchParams?: an
     }
 
     if (!userPageInfo) return (
-        <main>
-            <Heading>That user doesn&apos;t exist</Heading>
-        </main>
+        <NotFound />
     )
 
     const tournaments = await getUserTournaments(userPageInfo.id)
