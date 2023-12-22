@@ -5,6 +5,7 @@ import { Suspense } from 'react'
 import { GlobalTopPerformers, GlobalTopPerformersLoading, GlobalTopStreaks, GlobalTopStreaksLoading } from './sections'
 import { styleSheet } from './ui/util'
 import * as C from '@/app/lib/constants'
+import { currentPuzzleDate, displayScoreDate } from './lib/util'
 
 export default function Home() {
   return (
@@ -14,7 +15,7 @@ export default function Home() {
         <p><Link href="/tournaments">Browse tournaments</Link> or <Link href="/tournaments/create">create</Link> one of your own.</p>
         <Subheading><Link href="/score">Register today&apos;s score</Link></Subheading>
         <Box>
-          <Subheading>Today&apos;s fastest mini solves</Subheading>
+          <Subheading>Fastest solves for {displayScoreDate(currentPuzzleDate())}</Subheading>
           <Subtitle>Contest ends at 10pm eastern time</Subtitle>
         </Box>
         <Suspense fallback={<PodiumLeaderboardLoading />}>

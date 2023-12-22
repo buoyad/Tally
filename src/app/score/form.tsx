@@ -10,6 +10,7 @@ import { Button } from '../ui/client-components';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+import { currentPuzzleDate } from '../lib/util';
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -19,15 +20,6 @@ const loadWorker = createWorker('eng')
 const timeRegex = /(\d{1,2}):(\d{2})/g
 const timeRegexAlt = /(\d{1,2}).*seconds?/g
 
-const getDefaultDay = () => {
-    const timeInNY = dayjs().tz('America/New_York')
-    let currentlyPublishedDay = timeInNY.format('YYYY-MM-DD')
-    if (timeInNY.hour() >= 22) {
-        currentlyPublishedDay = timeInNY.add(1, 'day').format('YYYY-MM-DD')
-    }
-    return currentlyPublishedDay
-}
-
 export default function Form({ userInfo }: { userInfo: UserInfo }) {
     const [file, setFile] = React.useState<File | null>(null)
     const [processing, setProcessing] = React.useState(false)
@@ -36,7 +28,7 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
     const [minutes, setMinutes] = React.useState('0')
     const [seconds, setSeconds] = React.useState('0')
 
-    const [date, setDate] = React.useState(getDefaultDay())
+    const [date, setDate] = React.useState(currentPuzzleDate())
 
     const [state, formAction] = useFormState(submitScore, { message: '' })
 
