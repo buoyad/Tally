@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     description: 'Score and competition tracker for crossword puzzles.',
     siteName: 'Tally',
     images: [
-      { url: '/icon.png', alt: 'Tally logo, which is a 2x2 grid section of a crossword puzzle, with the bottom right square filled in black, and the top left square filled with the capital letter T.' },
+      { url: '/og.png', alt: 'Tally logo, which is a 2x2 grid section of a crossword puzzle, with the bottom right square filled in black, and the top left square filled with the capital letter T.' },
     ],
   },
 }
