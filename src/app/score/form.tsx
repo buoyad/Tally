@@ -135,6 +135,7 @@ const styles = styleSheet({
     timeInput: {
         fontSize: '24px',
         border: 'none',
+        borderRadius: '0',
         textAlign: 'center',
     },
     timeSeparator: {
