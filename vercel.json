@@ -2,7 +2,11 @@
     "crons": [
         {
             "path": "/api/invalidate",
-            "schedule": "0 2-3 * * *"
+            "schedule": "0 2 * * *"
+        },
+        {
+            "path": "/api/invalidate",
+            "schedule": "0 3 * * *"
         }
     ]
 }
