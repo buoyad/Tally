@@ -2,7 +2,7 @@
     border-radius: 0;
     border: 1px solid black;
     padding: 4px;
-    max-width: 200px;
+    max-width: 250px;
 }
 
 .textInput:focus {
