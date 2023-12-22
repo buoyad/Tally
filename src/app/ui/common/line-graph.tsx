@@ -100,27 +100,7 @@ const PlotLegend = () => {
             display: 'flex', // required in addition to `direction` if overriding styles
         }}
     />
-
 }
-
-const styles = styleSheet({
-    container: { position: 'relative' },
-    infoIcon: { position: 'absolute', top: '4px', right: '4px', cursor: 'pointer' },
-    infoContainer: {
-        position: 'absolute',
-        background: 'var(--color-background)',
-        left: 0,
-        zIndex: 1,
-        overflow: 'hidden',
-        width: '100%',
-    },
-    infoInner: {
-        fontSize: '14px',
-        lineHeight: '.8rem',
-        padding: '0.5rem 0.5rem',
-    },
-    infoLayout: { display: 'grid', gridTemplateColumns: '.7fr .25fr 1fr .25fr', gap: '.5rem', width: '100%' }
-})
 
 type ExternalProps = {
     avgs: { user_id: number, name: string, for_day: string, moving_avg: string }[]
