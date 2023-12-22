@@ -12,7 +12,8 @@ export const colors = {
         selectTrack: '#eaeaef',
         selectIndicator: '#efeffa',
         boxPlotFill: 'rgba(107, 188, 255, 0.5)',
-        boxPlotStroke: 'rgba(107, 188, 255, 0.9)'
+        boxPlotStroke: 'rgba(107, 188, 255, 0.9)',
+        neutralButtonFill: 'rgba(77, 136, 249, 0.1)',
     },
     dark: {
         transparent: 'transparent',
@@ -27,6 +28,7 @@ export const colors = {
         selectTrack: '#10101f',
         selectIndicator: '#22222f',
         boxPlotFill: 'rgba(107, 188, 255, 0.5)',
-        boxPlotStroke: 'rgba(107, 188, 255, 0.9)'
+        boxPlotStroke: 'rgba(107, 188, 255, 0.9)',
+        neutralButtonFill: 'rgba(77, 136, 249, 0.1)',
     },
 }

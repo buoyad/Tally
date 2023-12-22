@@ -8,5 +8,14 @@
             <circle cx="12" cy="20" r="4.5" />
             <path d="M15.5 16.5L20 12M24.5 7.5L23 9M23 9L25 11L22 14L20 12M23 9L20 12" stroke-linecap="square" />
         </symbol>
+        <symbol id="imageUpload" width="100%" height="100%" viewBox="0 0 32 32" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M28 8V28H4V4H24" />
+            <path d="M28 6V2M28 2L26 4M28 2L30 4" stroke-linecap="round" />
+            <path d="M11 26V6H21V26H11Z" />
+            <path d="M13 13L14 12L15 13L16 12L17 13L18 12L19 13" />
+            <path d="M13 16L14 15L15 16L16 15L17 16L18 15L19 16" />
+            <path d="M13 19L14 18L15 19L16 18L17 19L18 18L19 19" />
+        </symbol>
     </defs>
 </svg>

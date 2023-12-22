@@ -271,7 +271,7 @@ export async function submitScore(_: any, formData: FormData) {
     } catch (error) {
         if (error instanceof validation.z.ZodError) {
             log.error('submitScore: validation error: ' + error)
-            return { message: "An error occurred" }
+            return { message: "An error occurred, please check that the entered time is a number and try again." }
         } else if (error instanceof db.DBError) {
             return { message: error.message }
         }

@@ -1,19 +1,15 @@
 'use client'
 import * as React from 'react'
 import { UserInfo } from "../lib/types";
-import { Box } from "../ui/components";
+import { Box, Subtitle } from "../ui/components";
 import { createWorker, PSM } from 'tesseract.js'
-import styles from '@/app/ui/form.module.css'
+import formStyles from '@/app/ui/form.module.css'
 import { useFormState } from 'react-dom';
 import { submitScore } from '../lib/actions';
 import { Button } from '../ui/client-components';
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
 import { currentPuzzleDate } from '../lib/util';
-
-dayjs.extend(utc)
-dayjs.extend(timezone)
+import { styleSheet } from '../ui/util';
+import { Icon } from '../ui/common';
 
 const loadWorker = createWorker('eng')
 
@@ -25,18 +21,20 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
     const [processing, setProcessing] = React.useState(false)
 
     const [error, setError] = React.useState('')
-    const [minutes, setMinutes] = React.useState('0')
-    const [seconds, setSeconds] = React.useState('0')
+    const [minutes, setMinutes] = React.useState('00')
+    const [seconds, setSeconds] = React.useState('00')
 
     const [date, setDate] = React.useState(currentPuzzleDate())
 
     const [state, formAction] = useFormState(submitScore, { message: '' })
 
+    const fileSelectorRef = React.useRef<HTMLInputElement>(null)
+
     React.useEffect(() => {
         async function runOCR() {
             setProcessing(true)
-            setMinutes('0')
-            setSeconds('0')
+            setMinutes('00')
+            setSeconds('00')
             setError('')
             const worker = await loadWorker
             await worker.setParameters({
@@ -51,7 +49,7 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
             let lastMatchAlt = matchesAlt[matchesAlt.length - 1]
             if (lastMatchAlt) {
                 const [_, seconds] = lastMatchAlt
-                setMinutes('0')
+                setMinutes('00')
                 setSeconds(seconds)
             } else if (lastMatch) {
                 const [_, minutes, seconds] = lastMatch
@@ -69,28 +67,77 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
     }, [file])
 
     return <Box gap="medium">
-        <p>Select your completion screenshot</p>
-        <Box row={true}>
-            <input type="file" name="file" accept="image/*" onChange={(e) => e.target.files && setFile(e.target.files[0])} title='Upload' className={styles.fileInput} />
-            {processing && <p>Processing...</p>}
-            {error && <Box className={styles.error}>{error}</Box>}
-        </Box>
-        <form action={formAction}>
-            <p>
-                Puzzle completed in{' '}
-                <input type="text" name="minutes" value={minutes} onChange={(e) => setMinutes(e.target.value)} className={styles.textInput} size={2} />{' '}
-                {minutes === '1' ? 'minute' : 'minutes'} and{' '}
-                <input type="text" name="seconds" value={seconds} onChange={(e) => setSeconds(e.target.value)} className={styles.textInput} size={2} />{' '}
-                {seconds === '1' ? 'second' : 'seconds'}. Puzzle published on{' '}
-                <input type="date" name="date" value={date} onChange={(e) => setDate(e.target.value)} className={styles.textInput} />
-            </p>
-            <Box row={true}>
-                <input type="checkbox" name="submitAnother" id="submitAnother" value="false" />
-                <label htmlFor="submitAnother">submit another score</label>
+        <Box>
+            <p>Select a completion screenshot:</p>
+            <Box row={true} gap="medium" style={{ alignItems: 'flex-end' }}>
+                <Box style={styles.fileSelectContainer} className={formStyles.buttonActivity} onClick={() => fileSelectorRef.current?.click()}>
+                    <input type="file" name="file" accept="image/*" onChange={(e) => e.target.files && setFile(e.target.files[0])} title='Select an image' style={styles.fileInput} ref={fileSelectorRef} />
+                    <Icon name="imageUpload" width={64} height={64} />
+                </Box>
+                {processing && <p>Processing...</p>}
+                {error && <Box className={formStyles.error}>{error}</Box>}
             </Box>
-            <input type="hidden" name="userID" value={userInfo.id} />
-            <Button typeSubmit={true} label="Submit" pendingLabel='Submitting...' />
-            {state?.message && <Box className={styles.error}>{state.message}</Box>}
-        </form>
+        </Box>
+        <Box>
+            <p>or enter your score manually:</p>
+            <form action={formAction}>
+                <Box gap="medium">
+                    <Box style={{ alignItems: 'center' }}>
+                        <p>Puzzle completed in</p>
+                        <Box row={true} gap="none" style={styles.timeInputContainer}>
+                            <input type="text" name="minutes" value={minutes} onChange={(e) => setMinutes(e.target.value)} style={styles.timeInput} size={2} />
+                            <p style={styles.timeSeparator}>:</p>
+                            <input type="text" name="seconds" value={seconds} onChange={(e) => setSeconds(e.target.value)} style={styles.timeInput} size={2} />
+                        </Box>
+                        <p>
+                            Published on
+                        </p>
+                        <input type="date" name="date" value={date} onChange={(e) => setDate(e.target.value)} className={formStyles.textInput} />
+                    </Box>
+                    <Box>
+                        <Box row={true}>
+                            <input type="checkbox" name="submitAnother" id="submitAnother" value="false" />
+                            <label htmlFor="submitAnother">submit another score</label>
+                        </Box>
+                        <Box>
+                            <input type="hidden" name="userID" value={userInfo.id} />
+                            <Button typeSubmit={true} disabled={minutes === '00' && seconds === '00'} label="Submit" pendingLabel='Submitting...' />
+                            {state?.message && <Box className={formStyles.error}>{state.message}</Box>}
+                        </Box>
+                    </Box>
+                </Box>
+            </form>
+        </Box>
     </Box>
 }
+
+const styles = styleSheet({
+    fileInput: {
+        display: 'none',
+    },
+    fileSelectContainer: {
+        padding: '4px',
+        border: '1px solid var(--color-tileBorder)',
+        backgroundColor: 'var(--color-neutralButtonFill)',
+        borderRadius: '2px',
+        cursor: 'pointer',
+        width: '72px'
+    },
+    timeInputContainer: {
+        borderRadius: '0',
+        border: '1px solid black',
+        padding: '4px',
+        maxWidth: '200px',
+        backgroundColor: 'white',
+        fontSize: '24px',
+        alignItems: 'center',
+    },
+    timeInput: {
+        fontSize: '24px',
+        border: 'none',
+        textAlign: 'center',
+    },
+    timeSeparator: {
+        color: 'black',
+    }
+})

@@ -50,6 +50,29 @@
     opacity: 1;
 }
 
+.buttonActivity {
+    position: relative;
+}
+
+.buttonActivity::before {
+    position: absolute;
+    content: '';
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: transparent;
+    transition: background-color 50ms;
+}
+
+.buttonActivity:hover::before {
+    background-color: rgba(255, 255, 255, .05);
+}
+
+.buttonActivity:active::before {
+    background-color: rgba(255, 255, 255, .1);
+}
+
 .subtitle {
     font-size: 10px;
     font-style: italic;
