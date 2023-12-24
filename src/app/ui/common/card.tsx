@@ -9,11 +9,13 @@ type Props = {
 }
 export default function Card({ children, style }: Props) {
     const rotate = Math.random() * 4 - 2
+    const initRotate = Math.random() * 4 - 2
     return <motion.div style={{ ...styles.container, ...style }}
-        initial={{ scale: .98, filter: 'blur(2px)' }}
+        initial={{ scale: 1.02, filter: 'blur(2px)', rotate: initRotate }}
         whileInView={{ filter: 'blur(0)', scale: 1, rotate }}
         transition={{ type: 'spring', bounce: 0, damping: 20, filter: { duration: .5 } }}
         viewport={{ once: true }}
+        suppressHydrationWarning={true}
     >
         {children}
     </ motion.div>
