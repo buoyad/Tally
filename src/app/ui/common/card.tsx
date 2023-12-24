@@ -13,6 +13,7 @@ export default function Card({ children, style }: Props) {
         initial={{ scale: .98, filter: 'blur(2px)' }}
         whileInView={{ filter: 'blur(0)', scale: 1, rotate }}
         transition={{ type: 'spring', bounce: 0, damping: 20, filter: { duration: .5 } }}
+        viewport={{ once: true }}
     >
         {children}
     </ motion.div>
