@@ -14,7 +14,7 @@ export default function Card({ children, style }: Props) {
         initial={{ scale: 1.02, filter: 'blur(2px)', rotate: initRotate }}
         whileInView={{ filter: 'blur(0)', scale: 1, rotate }}
         transition={{ type: 'spring', bounce: 0, damping: 20, filter: { duration: .5 } }}
-        viewport={{ once: true }}
+        viewport={{ once: true, amount: .25 }}
         suppressHydrationWarning={true}
     >
         {children}
