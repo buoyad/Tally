@@ -10,11 +10,7 @@ type Props = {
 export default function Card({ children, style }: Props) {
     const initRotate = Math.random() * 4 - 2
     const [rotate, setRotate] = React.useState(Math.random() * 4 - 2)
-    const resetRotate = () => {
-        let ret = Math.random() * 4 - 2
-        while (Math.abs(ret - rotate) < 1) ret = Math.random() * 4 - 2
-        setRotate(ret)
-    }
+    const resetRotate = () => setRotate(0)
     return <motion.div style={{ ...styles.container, ...style }}
         initial={{ scale: 1.02, filter: 'blur(2px)', rotate: initRotate }}
         whileInView={{ filter: 'blur(0)', scale: 1, rotate }}
