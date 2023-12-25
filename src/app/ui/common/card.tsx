@@ -1,7 +1,7 @@
 'use client'
 import * as React from 'react'
 import { styleSheet } from '../util'
-import { motion } from 'framer-motion'
+import { TargetAndTransition, motion } from 'framer-motion'
 
 type Props = {
     children: React.ReactNode
@@ -9,14 +9,23 @@ type Props = {
 }
 export default function Card({ children, style }: Props) {
     const initRotate = Math.random() * 4 - 2
-    const [rotate, setRotate] = React.useState(Math.random() * 4 - 2)
-    const resetRotate = () => setRotate(0)
+    const rotate = Math.random() * 4 - 2
+
+    const [tAndT, setTAndT] = React.useState<TargetAndTransition>({
+        filter: 'blur(0)', scale: 1, rotate,
+        transition: { type: 'spring', bounce: 0, damping: 20, filter: { duration: .5 } }
+    })
+
+    const alignCard = () => setTAndT({
+        filter: 'blur(0)', scale: 1, rotate: 0,
+        transition: { type: 'tween', duration: .1, ease: 'easeIn' }
+    })
+
     return <motion.div style={{ ...styles.container, ...style }}
         initial={{ scale: 1.02, filter: 'blur(2px)', rotate: initRotate }}
-        whileInView={{ filter: 'blur(0)', scale: 1, rotate }}
-        transition={{ type: 'spring', bounce: 0, damping: 20, filter: { duration: .5 } }}
+        whileInView={tAndT}
         viewport={{ once: true, amount: .25 }}
-        onTap={resetRotate}
+        onTap={alignCard}
         suppressHydrationWarning={true}
     >
         {children}
