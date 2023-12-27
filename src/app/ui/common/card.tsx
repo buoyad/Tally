@@ -3,13 +3,15 @@ import * as React from 'react'
 import { styleSheet } from '../util'
 import { TargetAndTransition, motion } from 'framer-motion'
 
+const rotationRange = 4
+
 type Props = {
     children: React.ReactNode
     style?: React.CSSProperties
 }
 export default function Card({ children, style }: Props) {
-    const initRotate = Math.random() * 4 - 2
-    const rotate = Math.random() * 4 - 2
+    const initRotate = Math.random() * rotationRange - (rotationRange / 2)
+    const rotate = Math.random() * rotationRange - (rotationRange / 2)
 
     const [tAndT, setTAndT] = React.useState<TargetAndTransition>({
         filter: 'blur(0)', scale: 1, rotate,
