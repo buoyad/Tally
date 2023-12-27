@@ -21,8 +21,8 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
     const [processing, setProcessing] = React.useState(false)
 
     const [error, setError] = React.useState('')
-    const [minutes, setMinutes] = React.useState('00')
-    const [seconds, setSeconds] = React.useState('00')
+    const [minutes, setMinutes] = React.useState('')
+    const [seconds, setSeconds] = React.useState('')
 
     const [date, setDate] = React.useState(currentPuzzleDate())
 
@@ -33,8 +33,8 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
     React.useEffect(() => {
         async function runOCR() {
             setProcessing(true)
-            setMinutes('00')
-            setSeconds('00')
+            setMinutes('')
+            setSeconds('')
             setError('')
             const worker = await loadWorker
             await worker.setParameters({
@@ -49,7 +49,7 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
             let lastMatchAlt = matchesAlt[matchesAlt.length - 1]
             if (lastMatchAlt) {
                 const [_, seconds] = lastMatchAlt
-                setMinutes('00')
+                setMinutes('')
                 setSeconds(seconds)
             } else if (lastMatch) {
                 const [_, minutes, seconds] = lastMatch
@@ -85,9 +85,9 @@ export default function Form({ userInfo }: { userInfo: UserInfo }) {
                     <Box style={{ alignItems: 'center' }}>
                         <p>Puzzle completed in</p>
                         <Box row={true} gap="none" style={styles.timeInputContainer}>
-                            <input type="text" name="minutes" value={minutes} onChange={(e) => setMinutes(e.target.value)} style={styles.timeInput} size={2} />
+                            <input type="text" name="minutes" value={minutes} placeholder="00" onChange={(e) => setMinutes(e.target.value)} style={styles.timeInput} size={2} />
                             <p style={styles.timeSeparator}>:</p>
-                            <input type="text" name="seconds" value={seconds} onChange={(e) => setSeconds(e.target.value)} style={styles.timeInput} size={2} />
+                            <input type="text" name="seconds" value={seconds} placeholder="00" onChange={(e) => setSeconds(e.target.value)} style={styles.timeInput} size={2} />
                         </Box>
                         <p>
                             Published on
