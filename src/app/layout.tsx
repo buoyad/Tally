@@ -8,6 +8,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { SetInitialColors } from './ui/dark-mode'
 import { ThemeProvider } from './ui/theme-context'
 
+
 const lora = Lora({ subsets: ['latin'] }) // TODO: try some other options https://fonts.google.com/?stroke=Serif&vfonly=true&preview.text=Tally
 
 export const metadata: Metadata = {
